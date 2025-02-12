@@ -2,152 +2,165 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8" />
-        <title>Ashesh Kaji</title>
-        <link rel="stylesheet" href="https://unpkg.com/@sakun/system.css" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Will You Be My Valentine?</title>
+        <!-- Animate.css for animations -->
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+        />
+        <!-- Google Fonts for a cute vibe -->
+        <link
+            href="https://fonts.googleapis.com/css2?family=Pacifico&family=Open+Sans:wght@400;600&display=swap"
+            rel="stylesheet"
+        />
         <style>
+            /* Global Styles */
             body {
+                background-color: #ffe6f7;
+                font-family: "Open Sans", sans-serif;
+                margin: 0;
+                padding: 0;
                 display: flex;
+                flex-direction: column;
+                align-items: center;
                 justify-content: center;
-                align-items: center;
                 height: 100vh;
-                margin: 20%;
-            }
-            .title-bar {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-            }
-            .center {
                 text-align: center;
+                overflow: hidden;
+            }
+            h1 {
+                font-family: "Pacifico", cursive;
+                font-size: 3rem;
+                color: #ff69b4;
+                margin: 20px;
+            }
+            p {
+                font-size: 1.2rem;
+                color: #333;
+            }
+            /* Heart Styling */
+            #heart {
+                font-size: 5rem;
+                color: #ff1493;
+                cursor: pointer;
+                transition: transform 0.2s ease;
+                user-select: none;
+            }
+            #heart:hover {
+                transform: scale(1.1);
+            }
+            /* Question and Buttons Styling */
+            #question {
+                display: none;
+            }
+            #question p {
+                font-size: 2rem;
+                color: #d147a3;
+            }
+            #buttons {
+                margin-top: 20px;
+            }
+            #buttons button {
+                font-size: 1.2rem;
+                padding: 10px 20px;
+                margin: 0 10px;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                background-color: #ff69b4;
+                color: white;
+                transition: background-color 0.2s ease;
+            }
+            #buttons button:hover {
+                background-color: #ff85c1;
+            }
+            /* Love Messages Styling */
+            .love-message {
+                font-family: "Pacifico", cursive;
+                font-size: 1.5rem;
+                color: #ff1493;
+                pointer-events: none;
+            }
+            /* Container for Love Messages */
+            #loveContainer {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                pointer-events: none;
+                overflow: hidden;
             }
         </style>
     </head>
     <body>
-        <section class="window">
-            <header class="title-bar">
-                <button aria-label="Close" class="close"></button>
-                <h1>Ashesh Kaji</h1>
-                <button aria-label="Resize" class="resize"></button>
-            </header>
-            <hr />
+        <h1>Hello Beautiful!</h1>
+        <p>Tap the heart to reveal a secret...</p>
+        <!-- Clickable Heart -->
+        <div id="heart">&#10084;</div>
+        <!-- Hidden Question Section -->
+        <div id="question" class="animate__animated">
+            <p>Will you be my Valentine?</p>
+            <div id="buttons">
+                <button id="yesBtn">Yes</button>
+                <button id="noBtn">No</button>
+            </div>
+        </div>
+        <!-- Container for Love Messages -->
+        <div id="loveContainer"></div>
 
-            <article class="window-pane">
-                <header>
-                    <h2 class="center">Ashesh Kaji</h2>
-                    <p>ashesh8500@gmail.com</p>
-                </header>
+        <script>
+            // Reveal the question when the heart is clicked
+            document
+                .getElementById("heart")
+                .addEventListener("click", function () {
+                    var questionDiv = document.getElementById("question");
+                    if (
+                        window.getComputedStyle(questionDiv).display === "none"
+                    ) {
+                        questionDiv.style.display = "block";
+                        questionDiv.classList.add("animate__bounceIn");
+                        // Hide the heart after it's clicked
+                        this.style.display = "none";
+                    }
+                });
 
-                <section>
-                    <h2 class="center">EDUCATION</h2>
-                    <article>
-                        <h3>Bachelor of Science - BS in Cognitive Science</h3>
-                        <p>
-                            <strong
-                                >Specialization in Machine Learning and Neural
-                                Computation</strong
-                            ><br />
-                            UC San Diego • 09/2021 - 06/2025 (Expected)
-                        </p>
-                    </article>
-                    <article>
-                        <h3>International Baccalaureate Diploma Programme</h3>
-                        <p>
-                            SVKM's JV Parekh International School • GPA: 39 •
-                            01/2019 - 01/2021
-                        </p>
-                    </article>
-                </section>
+            // YES button: Animate several "I love you!" messages
+            document
+                .getElementById("yesBtn")
+                .addEventListener("click", function () {
+                    var loveContainer =
+                        document.getElementById("loveContainer");
+                    for (let i = 0; i < 10; i++) {
+                        const loveDiv = document.createElement("div");
+                        loveDiv.className =
+                            "love-message animate__animated animate__bounceIn";
+                        loveDiv.innerText = "I love you!";
+                        loveDiv.style.position = "absolute";
+                        loveDiv.style.left = Math.random() * 100 + "vw";
+                        loveDiv.style.top = Math.random() * 100 + "vh";
+                        loveContainer.appendChild(loveDiv);
+                        // Remove the element after 2 seconds
+                        setTimeout(() => {
+                            loveDiv.remove();
+                        }, 2000);
+                    }
+                });
 
-                <section>
-                    <h2 class="center">WORK EXPERIENCE</h2>
-                    <article>
-                        <h3>
-                            Machine Learning Intern • SageX Global • Remote •
-                            09/2023 - Present
-                        </h3>
-                        <ul>
-                            <li>
-                                Designed and implemented pipelines for data
-                                extraction and chat interface creation using
-                                Large Language Models (LLMs) and vector
-                                databases
-                            </li>
-                            <li>
-                                Developed a Retrieval-Augmented Generation (RAG)
-                                product that went into production, involving
-                                integration with Azure and serverless deployment
-                                of locally hosted LLMs
-                            </li>
-                            <li>
-                                Conducted architecture design, code
-                                implementation, rapid versioning, and production
-                                testing
-                            </li>
-                        </ul>
-                        <p>
-                            <strong>Skills:</strong> PyTorch, Scikit-Learn,
-                            Azure (Blob storage + Serverless deployment),
-                            Python, MLOps, NLP
-                        </p>
-                    </article>
-                    <article>
-                        <h3>
-                            Undergraduate Research Assistant • UC San Diego •
-                            San Diego, CA • 10/2022 - Present
-                        </h3>
-                        <ul>
-                            <li>
-                                Accessed data from a remote server and performed
-                                exploratory data analysis on the relationships
-                                between biological factors and diseases
-                            </li>
-                            <li>
-                                Utilized Python, CLI, NumPy, Pandas, and the
-                                Statsmodels API, applying an understanding of
-                                basic epidemiology
-                            </li>
-                        </ul>
-                        <p>
-                            <strong>Skills:</strong> Python, CLI, NumPy, Pandas,
-                            Statsmodels API, Epidemiology
-                        </p>
-                    </article>
-                    <article>
-                        <h3>
-                            IT Solutions Assistant Intern • Valuation Advisor
-                        </h3>
-                        <ul>
-                            <li>
-                                Created a solution to generate client reports
-                                and store valuable financial records data using
-                                MS Excel and Access for database structuring
-                            </li>
-                            <li>
-                                Developed skills in MS Excel+Access,
-                                understanding of financial products and jargon,
-                                and IT system design
-                            </li>
-                        </ul>
-                    </article>
-                    <article>
-                        <h3>
-                            Service Desk Employee • UC San Diego • San Diego, CA
-                        </h3>
-                        <p>
-                            Job responsibilities and achievements not specified
-                        </p>
-                    </article>
-                </section>
-
-                <section>
-                    <h2 class="center">SKILLS</h2>
-                    <p>
-                        CLI, Machine Learning, Mathematics, Python, PyTorch,
-                        Research Skills, Scikit-Learn, Statistical Data
-                        Analysis, Microsoft Azure
-                    </p>
-                </section>
-            </article>
-        </section>
+            // NO button: Shake the button and change its text temporarily to "Try again"
+            document
+                .getElementById("noBtn")
+                .addEventListener("click", function () {
+                    var noBtn = document.getElementById("noBtn");
+                    noBtn.classList.add("animate__shakeX");
+                    const originalText = noBtn.innerText;
+                    noBtn.innerText = "Try again";
+                    setTimeout(() => {
+                        noBtn.classList.remove("animate__shakeX");
+                        noBtn.innerText = originalText;
+                    }, 1000);
+                });
+        </script>
     </body>
 </html>
