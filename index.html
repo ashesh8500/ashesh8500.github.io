@@ -17,7 +17,7 @@
         <style>
             /* Global Styles */
             body {
-                background-color: #ffe6f7;
+                background: linear-gradient(135deg, #ffe6f7, #fff0f5);
                 font-family: "Open Sans", sans-serif;
                 margin: 0;
                 padding: 0;
@@ -28,16 +28,27 @@
                 height: 100vh;
                 text-align: center;
                 overflow: hidden;
+                animation: backgroundShift 10s infinite alternate;
+            }
+            @keyframes backgroundShift {
+                from {
+                    background: linear-gradient(135deg, #ffe6f7, #fff0f5);
+                }
+                to {
+                    background: linear-gradient(135deg, #fff0f5, #ffe6f7);
+                }
             }
             h1 {
                 font-family: "Pacifico", cursive;
                 font-size: 3rem;
                 color: #ff69b4;
                 margin: 20px;
+                animation: fadeInDown 1s;
             }
             p {
                 font-size: 1.2rem;
                 color: #333;
+                animation: fadeIn 1.5s;
             }
             /* Heart Styling */
             #heart {
@@ -46,9 +57,21 @@
                 cursor: pointer;
                 transition: transform 0.2s ease;
                 user-select: none;
+                animation: pulse 1.5s infinite;
             }
             #heart:hover {
-                transform: scale(1.1);
+                transform: scale(1.15);
+            }
+            @keyframes pulse {
+                0% {
+                    transform: scale(1);
+                }
+                50% {
+                    transform: scale(1.1);
+                }
+                100% {
+                    transform: scale(1);
+                }
             }
             /* Question and Buttons Styling */
             #question {
@@ -57,6 +80,7 @@
             #question p {
                 font-size: 2rem;
                 color: #d147a3;
+                animation: fadeIn 1s;
             }
             #buttons {
                 margin-top: 20px;
@@ -70,10 +94,14 @@
                 cursor: pointer;
                 background-color: #ff69b4;
                 color: white;
-                transition: background-color 0.2s ease;
+                transition:
+                    background-color 0.2s ease,
+                    transform 0.2s ease;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             }
             #buttons button:hover {
                 background-color: #ff85c1;
+                transform: translateY(-3px);
             }
             /* Love Messages Styling */
             .love-message {
@@ -81,6 +109,18 @@
                 font-size: 1.5rem;
                 color: #ff1493;
                 pointer-events: none;
+                position: absolute;
+            }
+            /* Custom Animation: After bounceIn, the messages gently float upward and fade */
+            @keyframes floatUp {
+                0% {
+                    transform: translateY(0);
+                    opacity: 1;
+                }
+                100% {
+                    transform: translateY(-50px);
+                    opacity: 0;
+                }
             }
             /* Container for Love Messages */
             #loveContainer {
@@ -95,10 +135,12 @@
         </style>
     </head>
     <body>
-        <h1>Hello Beautiful!</h1>
-        <p>Tap the heart to reveal a secret...</p>
+        <h1 class="animate__animated animate__fadeInDown">Hello Beautiful!</h1>
+        <p class="animate__animated animate__fadeIn">
+            Tap the heart to reveal a secret...
+        </p>
         <!-- Clickable Heart -->
-        <div id="heart">&#10084;</div>
+        <div id="heart" class="animate__animated">&#10084;</div>
         <!-- Hidden Question Section -->
         <div id="question" class="animate__animated">
             <p>Will you be my Valentine?</p>
@@ -126,7 +168,7 @@
                     }
                 });
 
-            // YES button: Animate several "I love you!" messages
+            // YES button: Animate several "I love you!" messages spread across the page
             document
                 .getElementById("yesBtn")
                 .addEventListener("click", function () {
@@ -137,14 +179,18 @@
                         loveDiv.className =
                             "love-message animate__animated animate__bounceIn";
                         loveDiv.innerText = "I love you!";
-                        loveDiv.style.position = "absolute";
+                        // Place randomly across the viewport (similar to the older version)
                         loveDiv.style.left = Math.random() * 100 + "vw";
                         loveDiv.style.top = Math.random() * 100 + "vh";
                         loveContainer.appendChild(loveDiv);
-                        // Remove the element after 2 seconds
+                        // After the bounceIn effect, start the floatUp animation
+                        setTimeout(() => {
+                            loveDiv.style.animation = "floatUp 2s forwards";
+                        }, 500);
+                        // Remove the element after animation finishes
                         setTimeout(() => {
                             loveDiv.remove();
-                        }, 2000);
+                        }, 2500);
                     }
                 });
 
@@ -153,12 +199,14 @@
                 .getElementById("noBtn")
                 .addEventListener("click", function () {
                     var noBtn = document.getElementById("noBtn");
-                    noBtn.classList.add("animate__shakeX");
+                    noBtn.classList.add("animate__animated", "animate__shakeX");
                     const originalText = noBtn.innerText;
                     noBtn.innerText = "Try again";
+                    noBtn.disabled = true; // disable button during animation
                     setTimeout(() => {
                         noBtn.classList.remove("animate__shakeX");
                         noBtn.innerText = originalText;
+                        noBtn.disabled = false;
                     }, 1000);
                 });
         </script>
