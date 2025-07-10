@@ -11,8 +11,11 @@ title = "personal_web"
 # include `assets` in web platform
 [web.resource]
 
+# Include assets directory
+base = "assets"
+
 # Additional CSS style files
-style = []
+style = ["assets/tailwind.css", "assets/styling/main.css"]
 
 # Additional JavaScript files
 script = []

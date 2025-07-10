@@ -4,17 +4,15 @@ use dioxus::prelude::*;
 use pulldown_cmark::{html, Options, Parser};
 #[cfg(feature = "server")]
 use std::fs;
-#[cfg(feature = "server")]
-use regex::Regex;
 
 const BLOG_CSS: Asset = asset!("/assets/styling/blog.css");
 
 #[component]
-pub fn Blog(id: String) -> Element {
+pub fn ProjectDetail(id: String) -> Element {
     let id_clone = id.clone();
     let content = use_resource(move || {
         let id = id_clone.clone();
-        async move { load_blog_post_server(id).await }
+        async move { load_project_server(id).await }
     });
 
     rsx! {
@@ -30,9 +28,9 @@ pub fn Blog(id: String) -> Element {
                 },
                 Some(Err(e)) => rsx! {
                     div { class: "error retro-error",
-                        h2 { "404 - Blog Post Not Found" }
+                        h2 { "404 - Project Not Found" }
                         p { "Error: {e}" }
-                        p { "The requested blog post '{id}' does not exist." }
+                        p { "The requested project '{id}' does not exist." }
                     }
                 },
                 None => rsx! {
@@ -46,9 +44,9 @@ pub fn Blog(id: String) -> Element {
     }
 }
 
-#[server(LoadBlogPost)]
-async fn load_blog_post_server(id: String) -> Result<String, ServerFnError> {
-    let file_path = format!("blog/{}.md", id);
+#[server(LoadProject)]
+async fn load_project_server(id: String) -> Result<String, ServerFnError> {
+    let file_path = format!("projects/{}.md", id);
 
     match fs::read_to_string(&file_path) {
         Ok(markdown_content) => {
@@ -61,27 +59,8 @@ async fn load_blog_post_server(id: String) -> Result<String, ServerFnError> {
             let mut html_output = String::new();
             html::push_html(&mut html_output, parser);
 
-            // Process LaTeX math expressions
-            let processed_html = process_latex_math(&html_output);
-
-            Ok(processed_html)
+            Ok(html_output)
         }
-        Err(_) => Err(ServerFnError::new(format!("Could not find blog post: {}", id))),
+        Err(_) => Err(ServerFnError::new(format!("Could not find project: {}", id))),
     }
-}
-
-#[cfg(feature = "server")]
-fn process_latex_math(html: &str) -> String {
-    // Handle display math first ($$...$$ -> \[...\])
-    let display_regex = Regex::new(r"\$\$([^$]+?)\$\$").unwrap();
-    let mut processed = display_regex.replace_all(html, r"\[$$1\]").to_string();
-    
-    // Handle inline math ($...$ -> \(...\))
-    let inline_regex = Regex::new(r"\$([^$\n]+?)\$").unwrap();
-    processed = inline_regex.replace_all(&processed, r"\($$1\)").to_string();
-    
-    // Add a script tag to trigger KaTeX rendering after content loads
-    processed.push_str(r#"<script>document.addEventListener('DOMContentLoaded', function() { if (typeof renderMathInElement !== 'undefined') { renderMathInElement(document.body, { delimiters: [{ left: '\\(', right: '\\)', display: false }, { left: '\\[', right: '\\]', display: true }], throwOnError: false }); } });</script>"#);
-    
-    processed
 }

@@ -1,20 +1,33 @@
 use dioxus::prelude::*;
 
-const HEADER_SVG: Asset = asset!("/assets/header.svg");
-
 #[component]
 pub fn Hero() -> Element {
     rsx! {
-        div {
-            id: "hero",
-            img { src: HEADER_SVG, id: "header" }
+        div { id: "hero", class: "retro-terminal",
+            div { class: "hero-header",
+                h1 { class: "glitch",
+                    "ASHESH_KAJI.EXE"
+                }
+                p { class: "hero-subtitle",
+                    "> Software Engineer & Digital Craftsman"
+                }
+                p { class: "hero-description",
+                    "Welcome to my digital workspace. I build things with code."
+                }
+            }
+
             div { id: "links",
-                a { href: "https://dioxuslabs.com/learn/0.6/", "📚 Learn Dioxus" }
-                a { href: "https://dioxuslabs.com/awesome", "🚀 Awesome Dioxus" }
-                a { href: "https://github.com/dioxus-community/", "📡 Community Libraries" }
-                a { href: "https://github.com/DioxusLabs/sdk", "⚙️ Dioxus Development Kit" }
-                a { href: "https://marketplace.visualstudio.com/items?itemName=DioxusLabs.dioxus", "💫 VSCode Extension" }
-                a { href: "https://discord.gg/XgGxMSkvUM", "👋 Community Discord" }
+                a { href: "/projects", "📁 Projects.dir" }
+                a { href: "/blog", "📝 Blog.md" }
+                a { href: "https://github.com/ashesh8500", target: "_blank", "🔗 GitHub.link" }
+                a { href: "https://linkedin.com/in/asheshkaji", target: "_blank", "💼 LinkedIn.url" }
+                a { href: "mailto:ashesh8500@gmail.com", "📧 Contact.mail" }
+            }
+
+            div { class: "terminal-prompt",
+                span { class: "prompt-symbol", "$ " }
+                span { class: "prompt-text", "explore --interactive" }
+                span { class: "cursor-blink", "█" }
             }
         }
     }
