@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Ashesh Kaji - AI Engineer</title>
+    <meta name="description" content="Personal portfolio of Ashesh Kaji, AI Engineer and Machine Learning Specialist">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="./assets/favicon.ico" type="image/x-icon">
+    
+    <!-- Open Graph / Social Media -->
+    <meta property="og:title" content="Ashesh Kaji - AI Engineer">
+    <meta property="og:description" content="Personal portfolio showcasing AI/ML projects and technical blog posts">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://ashesh8500.github.io/personal_web/">
+    
+    <!-- Prevent the webpage from requesting the favicon over and over -->
+    <link rel="icon" href="data:,">
+
+    <style>
+        html {
+            /* Remove touch delay: */
+            touch-action: manipulation;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: #2c2c2e;
+            color: white;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            overflow: hidden; /* Prevent scrollbars */
+        }
+
+        #loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #2c2c2e;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .spinner {
+            border: 4px solid #555;
+            border-top: 4px solid #0066cc;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        #the_canvas_id {
+            width: 100%;
+            height: 100vh;
+            display: block;
+        }
+
+        .error {
+            color: #ff6b6b;
+            background: #2c2c2e;
+            padding: 20px;
+            margin: 20px;
+            border-radius: 8px;
+            border: 1px solid #ff6b6b;
+        }
+
+        /* Custom cursor */
+        body, html {
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="white" stroke="black" stroke-width="1" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>') 12 12, auto;
+        }
+        
+        /* Prevent text selection on UI elements */
+        canvas {
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="white" stroke="black" stroke-width="1" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>') 12 12, auto;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading">
+        <div class="spinner"></div>
+        <p>Loading Ashesh Kaji's Portfolio...</p>
+        <p style="color: #888; font-size: 0.9em;">Building AI-powered experiences with Rust 🦀</p>
+    </div>
+
+    <!-- The WASM application will be inserted here -->
+    <canvas id="the_canvas_id"></canvas>
+
+    <!-- Handle loading screen -->
+    <script>
+        // Hide loading screen after a short delay to ensure WASM is loaded
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                const loading = document.getElementById('loading');
+                if (loading) {
+                    loading.style.display = 'none';
+                }
+            }, 1000);
+        });
+        
+        // Also hide if canvas gets focus (WASM app started)
+        const canvas = document.getElementById('the_canvas_id');
+        if (canvas) {
+            canvas.addEventListener('focus', function() {
+                const loading = document.getElementById('loading');
+                if (loading) {
+                    loading.style.display = 'none';
+                }
+            });
+        }
+    </script>
+
+    <!-- Trunk will automatically inject the WASM module here -->
+    <link data-trunk rel="rust" data-wasm-opt="z" />
+</body>
+</html>

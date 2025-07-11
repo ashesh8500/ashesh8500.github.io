@@ -1,0 +1,30 @@
+[build]
+# The index HTML file to drive the bundling process.
+target = "index.html"
+
+# Build in release mode.
+release = true
+
+# The output dir for all final assets.
+dist = "dist"
+
+# Copy assets to the dist directory
+[[build.hooks]]
+stage = "pre_build"
+command = "mkdir"
+command_arguments = ["-p", "dist/assets"]
+
+[[build.hooks]]
+stage = "pre_build"
+command = "cp"
+command_arguments = ["-r", "assets/favicon.ico", "dist/assets/"]
+
+[serve]
+# The address to serve on.
+address = "127.0.0.1"
+
+# The port to serve on.
+port = 8080
+
+# Automatically open a browser tab for the app.
+open = true
