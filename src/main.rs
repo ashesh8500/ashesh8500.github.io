@@ -1,5 +1,5 @@
 use eframe::egui;
-use pulldown_cmark::{Parser, Event, Tag, CodeBlockKind};
+use pulldown_cmark::{CodeBlockKind, Event, Parser, Tag};
 use std::collections::HashMap;
 
 #[cfg(not(target_arch = "wasm32"))]
@@ -53,7 +53,7 @@ fn main() {
             .expect("No global `window` exists")
             .document()
             .expect("Should have a document on window");
-        
+
         let canvas = document
             .get_element_by_id("the_canvas_id")
             .expect("Failed to find the_canvas_id")
@@ -128,59 +128,65 @@ fn render_markdown(ui: &mut egui::Ui, markdown: &str) {
     let mut table_row: Vec<String> = Vec::new();
     let mut table_rows: Vec<Vec<String>> = Vec::new();
     let mut text_buffer = String::new();
-    
+
     for event in parser {
         match event {
-            Event::Start(tag) => {
-                match tag {
-                    Tag::Heading(level, _, _) => {
-                        current_heading_level = level as u32;
-                    }
-                    Tag::Paragraph => {
-                        text_buffer.clear();
-                    }
-                    Tag::CodeBlock(CodeBlockKind::Fenced(lang)) => {
-                        ui.separator();
-                        ui.add_space(5.0);
-                        ui.with_layout(egui::Layout::left_to_right(egui::Align::TOP), |ui| {
-                            ui.label(egui::RichText::new(format!("```{}", lang)).monospace().color(egui::Color32::DARK_GRAY));
-                        });
-                        in_code_block = true;
-                    }
-                    Tag::CodeBlock(CodeBlockKind::Indented) => {
-                        ui.separator();
-                        ui.add_space(5.0);
-                        ui.with_layout(egui::Layout::left_to_right(egui::Align::TOP), |ui| {
-                            ui.label(egui::RichText::new("```").monospace().color(egui::Color32::DARK_GRAY));
-                        });
-                        in_code_block = true;
-                    }
-                    Tag::Table(_) => {
-                        in_table = true;
-                        table_headers.clear();
-                        table_rows.clear();
-                    }
-                    Tag::TableHead => {
-                        table_headers.clear();
-                    }
-                    Tag::TableRow => {
-                        table_row.clear();
-                    }
-                    Tag::TableCell => {
-                        text_buffer.clear();
-                    }
-                    Tag::List(_) => {
-                        ui.add_space(5.0);
-                    }
-                    Tag::Item => {
-                        text_buffer.clear();
-                    }
-                    _ => {}
+            Event::Start(tag) => match tag {
+                Tag::Heading(level, _, _) => {
+                    current_heading_level = level as u32;
                 }
-            }
+                Tag::Paragraph => {
+                    text_buffer.clear();
+                }
+                Tag::CodeBlock(CodeBlockKind::Fenced(lang)) => {
+                    ui.separator();
+                    ui.add_space(5.0);
+                    ui.with_layout(egui::Layout::left_to_right(egui::Align::TOP), |ui| {
+                        ui.label(
+                            egui::RichText::new(format!("```{}", lang))
+                                .monospace()
+                                .color(egui::Color32::LIGHT_GRAY),
+                        );
+                    });
+                    in_code_block = true;
+                }
+                Tag::CodeBlock(CodeBlockKind::Indented) => {
+                    ui.separator();
+                    ui.add_space(5.0);
+                    ui.with_layout(egui::Layout::left_to_right(egui::Align::TOP), |ui| {
+                        ui.label(
+                            egui::RichText::new("```")
+                                .monospace()
+                                .color(egui::Color32::LIGHT_GRAY),
+                        );
+                    });
+                    in_code_block = true;
+                }
+                Tag::Table(_) => {
+                    in_table = true;
+                    table_headers.clear();
+                    table_rows.clear();
+                }
+                Tag::TableHead => {
+                    table_headers.clear();
+                }
+                Tag::TableRow => {
+                    table_row.clear();
+                }
+                Tag::TableCell => {
+                    text_buffer.clear();
+                }
+                Tag::List(_) => {
+                    ui.add_space(5.0);
+                }
+                Tag::Item => {
+                    text_buffer.clear();
+                }
+                _ => {}
+            },
             Event::Text(text) => {
                 let text_str = text.to_string();
-                
+
                 // Check for LaTeX math expressions
                 if text_str.contains("$") {
                     render_text_with_math(ui, &text_str, in_code_block, current_heading_level);
@@ -189,7 +195,11 @@ fn render_markdown(ui: &mut egui::Ui, markdown: &str) {
                     }
                 } else if in_code_block {
                     ui.with_layout(egui::Layout::left_to_right(egui::Align::TOP), |ui| {
-                        ui.label(egui::RichText::new(text_str).monospace().background_color(egui::Color32::from_rgb(240, 240, 240)));
+                        ui.label(
+                            egui::RichText::new(text_str)
+                                .monospace()
+                                .background_color(egui::Color32::from_rgb(240, 240, 240)),
+                        );
                     });
                 } else if current_heading_level > 0 {
                     match current_heading_level {
@@ -204,75 +214,81 @@ fn render_markdown(ui: &mut egui::Ui, markdown: &str) {
                 }
             }
             Event::Code(text) => {
-                ui.label(egui::RichText::new(text.to_string()).monospace().background_color(egui::Color32::from_rgb(240, 240, 240)));
+                ui.label(
+                    egui::RichText::new(text.to_string())
+                        .monospace()
+                        .background_color(egui::Color32::from_rgb(240, 240, 240)),
+                );
             }
-            Event::End(tag) => {
-                match tag {
-                    Tag::CodeBlock(_) => {
-                        ui.with_layout(egui::Layout::left_to_right(egui::Align::TOP), |ui| {
-                            ui.label(egui::RichText::new("```").monospace().color(egui::Color32::DARK_GRAY));
-                        });
-                        ui.separator();
-                        ui.add_space(5.0);
-                        in_code_block = false;
-                    }
-                    Tag::Paragraph => {
-                        if !text_buffer.is_empty() {
-                            if text_buffer.contains("$") {
-                                render_text_with_math(ui, &text_buffer, false, 0);
-                            } else {
-                                ui.label(text_buffer.clone());
-                            }
-                            text_buffer.clear();
-                        }
-                        ui.add_space(8.0);
-                    }
-                    Tag::Heading(_, _, _) => {
-                        ui.add_space(5.0);
-                        ui.separator();
-                        ui.add_space(5.0);
-                    }
-                    Tag::TableCell => {
-                        if in_table {
-                            table_row.push(text_buffer.clone());
-                            text_buffer.clear();
-                        }
-                    }
-                    Tag::TableRow => {
-                        if in_table {
-                            if table_headers.is_empty() {
-                                table_headers = table_row.clone();
-                            } else {
-                                table_rows.push(table_row.clone());
-                            }
-                            table_row.clear();
-                        }
-                    }
-                    Tag::Table(_) => {
-                        if in_table {
-                            render_table(ui, &table_headers, &table_rows);
-                            in_table = false;
-                        }
-                    }
-                    Tag::Item => {
-                        if !text_buffer.is_empty() {
-                            ui.horizontal(|ui| {
-                                ui.label("•");
-                                ui.label(text_buffer.clone());
-                            });
-                            text_buffer.clear();
-                        }
-                    }
-                    Tag::List(_) => {
-                        ui.add_space(5.0);
-                    }
-                    _ => {}
+            Event::End(tag) => match tag {
+                Tag::CodeBlock(_) => {
+                    ui.with_layout(egui::Layout::left_to_right(egui::Align::TOP), |ui| {
+                        ui.label(
+                            egui::RichText::new("```")
+                                .monospace()
+                                .color(egui::Color32::LIGHT_GRAY),
+                        );
+                    });
+                    ui.separator();
+                    ui.add_space(5.0);
+                    in_code_block = false;
                 }
-            }
+                Tag::Paragraph => {
+                    if !text_buffer.is_empty() {
+                        if text_buffer.contains("$") {
+                            render_text_with_math(ui, &text_buffer, false, 0);
+                        } else {
+                            ui.label(text_buffer.clone());
+                        }
+                        text_buffer.clear();
+                    }
+                    ui.add_space(8.0);
+                }
+                Tag::Heading(_, _, _) => {
+                    ui.add_space(5.0);
+                    ui.separator();
+                    ui.add_space(5.0);
+                }
+                Tag::TableCell => {
+                    if in_table {
+                        table_row.push(text_buffer.clone());
+                        text_buffer.clear();
+                    }
+                }
+                Tag::TableRow => {
+                    if in_table {
+                        if table_headers.is_empty() {
+                            table_headers = table_row.clone();
+                        } else {
+                            table_rows.push(table_row.clone());
+                        }
+                        table_row.clear();
+                    }
+                }
+                Tag::Table(_) => {
+                    if in_table {
+                        render_table(ui, &table_headers, &table_rows);
+                        in_table = false;
+                    }
+                }
+                Tag::Item => {
+                    if !text_buffer.is_empty() {
+                        ui.horizontal(|ui| {
+                            ui.label("•");
+                            ui.label(text_buffer.clone());
+                        });
+                        text_buffer.clear();
+                    }
+                }
+                Tag::List(_) => {
+                    ui.add_space(5.0);
+                }
+                _ => {}
+            },
             _ => {}
         }
     }
-    
+
     // Handle any remaining text
     if !text_buffer.is_empty() {
         if text_buffer.contains("$") {
@@ -288,7 +304,7 @@ fn render_text_with_math(ui: &mut egui::Ui, text: &str, in_code_block: bool, hea
         ui.label(egui::RichText::new(text).monospace());
         return;
     }
-    
+
     // Simple LaTeX math rendering - split by $ signs
     let parts: Vec<&str> = text.split('$').collect();
     if parts.len() == 1 {
@@ -305,7 +321,7 @@ fn render_text_with_math(ui: &mut egui::Ui, text: &str, in_code_block: bool, hea
         }
         return;
     }
-    
+
     ui.horizontal_wrapped(|ui| {
         for (i, part) in parts.iter().enumerate() {
             if i % 2 == 0 {
@@ -316,7 +332,11 @@ fn render_text_with_math(ui: &mut egui::Ui, text: &str, in_code_block: bool, hea
             } else {
                 // Math expression - render with special formatting
                 if !part.is_empty() {
-                    ui.label(egui::RichText::new(format!("𝒇({})", part)).italics().color(egui::Color32::from_rgb(100, 50, 150)));
+                    ui.label(
+                        egui::RichText::new(format!("𝒇({})", part))
+                            .italics()
+                            .color(egui::Color32::from_rgb(100, 50, 150)),
+                    );
                 }
             }
         }
@@ -325,7 +345,7 @@ fn render_text_with_math(ui: &mut egui::Ui, text: &str, in_code_block: bool, hea
 
 fn render_table(ui: &mut egui::Ui, headers: &[String], rows: &[Vec<String>]) {
     ui.add_space(10.0);
-    
+
     egui::Grid::new("markdown_table")
         .striped(true)
         .show(ui, |ui| {
@@ -334,7 +354,7 @@ fn render_table(ui: &mut egui::Ui, headers: &[String], rows: &[Vec<String>]) {
                 ui.label(egui::RichText::new(header).strong());
             }
             ui.end_row();
-            
+
             // Rows
             for row in rows {
                 for cell in row {
@@ -343,7 +363,7 @@ fn render_table(ui: &mut egui::Ui, headers: &[String], rows: &[Vec<String>]) {
                 ui.end_row();
             }
         });
-    
+
     ui.add_space(10.0);
 }
 
@@ -352,18 +372,16 @@ impl PersonalWebApp {
         // Welcome message in center
         let center_x = rect.center().x;
         let center_y = rect.center().y - 100.0;
-        
+
         // Semi-transparent background for text
-        let text_bg = egui::Rect::from_center_size(
-            egui::pos2(center_x, center_y),
-            egui::vec2(500.0, 200.0),
-        );
+        let text_bg =
+            egui::Rect::from_center_size(egui::pos2(center_x, center_y), egui::vec2(500.0, 200.0));
         ui.painter().rect_filled(
             text_bg,
             12.0,
             egui::Color32::from_rgba_unmultiplied(255, 255, 255, 220),
         );
-        
+
         // Welcome title
         ui.painter().text(
             egui::pos2(center_x, center_y - 60.0),
@@ -372,7 +390,7 @@ impl PersonalWebApp {
             egui::FontId::proportional(32.0),
             egui::Color32::from_rgb(40, 40, 40),
         );
-        
+
         // Subtitle
         ui.painter().text(
             egui::pos2(center_x, center_y - 20.0),
@@ -381,7 +399,7 @@ impl PersonalWebApp {
             egui::FontId::proportional(18.0),
             egui::Color32::from_rgb(60, 60, 60),
         );
-        
+
         // Instructions
         ui.painter().text(
             egui::pos2(center_x, center_y + 20.0),
@@ -390,7 +408,7 @@ impl PersonalWebApp {
             egui::FontId::proportional(14.0),
             egui::Color32::from_rgb(80, 80, 80),
         );
-        
+
         // Tech stack
         ui.painter().text(
             egui::pos2(center_x, center_y + 50.0),
@@ -408,40 +426,42 @@ impl PersonalWebApp {
             egui::pos2(rect.center().x, rect.bottom() - dock_height / 2.0 - 10.0),
             egui::vec2(dock_width, dock_height),
         );
-        
+
         // Dock background
         ui.painter().rect_filled(
             dock_rect,
             15.0,
             egui::Color32::from_rgba_unmultiplied(240, 240, 240, 200),
         );
-        
+
         // Functional dock items only
         let dock_items = vec![
             ("📁", "Projects", DockAction::OpenProjects),
             ("📝", "Blog", DockAction::OpenBlog),
             ("👤", "About", DockAction::OpenAbout),
         ];
-        
+
         let item_size = 50.0;
-        let spacing = (dock_width - (dock_items.len() as f32 * item_size)) / (dock_items.len() + 1) as f32;
-        
+        let spacing =
+            (dock_width - (dock_items.len() as f32 * item_size)) / (dock_items.len() + 1) as f32;
+
         for (i, (icon, _label, action)) in dock_items.iter().enumerate() {
             let item_x = dock_rect.left() + spacing + (i as f32 * (item_size + spacing));
             let item_center = egui::pos2(item_x + item_size / 2.0, dock_rect.center().y);
-            let item_rect = egui::Rect::from_center_size(item_center, egui::vec2(item_size, item_size));
-            
+            let item_rect =
+                egui::Rect::from_center_size(item_center, egui::vec2(item_size, item_size));
+
             let response = ui.allocate_rect(item_rect, egui::Sense::click());
-            
+
             // Item background with hover effect
             let bg_color = if response.hovered() {
                 egui::Color32::from_rgba_unmultiplied(255, 255, 255, 200)
             } else {
                 egui::Color32::from_rgba_unmultiplied(255, 255, 255, 150)
             };
-            
+
             ui.painter().rect_filled(item_rect, 8.0, bg_color);
-            
+
             // Icon
             ui.painter().text(
                 item_center,
@@ -450,7 +470,7 @@ impl PersonalWebApp {
                 egui::FontId::proportional(24.0),
                 egui::Color32::BLACK,
             );
-            
+
             // Handle clicks
             if response.clicked() {
                 match action {
@@ -538,17 +558,23 @@ impl eframe::App for PersonalWebApp {
             .frame(egui::Frame::default().fill(egui::Color32::from_rgb(192, 192, 192)))
             .show(ctx, |ui| {
                 let rect = ui.available_rect_before_wrap();
-                
+
                 // Draw gradient background
                 let gradient_color_top = egui::Color32::from_rgb(140, 190, 240);
                 let gradient_color_bottom = egui::Color32::from_rgb(92, 142, 192);
-                
+
                 for y in 0..rect.height() as i32 {
                     let progress = y as f32 / rect.height();
                     let color = egui::Color32::from_rgb(
-                        (gradient_color_top.r() as f32 * (1.0 - progress) + gradient_color_bottom.r() as f32 * progress) as u8,
-                        (gradient_color_top.g() as f32 * (1.0 - progress) + gradient_color_bottom.g() as f32 * progress) as u8,
-                        (gradient_color_top.b() as f32 * (1.0 - progress) + gradient_color_bottom.b() as f32 * progress) as u8,
+                        (gradient_color_top.r() as f32 * (1.0 - progress)
+                            + gradient_color_bottom.r() as f32 * progress)
+                            as u8,
+                        (gradient_color_top.g() as f32 * (1.0 - progress)
+                            + gradient_color_bottom.g() as f32 * progress)
+                            as u8,
+                        (gradient_color_top.b() as f32 * (1.0 - progress)
+                            + gradient_color_bottom.b() as f32 * progress)
+                            as u8,
                     );
                     ui.painter().rect_filled(
                         egui::Rect::from_min_size(
@@ -559,14 +585,14 @@ impl eframe::App for PersonalWebApp {
                         color,
                     );
                 }
-                
+
                 // Draw welcome wallpaper
                 self.draw_welcome_wallpaper(ui, rect);
-                
+
                 // Draw dock
                 let mut self_clone = self.clone();
                 self_clone.draw_dock(ui, rect);
-                
+
                 // Copy back any window changes
                 self.windows = self_clone.windows;
                 self.next_window_id = self_clone.next_window_id;
@@ -684,7 +710,7 @@ impl eframe::App for PersonalWebApp {
                             WindowContent::BlogList => {
                                 ui.heading("Blog Posts");
                                 ui.separator();
-                                
+
                                 #[cfg(not(target_arch = "wasm32"))]
                                 {
                                     if let Ok(entries) = fs::read_dir("./blog") {
@@ -710,7 +736,7 @@ impl eframe::App for PersonalWebApp {
                                         ui.label("Could not read blog directory.");
                                     }
                                 }
-                                
+
                                 #[cfg(target_arch = "wasm32")]
                                 {
                                     let blogs = vec![
@@ -718,7 +744,7 @@ impl eframe::App for PersonalWebApp {
                                         ("welcome", "Welcome"),
                                         ("ai-journey", "AI Journey"),
                                     ];
-                                    
+
                                     for (blog_id, title) in blogs {
                                         if ui.button(format!("📝 {}", title)).clicked() {
                                             self.create_window(
@@ -733,7 +759,7 @@ impl eframe::App for PersonalWebApp {
                             WindowContent::ProjectList => {
                                 ui.heading("Projects");
                                 ui.separator();
-                                
+
                                 #[cfg(not(target_arch = "wasm32"))]
                                 {
                                     if let Ok(entries) = fs::read_dir("./projects") {
@@ -759,14 +785,14 @@ impl eframe::App for PersonalWebApp {
                                         ui.label("Could not read projects directory.");
                                     }
                                 }
-                                
+
                                 #[cfg(target_arch = "wasm32")]
                                 {
                                     let projects = vec![
                                         ("personal-website", "Personal Website"),
                                         ("rust-desktop-app", "Rust Desktop App"),
                                     ];
-                                    
+
                                     for (project_id, title) in projects {
                                         if ui.button(format!("🤖 {}", title)).clicked() {
                                             self.create_window(
@@ -795,7 +821,7 @@ impl eframe::App for PersonalWebApp {
                                             }
                                         }
                                     }
-                                    
+
                                     #[cfg(target_arch = "wasm32")]
                                     {
                                         let content = match blog_id.as_str() {
@@ -826,7 +852,7 @@ impl eframe::App for PersonalWebApp {
                                             }
                                         }
                                     }
-                                    
+
                                     #[cfg(target_arch = "wasm32")]
                                     {
                                         let content = match project_id.as_str() {
