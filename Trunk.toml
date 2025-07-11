@@ -28,3 +28,5 @@ port = 8080
 
 # Automatically open a browser tab for the app.
 open = true
+
+# Public URL will be set via command line in GitHub Actions

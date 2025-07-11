@@ -71,7 +71,7 @@ fn main() {
     });
 }
 
-#[derive(Default)]
+#[derive(Default, Clone)]
 struct PersonalWebApp {
     windows: HashMap<String, WindowState>,
     next_window_id: usize,
@@ -110,6 +110,13 @@ enum DesktopItemType {
     Folder(String),
     Document(String),
     Link(String),
+}
+
+#[derive(Clone)]
+enum DockAction {
+    OpenProjects,
+    OpenBlog,
+    OpenAbout,
 }
 
 fn render_markdown(ui: &mut egui::Ui, markdown: &str) {
@@ -394,9 +401,9 @@ impl PersonalWebApp {
         );
     }
 
-    fn draw_dock(&self, ui: &mut egui::Ui, rect: egui::Rect) {
+    fn draw_dock(&mut self, ui: &mut egui::Ui, rect: egui::Rect) {
         let dock_height = 70.0;
-        let dock_width = 400.0;
+        let dock_width = 300.0;
         let dock_rect = egui::Rect::from_center_size(
             egui::pos2(rect.center().x, rect.bottom() - dock_height / 2.0 - 10.0),
             egui::vec2(dock_width, dock_height),
@@ -409,29 +416,31 @@ impl PersonalWebApp {
             egui::Color32::from_rgba_unmultiplied(240, 240, 240, 200),
         );
         
-        // Dock items
+        // Functional dock items only
         let dock_items = vec![
-            ("📁", "Projects"),
-            ("📝", "Blog"),
-            ("👤", "About"),
-            ("🔗", "GitHub"),
-            ("💼", "LinkedIn"),
+            ("📁", "Projects", DockAction::OpenProjects),
+            ("📝", "Blog", DockAction::OpenBlog),
+            ("👤", "About", DockAction::OpenAbout),
         ];
         
         let item_size = 50.0;
         let spacing = (dock_width - (dock_items.len() as f32 * item_size)) / (dock_items.len() + 1) as f32;
         
-        for (i, (icon, _label)) in dock_items.iter().enumerate() {
+        for (i, (icon, _label, action)) in dock_items.iter().enumerate() {
             let item_x = dock_rect.left() + spacing + (i as f32 * (item_size + spacing));
             let item_center = egui::pos2(item_x + item_size / 2.0, dock_rect.center().y);
             let item_rect = egui::Rect::from_center_size(item_center, egui::vec2(item_size, item_size));
             
-            // Item background
-            ui.painter().rect_filled(
-                item_rect,
-                8.0,
-                egui::Color32::from_rgba_unmultiplied(255, 255, 255, 150),
-            );
+            let response = ui.allocate_rect(item_rect, egui::Sense::click());
+            
+            // Item background with hover effect
+            let bg_color = if response.hovered() {
+                egui::Color32::from_rgba_unmultiplied(255, 255, 255, 200)
+            } else {
+                egui::Color32::from_rgba_unmultiplied(255, 255, 255, 150)
+            };
+            
+            ui.painter().rect_filled(item_rect, 8.0, bg_color);
             
             // Icon
             ui.painter().text(
@@ -441,6 +450,21 @@ impl PersonalWebApp {
                 egui::FontId::proportional(24.0),
                 egui::Color32::BLACK,
             );
+            
+            // Handle clicks
+            if response.clicked() {
+                match action {
+                    DockAction::OpenProjects => {
+                        self.create_window(WindowContent::ProjectList, "Projects".to_string());
+                    }
+                    DockAction::OpenBlog => {
+                        self.create_window(WindowContent::BlogList, "Blog".to_string());
+                    }
+                    DockAction::OpenAbout => {
+                        self.create_window(WindowContent::About, "About Me".to_string());
+                    }
+                }
+            }
         }
     }
 
@@ -540,7 +564,12 @@ impl eframe::App for PersonalWebApp {
                 self.draw_welcome_wallpaper(ui, rect);
                 
                 // Draw dock
-                self.draw_dock(ui, rect);
+                let mut self_clone = self.clone();
+                self_clone.draw_dock(ui, rect);
+                
+                // Copy back any window changes
+                self.windows = self_clone.windows;
+                self.next_window_id = self_clone.next_window_id;
 
                 // Desktop items
                 for item in &self.desktop_items.clone() {
