@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume — Ashesh Kaji</title>
+    <meta name="description" content="Ashesh Kaji — Resume. AI Engineer, MS Computer Engineering @ NYU.">
+    <meta property="og:title" content="Resume — Ashesh Kaji">
+    <meta property="og:description" content="AI Engineer, MS Computer Engineering @ NYU. Experience in LLMs, RAG, MLOps, and ML research.">
+    <meta property="og:type" content="website">
+    <meta name="theme-color" content="#0d1117">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📄</text></svg>">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        .resume-page {
+            max-width: 850px;
+            margin: 0 auto;
+            padding: 80px 24px;
+        }
+        
+        .resume-header {
+            text-align: center;
+            margin-bottom: 48px;
+            padding-bottom: 32px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+        
+        .resume-header h1 {
+            font-family: var(--font-mono);
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+        
+        .resume-header .contact {
+            font-family: var(--font-mono);
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        
+        .resume-header .contact a {
+            color: var(--accent-teal);
+        }
+        
+        .resume-section {
+            margin-bottom: 36px;
+        }
+        
+        .resume-section-title {
+            font-family: var(--font-mono);
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--accent-teal);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 16px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+        
+        .resume-item {
+            margin-bottom: 22px;
+        }
+        
+        .resume-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+        
+        .resume-item-title {
+            font-family: var(--font-mono);
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .resume-item-subtitle {
+            font-size: 14px;
+            color: var(--accent-teal);
+        }
+        
+        .resume-item-date {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+        
+        .resume-item-desc {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-top: 4px;
+        }
+        
+        .resume-item-desc ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .resume-item-desc li {
+            padding-left: 16px;
+            position: relative;
+            margin-bottom: 4px;
+        }
+        
+        .resume-item-desc li::before {
+            content: '›';
+            position: absolute;
+            left: 0;
+            color: var(--accent-teal);
+            font-weight: 700;
+        }
+        
+        .skills-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .skills-bar span {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            padding: 4px 12px;
+            border-radius: 4px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
+        }
+        
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: var(--font-mono);
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 40px;
+            transition: color var(--transition-fast);
+        }
+        
+        .back-link:hover { color: var(--accent-teal); }
+        
+        @media print {
+            body { background: white; color: black; font-size: 12px; }
+            .resume-section-title { color: #333; border-color: #ccc; }
+            .resume-item-title { color: #111; }
+            .resume-item-subtitle { color: #444; }
+            .resume-item-desc { color: #333; }
+            .resume-item-date { color: #666; }
+            .back-link { display: none; }
+            .nav { display: none; }
+            .resume-page { padding: 20px 0; }
+            .skills-bar span { border-color: #ccc; color: #333; }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="nav" id="nav">
+    <div class="nav-inner">
+        <a href="/" class="nav-logo">~/ashesh <span>// resume</span></a>
+        <ul class="nav-links">
+            <li><a href="index.html">← back to portfolio</a></li>
+        </ul>
+    </div>
+</nav>
+
+<div class="resume-page">
+    <a href="index.html" class="back-link">← Back to portfolio</a>
+    
+    <div class="resume-header">
+        <h1>Ashesh Kaji</h1>
+        <div class="contact">
+            <a href="mailto:ashesh8500@gmail.com">ashesh8500@gmail.com</a> · 
+            <a href="mailto:ask9184@nyu.edu">ask9184@nyu.edu</a> · 
+            +1 (858) 308-6586
+        </div>
+    </div>
+
+    <!-- EDUCATION -->
+    <div class="resume-section">
+        <div class="resume-section-title">Education</div>
+        
+        <div class="resume-item">
+            <div class="resume-item-header">
+                <div>
+                    <div class="resume-item-title">MS in Computer Engineering</div>
+                    <div class="resume-item-subtitle">NYU Tandon School of Engineering</div>
+                </div>
+                <div class="resume-item-date">01/2026 – 12/2028 (expected)</div>
+            </div>
+        </div>
+        
+        <div class="resume-item">
+            <div class="resume-item-header">
+                <div>
+                    <div class="resume-item-title">BS with Honors in Cognitive Science</div>
+                    <div class="resume-item-subtitle">Specialization in Machine Learning and Neural Computation · UC San Diego</div>
+                </div>
+                <div class="resume-item-date">09/2021 – 06/2025</div>
+            </div>
+            <div class="resume-item-desc">
+                Expected to defend an honors thesis on: <em>"Effect of metal exposure from vapes on brain imaging"</em>
+            </div>
+        </div>
+        
+        <div class="resume-item">
+            <div class="resume-item-header">
+                <div>
+                    <div class="resume-item-title">International Baccalaureate Diploma Programme</div>
+                    <div class="resume-item-subtitle">SVKM's JV Parekh International School · GPA: 39</div>
+                </div>
+                <div class="resume-item-date">01/2019 – 01/2021</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- WORK EXPERIENCE -->
+    <div class="resume-section">
+        <div class="resume-section-title">Work Experience</div>
+        
+        <div class="resume-item">
+            <div class="resume-item-header">
+                <div>
+                    <div class="resume-item-title">AI Engineer</div>
+                    <div class="resume-item-subtitle">UniQreate · San Diego, CA</div>
+                </div>
+                <div class="resume-item-date">08/2024 – Present</div>
+            </div>
+            <div class="resume-item-desc">
+                <ul>
+                    <li>Integrating pretrained and novel models from industry leaders into AI-first products at production scale</li>
+                    <li>Building pipelines to unify proprietary models alongside third-party tools for reliable production deployment</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="resume-item">
+            <div class="resume-item-header">
+                <div>
+                    <div class="resume-item-title">Artificial Intelligence Engineer</div>
+                    <div class="resume-item-subtitle">SageX Global · Remote</div>
+                </div>
+                <div class="resume-item-date">09/2024 – 09/2025</div>
+            </div>
+            <div class="resume-item-desc">
+                <ul>
+                    <li>Designed pipelines for custom data transforms and fine-tuning strategies for varied data lifecycle requirements</li>
+                    <li>Led development of major products: LLMs, SLMs, statistical mapping models, and semantic database memory retrieval</li>
+                </ul>
+                <div class="skills-bar" style="margin-top:8px;">
+                    <span>PyTorch</span><span>Scikit-Learn</span><span>Azure</span><span>AWS</span><span>Python</span><span>MLOps</span><span>NLP</span><span>RAG</span><span>LLMs</span><span>concurrent mapping systems</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="resume-item">
+            <div class="resume-item-header">
+                <div>
+                    <div class="resume-item-title">Machine Learning Intern</div>
+                    <div class="resume-item-subtitle">SageX Global · Remote</div>
+                </div>
+                <div class="resume-item-date">09/2023 – 07/2024</div>
+            </div>
+            <div class="resume-item-desc">
+                <ul>
+                    <li>Designed and implemented data extraction pipelines and chat interfaces using LLMs and vector databases</li>
+                    <li>Developed a Retrieval-Augmented Generation (RAG) product that went into production with Azure integration and serverless deployment of locally-hosted LLMs</li>
+                    <li>Owned architecture design, code implementation, rapid versioning, and production testing</li>
+                </ul>
+                <div class="skills-bar" style="margin-top:8px;">
+                    <span>PyTorch</span><span>Scikit-Learn</span><span>Azure (Blob storage + Serverless deployment)</span><span>Python</span><span>MLOps</span><span>NLP</span><span>RAG</span><span>LLMs</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="resume-item">
+            <div class="resume-item-header">
+                <div>
+                    <div class="resume-item-title">Instructional Assistant — COGS 18 (Intro to Python)</div>
+                    <div class="resume-item-subtitle">UC San Diego · San Diego, CA</div>
+                </div>
+                <div class="resume-item-date">03/2024 – 06/2024</div>
+            </div>
+            <div class="resume-item-desc">
+                <ul>
+                    <li>Assisted students in introductory Python programming, focusing on fundamentals and coding skill development</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="resume-item">
+            <div class="resume-item-header">
+                <div>
+                    <div class="resume-item-title">Undergraduate Research Assistant</div>
+                    <div class="resume-item-subtitle">UC San Diego · Dr. Mary Boyle's Lab · San Diego, CA</div>
+                </div>
+                <div class="resume-item-date">10/2022 – 06/2025</div>
+            </div>
+            <div class="resume-item-desc">
+                <ul>
+                    <li>Studied relationship of peripheral iron levels and NAFLD on neurodegenerative disorders using UK BioBank data</li>
+                    <li>Explored effect of metal exposure from vapes on MRI imaging of subjects from the ABCD study</li>
+                    <li>Applied Python, CLI, NumPy, Pandas, and Statsmodels API with epidemiology methodology</li>
+                </ul>
+                <div class="skills-bar" style="margin-top:8px;">
+                    <span>Python</span><span>CLI</span><span>NumPy</span><span>Pandas</span><span>Statsmodels API</span><span>Epidemiology</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PROJECTS -->
+    <div class="resume-section">
+        <div class="resume-section-title">Projects of Interest</div>
+        
+        <div class="resume-item">
+            <div class="resume-item-title" style="font-size:14px;">RL-Based Autonomous Driving</div>
+            <div class="resume-item-desc">
+                Deep reinforcement learning for autonomous driving systems using CARLA simulator with real-world sensor feeds. Studied policy gradients, DQN variants, and sim-to-real transfer.
+                <br><a href="https://github.com/ashesh8500/fp185" target="_blank" rel="noopener">github.com/ashesh8500/fp185 ↗</a>
+            </div>
+        </div>
+        
+        <div class="resume-item">
+            <div class="resume-item-title" style="font-size:14px;">Statistically Motivated Portfolio Optimization</div>
+            <div class="resume-item-desc">
+                Developed an algorithm generating attractiveness scores from historic indicators with walk-forward validation and regime detection. 
+                <br><a href="https://github.com/ashesh8500/fractal" target="_blank" rel="noopener">github.com/ashesh8500/fractal ↗</a>
+            </div>
+        </div>
+        
+        <div class="resume-item">
+            <div class="resume-item-title" style="font-size:14px;">Apple Health Analyzer</div>
+            <div class="resume-item-desc">
+                Built an app to transform Apple Health export data into analyzable CSVs with visualization for studying relationships between blood glucose, exercise, and other biomarkers.
+                <br><a href="https://github.com/ashesh8500/apple_health_export" target="_blank" rel="noopener">github.com/ashesh8500/apple_health_export ↗</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- TECHNICAL SKILLS -->
+    <div class="resume-section">
+        <div class="resume-section-title">Technical Skills</div>
+        <div class="skills-bar">
+            <span>Python</span><span>PyTorch</span><span>Scikit-Learn</span><span>Rust</span>
+            <span>Azure</span><span>AWS</span><span>MLOps</span><span>NLP</span>
+            <span>RAG</span><span>LLMs</span><span>Docker</span><span>Git</span>
+            <span>NumPy</span><span>Pandas</span><span>Statsmodels</span><span>Seaborn</span>
+            <span>WebAssembly</span><span>FPGA</span><span>CLI/Linux</span><span>Vector Databases</span>
+        </div>
+    </div>
+
+    <!-- LANGUAGES -->
+    <div class="resume-section">
+        <div class="resume-section-title">Languages</div>
+        <div class="skills-bar">
+            <span>English — Native/Bilingual</span>
+            <span>Gujarati — Native/Bilingual</span>
+            <span>Hindi — Native/Bilingual</span>
+        </div>
+    </div>
+</div>
+
+<script src="assets/js/main.js"></script>
+</body>
+</html>

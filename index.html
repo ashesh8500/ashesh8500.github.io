@@ -1,132 +1,342 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Ashesh Kaji - AI Engineer</title>
-    <meta name="description" content="Personal portfolio of Ashesh Kaji, AI Engineer and Machine Learning Specialist">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <!-- Favicon -->
-    <link rel="icon" href="./assets/favicon.ico" type="image/x-icon">
-    
-    <!-- Open Graph / Social Media -->
-    <meta property="og:title" content="Ashesh Kaji - AI Engineer">
-    <meta property="og:description" content="Personal portfolio showcasing AI/ML projects and technical blog posts">
+    <title>Ashesh Kaji</title>
+    <meta name="description" content="Ashesh Kaji — AI Engineer, MS Computer Engineering @ NYU. Building at the edge of ML systems, quantized inference, and autonomous agents.">
+    <meta property="og:title" content="Ashesh Kaji">
+    <meta property="og:description" content="AI Engineer, MS Computer Engineering @ NYU. Building at the edge of ML systems, quantized inference, and autonomous agents.">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://ashesh8500.github.io/personal_web/">
-    
-    <!-- Prevent the webpage from requesting the favicon over and over -->
-    <link rel="icon" href="data:,">
-
-    <style>
-        html {
-            /* Remove touch delay: */
-            touch-action: manipulation;
-        }
-
-        body {
-            margin: 0;
-            padding: 0;
-            background: #2c2c2e;
-            color: white;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            overflow: hidden; /* Prevent scrollbars */
-        }
-
-        #loading {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #2c2c2e;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .spinner {
-            border: 4px solid #555;
-            border-top: 4px solid #0066cc;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        #the_canvas_id {
-            width: 100%;
-            height: 100vh;
-            display: block;
-        }
-
-        .error {
-            color: #ff6b6b;
-            background: #2c2c2e;
-            padding: 20px;
-            margin: 20px;
-            border-radius: 8px;
-            border: 1px solid #ff6b6b;
-        }
-
-        /* Retro Mac cursor */
-        body, html {
-            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><path fill="white" stroke="black" stroke-width="1" d="M2 2 L2 12 L5 9 L7 11 L9 9 L5 5 Z"/></svg>') 2 2, auto;
-        }
-        
-        /* Prevent text selection on UI elements */
-        canvas {
-            user-select: none;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><path fill="white" stroke="black" stroke-width="1" d="M2 2 L2 12 L5 9 L7 11 L9 9 L5 5 Z"/></svg>') 2 2, auto;
-        }
-    </style>
+    <meta property="og:url" content="https://ashesh8500.github.io">
+    <meta name="theme-color" content="#0d1117">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+    <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
-    <div id="loading">
-        <div class="spinner"></div>
-        <p>Loading Ashesh Kaji's Portfolio...</p>
-        <p style="color: #888; font-size: 0.9em;">Building AI-powered experiences with Rust 🦀</p>
+
+<!-- NAVIGATION -->
+<nav class="nav" id="nav">
+    <div class="nav-inner">
+        <a href="#" class="nav-logo">~/ashesh <span>// portfolio</span></a>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="#about" class="active">about</a></li>
+            <li><a href="#experience">experience</a></li>
+            <li><a href="#education">education</a></li>
+            <li><a href="#projects">projects</a></li>
+            <li><a href="#skills">skills</a></li>
+            <li><a href="#ask">ask_me</a></li>
+        </ul>
+        <button class="nav-mobile-toggle" id="navToggle" aria-label="Toggle menu">☰</button>
     </div>
+</nav>
 
-    <!-- The WASM application will be inserted here -->
-    <canvas id="the_canvas_id"></canvas>
+<!-- HERO -->
+<section class="hero" id="hero">
+    <div class="hero-inner">
+        <div class="hero-badge">⚡ Available for hire</div>
+        <h1 class="hero-name">Ashesh<span class="dot">.</span>Kaji</h1>
+        <p class="hero-subtitle">
+            <span id="typewriter"></span><span class="cursor"></span>
+        </p>
+        <div class="hero-cta">
+            <a href="#ask" class="btn btn-purple">
+                <span>▸</span> Ask Me Anything
+            </a>
+            <a href="resume.html" class="btn btn-outline">
+                <span>📄</span> View Resume
+            </a>
+            <a href="https://linkedin.com/in/ashesh-kaji-b5a3161b9" target="_blank" rel="noopener" class="btn btn-outline">
+                <span>🔗</span> LinkedIn
+            </a>
+        </div>
+    </div>
+</section>
 
-    <!-- Handle loading screen -->
-    <script>
-        // Hide loading screen after a short delay to ensure WASM is loaded
-        window.addEventListener('load', function() {
-            setTimeout(function() {
-                const loading = document.getElementById('loading');
-                if (loading) {
-                    loading.style.display = 'none';
-                }
-            }, 1000);
-        });
-        
-        // Also hide if canvas gets focus (WASM app started)
-        const canvas = document.getElementById('the_canvas_id');
-        if (canvas) {
-            canvas.addEventListener('focus', function() {
-                const loading = document.getElementById('loading');
-                if (loading) {
-                    loading.style.display = 'none';
-                }
-            });
-        }
-    </script>
+<!-- ABOUT -->
+<section class="section" id="about">
+    <div class="section-inner">
+        <div class="section-header">
+            <div class="section-label">// 01</div>
+            <h2 class="section-title">About Me</h2>
+            <div class="section-line"></div>
+        </div>
+        <div class="about-grid">
+            <div class="about-text">
+                <p>
+                    I'm an <strong>AI Engineer</strong> currently pursuing an <strong>MS in Computer Engineering at NYU Tandon</strong>, 
+                    building on a BS with Honors in Cognitive Science (ML &amp; Neural Computation) from <strong>UC San Diego</strong>.
+                </p>
+                <p style="margin-top:12px;">
+                    My work spans the full ML lifecycle — from designing RAG pipelines and fine-tuning LLMs for production 
+                    at <strong>SageX Global</strong> and <strong>UniQreate</strong>, to conducting neuroscience research on 
+                    neuroimaging and iron metabolism at UCSD. I'm especially drawn to problems at the intersection of 
+                    <strong>efficient ML inference, quantized models, hardware-aware optimization</strong>, and autonomous systems.
+                </p>
+                <p style="margin-top:12px;">
+                    When I'm not training models, you'll find me building Rust CLIs, hacking on FPGA-based ZKP accelerators, 
+                    or contributing to open-source tooling around portfolio optimization and media management.
+                </p>
+            </div>
+            <div class="about-stats">
+                <div class="stat-card">
+                    <span class="stat-number">3+</span>
+                    <span class="stat-label">Years in AI/ML</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">12</span>
+                    <span class="stat-label">Public Repos</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">3</span>
+                    <span class="stat-label">Languages (EN/GU/HI)</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">MS+BS</span>
+                    <span class="stat-label">Degrees</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
-    <!-- Trunk will automatically inject the WASM module here -->
-    <link data-trunk rel="rust" data-wasm-opt="z" />
+<!-- EXPERIENCE -->
+<section class="section" id="experience">
+    <div class="section-inner">
+        <div class="section-header">
+            <div class="section-label">// 02</div>
+            <h2 class="section-title">Experience</h2>
+            <div class="section-line"></div>
+        </div>
+        <div class="timeline">
+            <div class="timeline-item fade-in">
+                <div class="timeline-dot"></div>
+                <div class="timeline-date">2024.08 – PRESENT</div>
+                <div class="timeline-role">AI Engineer</div>
+                <div class="timeline-company">UniQreate · San Diego, CA</div>
+                <div class="timeline-desc">
+                    <ul>
+                        <li>Integrating pretrained and novel models from major industry leaders into production AI-first products</li>
+                        <li>Building pipelines to unify proprietary models with third-party tools at production scale</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="timeline-item fade-in">
+                <div class="timeline-dot"></div>
+                <div class="timeline-date">2024.09 – 2025.09</div>
+                <div class="timeline-role">Artificial Intelligence Engineer</div>
+                <div class="timeline-company">SageX Global · Remote</div>
+                <div class="timeline-desc">
+                    <ul>
+                        <li>Designed pipelines for custom data transforms and fine-tuning strategies across varied data lifecycle requirements</li>
+                        <li>Led development of major products: LLMs, SLMs, statistical mapping models, and semantic database memory retrieval</li>
+                        <li><strong>Stack:</strong> PyTorch, Scikit-Learn, Azure, AWS, Python, MLOps, NLP, RAG, LLMs, concurrent mapping systems</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="timeline-item fade-in">
+                <div class="timeline-dot"></div>
+                <div class="timeline-date">2023.09 – 2024.08</div>
+                <div class="timeline-role">Machine Learning Intern</div>
+                <div class="timeline-company">SageX Global · Remote</div>
+                <div class="timeline-desc">
+                    <ul>
+                        <li>Designed and implemented data extraction pipelines and chat interfaces using LLMs and vector databases</li>
+                        <li>Developed a Retrieval-Augmented Generation (RAG) product that went into production with Azure integration and serverless deployment of locally-hosted LLMs</li>
+                        <li>Owned architecture design, code implementation, rapid versioning, and production testing</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="timeline-item fade-in">
+                <div class="timeline-dot"></div>
+                <div class="timeline-date">2024.03 – 2024.06</div>
+                <div class="timeline-role">Instructional Assistant — COGS 18 (Intro to Python)</div>
+                <div class="timeline-company">UC San Diego · San Diego, CA</div>
+                <div class="timeline-desc">
+                    <ul>
+                        <li>Assisted students with programming fundamentals and Python skill development in an introductory CS course</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="timeline-item fade-in">
+                <div class="timeline-dot"></div>
+                <div class="timeline-date">2022.10 – 2025.06</div>
+                <div class="timeline-role">Undergraduate Research Assistant</div>
+                <div class="timeline-company">UC San Diego · Dr. Mary Boyle's Lab</div>
+                <div class="timeline-desc">
+                    <ul>
+                        <li>Studied relationship between peripheral iron levels, NAFLD, and neurodegenerative disorders using UK BioBank data</li>
+                        <li>Explored effect of metal exposure from vapes on MRI imaging of subjects from the ABCD study</li>
+                        <li><strong>Stack:</strong> Python, CLI, NumPy, Pandas, Statsmodels API, epidemiology</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- EDUCATION -->
+<section class="section" id="education">
+    <div class="section-inner">
+        <div class="section-header">
+            <div class="section-label">// 03</div>
+            <h2 class="section-title">Education</h2>
+            <div class="section-line"></div>
+        </div>
+        <div class="edu-grid">
+            <div class="edu-card fade-in">
+                <div class="edu-degree">MS in Computer Engineering</div>
+                <div class="edu-school">NYU Tandon School of Engineering</div>
+                <div class="edu-date">01/2026 – 12/2028 (expected)</div>
+                <div class="edu-detail">Graduate studies focusing on systems, ML infrastructure, and hardware-software co-design.</div>
+            </div>
+            <div class="edu-card fade-in">
+                <div class="edu-degree">BS with Honors in Cognitive Science</div>
+                <div class="edu-school">UC San Diego</div>
+                <div class="edu-date">09/2021 – 06/2025</div>
+                <div class="edu-detail">
+                    Specialization in Machine Learning and Neural Computation. Honors thesis on the effect of metal exposure from vapes on brain imaging. Completed advanced coursework in ML methods, deep learning, and neurophysiology.
+                </div>
+            </div>
+            <div class="edu-card fade-in">
+                <div class="edu-degree">International Baccalaureate Diploma</div>
+                <div class="edu-school">SVKM's JV Parekh International School</div>
+                <div class="edu-date">2019 – 2021 · Score: 39/45</div>
+                <div class="edu-detail">Rigorous pre-university program with advanced coursework across sciences, mathematics, and humanities.</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- PROJECTS -->
+<section class="section" id="projects">
+    <div class="section-inner">
+        <div class="section-header">
+            <div class="section-label">// 04</div>
+            <h2 class="section-title">Projects &amp; Open Source</h2>
+            <div class="section-line"></div>
+        </div>
+        <div class="projects-grid" id="projectsGrid">
+            <div class="project-loading">
+                <span>fetching repositories from github...</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SKILLS -->
+<section class="section" id="skills">
+    <div class="section-inner">
+        <div class="section-header">
+            <div class="section-label">// 05</div>
+            <h2 class="section-title">Skills</h2>
+            <div class="section-line"></div>
+        </div>
+        <div class="skills-cloud">
+            <span class="skill-tag">Python</span>
+            <span class="skill-tag">PyTorch</span>
+            <span class="skill-tag">Rust</span>
+            <span class="skill-tag purple">LLMs</span>
+            <span class="skill-tag purple">RAG</span>
+            <span class="skill-tag">NLP</span>
+            <span class="skill-tag">MLOps</span>
+            <span class="skill-tag">Scikit-Learn</span>
+            <span class="skill-tag purple">NumPy</span>
+            <span class="skill-tag">Pandas</span>
+            <span class="skill-tag">Azure</span>
+            <span class="skill-tag purple">AWS</span>
+            <span class="skill-tag">Docker</span>
+            <span class="skill-tag">Git</span>
+            <span class="skill-tag">Linux / CLI</span>
+            <span class="skill-tag purple">SQL</span>
+            <span class="skill-tag">Vector Databases</span>
+            <span class="skill-tag purple">WebAssembly</span>
+            <span class="skill-tag">FPGA / Hardware</span>
+            <span class="skill-tag">Statsmodels</span>
+            <span class="skill-tag purple">Seaborn</span>
+        </div>
+    </div>
+</section>
+
+<!-- ASK ME ANYTHING -->
+<section class="section ask-section" id="ask">
+    <div class="section-inner ask-container">
+        <div class="section-header">
+            <div class="section-label">// 06</div>
+            <h2 class="section-title">Ask Me Anything</h2>
+            <div class="section-line"></div>
+        </div>
+        <div class="ask-info">
+            <p>
+                This chat is powered entirely by <strong>PrismML's Bonsai</strong> — a <strong>1-bit quantized language model</strong> 
+                running <em>locally in your browser</em> via WebGPU + WebAssembly. No server. No API calls. No data leaves your machine.
+            </p>
+            <div class="ask-badges">
+                <span class="ask-badge teal">WebGPU Accelerated</span>
+                <span class="ask-badge teal">1-bit Quantization</span>
+                <span class="ask-badge">~290MB Model</span>
+                <span class="ask-badge">100% Client-Side</span>
+                <span class="ask-badge teal">Zero Telemetry</span>
+            </div>
+        </div>
+
+        <div class="chat-container">
+            <div class="chat-header">
+                <div class="chat-header-left">
+                    <span class="chat-status-dot" id="chatStatusDot"></span>
+                    <div>
+                        <div class="chat-title">Ashesh Kaji (Bonsai 1.7B)</div>
+                        <div class="chat-subtitle" id="chatStatusText">click "Load Model" to begin</div>
+                    </div>
+                </div>
+                <div class="chat-model-info" id="chatModelInfo">1-bit · PrismML</div>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="chat-message">
+                    <div class="chat-avatar assistant">AK</div>
+                    <div class="chat-bubble assistant">
+                        <p>Hey! I'm a browser-native AI assistant powered by PrismML's <strong>Bonsai 1.7B</strong> — a 1-bit quantized language model running entirely in your browser via WebGPU.</p>
+                        <p>Ask me about Ashesh's experience, projects, skills, or interests. The model was trained on his background and will respond based on what it knows.</p>
+                        <p><strong>Click "Load Model" below</strong> to begin — first load takes ~30s (290MB download, cached after).</p>
+                    </div>
+                </div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" class="chat-input" id="chatInput" 
+                       placeholder="Loading model first..." disabled
+                       aria-label="Chat message">
+                <button class="chat-send" id="chatLoadBtn" onclick="initModel()">
+                    ⚡ Load Model
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+    <div class="footer-links">
+        <a href="https://github.com/ashesh8500" target="_blank" rel="noopener" class="footer-link">
+            <span>⌘</span> GitHub
+        </a>
+        <a href="https://linkedin.com/in/ashesh-kaji-b5a3161b9" target="_blank" rel="noopener" class="footer-link">
+            <span>🔗</span> LinkedIn
+        </a>
+        <a href="mailto:ashesh8500@gmail.com" class="footer-link">
+            <span>✉</span> ashesh8500@gmail.com
+        </a>
+        <a href="resume.html" class="footer-link">
+            <span>📄</span> Resume
+        </a>
+    </div>
+    <p class="footer-copy">© 2026 Ashesh Kaji · Built with ❤️ and pure HTML/CSS/JS</p>
+</footer>
+
+<script src="assets/js/main.js"></script>
+<script type="module" src="assets/js/prisml-chat.js"></script>
 </body>
 </html>
