@@ -1,243 +1,299 @@
 /**
- * prisml-chat.js — Ask Me Anything
- * Browser-native AI chat powered by PrismML's Bonsai architecture
- * Uses Transformers.js + WebGPU for client-side inference
+ * prisml-chat.js — Ask Me Anything (Chat UI)
  * 
- * Architecture: 1-bit quantized model → WebGPU shaders → token streaming → DOM
- * No server. No API keys. No data leaves your browser.
+ * Browser-native AI chat powered by PrismML's Bonsai 1.7B
+ * Runs the REAL model via Web Worker + Transformers.js + WebGPU
+ * 
+ * Model: onnx-community/Bonsai-1.7B-ONNX (1-bit, ~290MB)
+ * No server. No API keys. Zero data leaves your browser.
  */
 
-// ─── STATE ────────────────────────────────────────────────
-const STATE = {
-  status: 'idle',           // idle | loading | ready | error | simulating
-  modelLoaded: false,
-  webgpuAvailable: false,
-  generator: null,
-  messages: [],
-  isGenerating: false,
-};
+// ─── WORKER ────────────────────────────────────────────────
+let worker = null;
+let currentAssistantBubble = null;
+let accumulatedText = '';
 
-const DOM = {
-  messages: null,
-  input: null,
-  loadBtn: null,
-  statusDot: null,
-  statusText: null,
-  modelInfo: null,
-};
+// ─── DOM REFS ──────────────────────────────────────────────
+const D = {};
 
-// ─── KNOWLEDGE BASE (for simulation fallback) ────────────
-const KNOWLEDGE = {
-  who: "I'm Ashesh Kaji, an AI Engineer currently pursuing an MS in Computer Engineering at NYU Tandon. I did my undergrad at UC San Diego in Cognitive Science with a specialization in Machine Learning and Neural Computation.",
-  experience: "I've worked at SageX Global as an AI Engineer and ML Intern, building RAG pipelines, fine-tuning LLMs, and deploying production AI systems. Currently at UniQreate as an AI Engineer. I also did neuroscience research at UCSD studying iron metabolism and neurodegenerative disorders.",
-  skills: "Python, PyTorch, Rust, MLOps, NLP, RAG, LLMs, Azure, AWS, Docker, WebAssembly, FPGA hardware design, and more. I'm a polyglot programmer who moves between ML research and systems engineering.",
-  projects: "I've built an RL-based autonomous driving system with CARLA, a statistical portfolio optimization engine, an Apple Health data analyzer, a Rust media sync CLI (mediasync), and a ZKP FPGA accelerator (zkp_fpga).",
-  education: "MS Computer Engineering at NYU Tandon (2026-2028), BS with Honors in Cognitive Science (ML & Neural Computation) at UC San Diego (2021-2025), and an IB Diploma with 39/45.",
-  interests: "I'm fascinated by efficient ML inference, 1-bit and ternary quantized models, hardware-software co-design, autonomous agents, and the intersection of neuroscience and AI.",
-  languages: "English, Gujarati, and Hindi — all at native/bilingual proficiency.",
-  default: "That's an interesting question! As an AI running locally in your browser, my knowledge is focused on Ashesh's professional background. You can ask me about his experience, education, projects, skills, or interests.",
-};
-
-function matchKnowledge(query) {
-  const q = query.toLowerCase();
-  if (q.includes('who') || q.includes('about') || q.includes('name') || q.includes('background') || q.includes('tell me about yourself')) return 'who';
-  if (q.includes('experience') || q.includes('work') || q.includes('job') || q.includes('career') || q.includes('sagex') || q.includes('uniqreate')) return 'experience';
-  if (q.includes('skill') || q.includes('tech') || q.includes('stack') || q.includes('language') || q.includes('code') || q.includes('program')) return 'skills';
-  if (q.includes('project') || q.includes('build') || q.includes('portfolio') || q.includes('hack') || q.includes('github')) return 'projects';
-  if (q.includes('education') || q.includes('school') || q.includes('university') || q.includes('degree') || q.includes('study') || q.includes('nyu') || q.includes('ucsd') || q.includes('college')) return 'education';
-  if (q.includes('interest') || q.includes('hobby') || q.includes('passion') || q.includes('love') || q.includes('like')) return 'interests';
-  if (q.includes('language') || q.includes('speak') || q.includes('gujarati') || q.includes('hindi') || q.includes('english')) return 'languages';
-  if (q.includes('hello') || q.includes('hi') || q.includes('hey')) return 'greeting';
-  return 'default';
-}
-
-// ─── DOM SETUP ────────────────────────────────────────────
 function getDom() {
-  DOM.messages = document.getElementById('chatMessages');
-  DOM.input = document.getElementById('chatInput');
-  DOM.loadBtn = document.getElementById('chatLoadBtn');
-  DOM.statusDot = document.getElementById('chatStatusDot');
-  DOM.statusText = document.getElementById('chatStatusText');
-  DOM.modelInfo = document.getElementById('chatModelInfo');
+  D.messages = document.getElementById('chatMessages');
+  D.input = document.getElementById('chatInput');
+  D.loadBtn = document.getElementById('chatLoadBtn');
+  D.statusDot = document.getElementById('chatStatusDot');
+  D.statusText = document.getElementById('chatStatusText');
+  D.modelInfo = document.getElementById('chatModelInfo');
 }
 
-// ─── STATUS ───────────────────────────────────────────────
-function setStatus(status, text, modelText) {
-  STATE.status = status;
-  if (DOM.statusDot) {
-    DOM.statusDot.className = 'chat-status-dot ' + status;
+// ─── INIT ──────────────────────────────────────────────────
+async function initModel() {
+  getDom();
+  
+  if (D.loadBtn.disabled && D.loadBtn.textContent.includes('Loading')) return;
+  if (worker && D.loadBtn.textContent === '▸ Send') {
+    // Already loaded, just focus input
+    D.input.focus();
+    return;
   }
-  if (DOM.statusText && text) DOM.statusText.textContent = text;
-  if (DOM.modelInfo && modelText) DOM.modelInfo.textContent = modelText;
+  
+  // Disable during init
+  D.loadBtn.textContent = '⟳ Initializing...';
+  D.loadBtn.disabled = true;
+  D.loadBtn.style = '';
+  
+  setStatus('loading', 'Creating Web Worker...', 'Bonsai 1.7B');
+  
+  try {
+    // Create Web Worker
+    const workerUrl = new URL('assets/js/prisml-worker.js', window.location.href);
+    worker = new Worker(workerUrl, { type: 'module' });
+    
+    // Worker message handler
+    worker.onmessage = handleWorkerMessage;
+    worker.onerror = (err) => {
+      console.error('Worker error:', err);
+      setStatus('error', 'Worker crashed — try refreshing', 'error');
+      addMessage('system', '❌ <strong>Worker error.</strong> Your browser may not support Web Workers with ES modules. Try Chrome 113+.');
+    };
+    
+    // Step 1: Check WebGPU
+    worker.postMessage({ type: 'check' });
+    
+  } catch (err) {
+    console.error('Worker creation failed:', err);
+    handleFallback('Could not create Web Worker for model inference');
+  }
 }
 
-// ─── MESSAGES ─────────────────────────────────────────────
+function handleWorkerMessage(e) {
+  const { type, status, message, progress, stage, loaded, total, text, tps, numTokens, fallback } = e.data;
+  
+  switch (type) {
+    case 'status':
+      if (status === 'webgpu_ok') {
+        setStatus('loading', 'WebGPU detected — loading Bonsai 1.7B...', 'WebGPU ✓');
+        addMessage('system', `✅ <strong>WebGPU available</strong> — ${message}<br><small>Proceeding to load Bonsai 1.7B (1-bit, ~290MB)</small>`);
+        // Start loading
+        worker.postMessage({ type: 'load', data: '1.7b' });
+      } else if (status === 'no_webgpu') {
+        handleFallback(message);
+      }
+      break;
+      
+    case 'progress':
+      const pctStr = progress !== undefined ? ` ${progress}%` : '';
+      if (stage === 'compile') {
+        setStatus('loading', message, 'Compiling shaders...');
+        addMessage('system', `⚙️ ${message}`);
+      } else {
+        setStatus('loading', message, `${loaded || '?'}MB / ${total || '290'}MB`);
+        // Update load button progress
+        if (progress !== undefined) {
+          D.loadBtn.textContent = `⟳ ${progress}%`;
+        }
+      }
+      break;
+      
+    case 'ready':
+      setStatus('online', 'Bonsai 1.7B · running locally', '1-bit · WebGPU');
+      D.loadBtn.textContent = '▸ Send';
+      D.loadBtn.disabled = false;
+      D.loadBtn.style.background = 'var(--accent-purple)';
+      D.input.disabled = false;
+      D.input.placeholder = 'Ask me about Ashesh...';
+      D.input.focus();
+      
+      // Wire up send
+      D.input.addEventListener('keydown', handleKeydown);
+      D.loadBtn.onclick = () => sendMessage();
+      
+      addMessage('system', `⚡ <strong>Bonsai 1.7B loaded!</strong><br>1-bit quantized model · WebGPU accelerated · running entirely in your browser<br><small>Try asking: "What projects has Ashesh built?" or "Tell me about his research"</small>`);
+      break;
+      
+    case 'generating':
+      // Create empty assistant bubble for streaming
+      currentAssistantBubble = createStreamingBubble();
+      accumulatedText = '';
+      break;
+      
+    case 'token':
+      if (currentAssistantBubble) {
+        accumulatedText += text;
+        currentAssistantBubble.innerHTML = formatText(accumulatedText);
+        scrollToBottom();
+      }
+      break;
+      
+    case 'done':
+      if (currentAssistantBubble) {
+        currentAssistantBubble.innerHTML = formatText(accumulatedText);
+      }
+      currentAssistantBubble = null;
+      D.input.disabled = false;
+      D.loadBtn.disabled = false;
+      D.input.focus();
+      break;
+      
+    case 'interrupted':
+      if (currentAssistantBubble) {
+        currentAssistantBubble.innerHTML = formatText(accumulatedText + ' <em>[stopped]</em>');
+      }
+      currentAssistantBubble = null;
+      D.input.disabled = false;
+      D.loadBtn.disabled = false;
+      D.input.focus();
+      break;
+      
+    case 'error':
+      console.error('Worker error:', message);
+      if (fallback) {
+        handleFallback(message);
+      } else {
+        addMessage('system', `❌ ${message}`);
+        D.input.disabled = false;
+        D.loadBtn.disabled = false;
+      }
+      break;
+      
+    case 'reset_done':
+      addMessage('system', '🔄 Conversation reset.');
+      break;
+  }
+}
+
+// ─── FALLBACK ──────────────────────────────────────────────
+function handleFallback(reason) {
+  // Clean up worker
+  if (worker) { worker.terminate(); worker = null; }
+  
+  setStatus('online', 'simulation mode · ' + (reason || 'WebGPU unavailable'), 'local');
+  D.loadBtn.textContent = '▸ Send';
+  D.loadBtn.disabled = false;
+  D.loadBtn.style.background = 'var(--accent-purple)';
+  D.input.disabled = false;
+  D.input.placeholder = 'Ask me about Ashesh...';
+  
+  D.input.addEventListener('keydown', handleKeydown);
+  D.loadBtn.onclick = () => sendMessage();
+  
+  addMessage('system', `⚡ Running in <strong>simulation mode</strong>. ${reason || 'WebGPU not available'}.<br><small>The full 1-bit Bonsai 1.7B requires Chrome 113+ with WebGPU enabled. Try again in Chrome for the real model running locally in your browser.</small>`);
+  
+  D.input.focus();
+}
+
+// ─── SEND MESSAGE ──────────────────────────────────────────
+async function sendMessage() {
+  const text = D.input.value.trim();
+  if (!text) return;
+  
+  D.input.value = '';
+  D.input.disabled = true;
+  D.loadBtn.disabled = true;
+  
+  addMessage('user', text);
+  
+  if (worker && D.statusDot.classList.contains('online')) {
+    // Real model inference via worker
+    const messages = [
+      { role: 'system', content: 'You are Ashesh Kaji, an AI Engineer pursuing an MS in Computer Engineering at NYU Tandon. You hold a BS with Honors in Cognitive Science (ML & Neural Computation) from UC San Diego. You have worked at SageX Global and UniQreate as an AI/ML Engineer, building RAG pipelines, fine-tuning LLMs, and deploying production AI systems. You are an expert in efficient ML inference, 1-bit quantization, Rust, and Python. You are friendly and concise. Respond as Ashesh would.' },
+      { role: 'user', content: text },
+    ];
+    
+    worker.postMessage({ type: 'generate', data: messages });
+  } else {
+    // Simulation fallback
+    await new Promise(r => setTimeout(r, 600 + Math.random() * 600));
+    const response = getSimulatedResponse(text);
+    addMessage('assistant', response);
+    D.input.disabled = false;
+    D.loadBtn.disabled = false;
+    D.input.focus();
+  }
+}
+
+// ─── STREAMING BUBBLE ──────────────────────────────────────
+function createStreamingBubble() {
+  const div = document.createElement('div');
+  div.className = 'chat-message';
+  div.innerHTML = `
+    <div class="chat-avatar assistant">AK</div>
+    <div class="chat-bubble assistant" id="streamingBubble"></div>
+  `;
+  D.messages.appendChild(div);
+  return div.querySelector('#streamingBubble');
+}
+
+// ─── ADD MESSAGE ───────────────────────────────────────────
 function addMessage(role, content) {
   const div = document.createElement('div');
   div.className = 'chat-message';
   
   const avatar = document.createElement('div');
-  avatar.className = 'chat-avatar ' + role;
+  avatar.className = 'chat-avatar ' + (role === 'user' ? 'user' : 'assistant');
   avatar.textContent = role === 'user' ? 'U' : 'AK';
   
   const bubble = document.createElement('div');
-  bubble.className = 'chat-bubble ' + role;
+  bubble.className = 'chat-bubble ' + (role === 'user' ? 'user' : 'assistant');
   
-  if (role === 'assistant' || role === 'system') {
+  if (role === 'system') {
+    bubble.className = 'chat-bubble system';
     bubble.innerHTML = content;
-  } else {
+  } else if (role === 'user') {
     bubble.textContent = content;
+  } else {
+    bubble.innerHTML = content;
   }
   
   div.appendChild(avatar);
   div.appendChild(bubble);
-  DOM.messages.appendChild(div);
-  DOM.messages.scrollTop = DOM.messages.scrollHeight;
+  D.messages.appendChild(div);
+  scrollToBottom();
 }
 
-function addLoadingIndicator() {
-  const div = document.createElement('div');
-  div.className = 'chat-message';
-  div.id = 'loadingIndicator';
+// ─── SIMULATION FALLBACK ───────────────────────────────────
+function getSimulatedResponse(query) {
+  const q = query.toLowerCase();
   
-  const avatar = document.createElement('div');
-  avatar.className = 'chat-avatar assistant';
-  avatar.textContent = 'AK';
+  if (q.includes('hello') || q.includes('hi') || q.includes('hey'))
+    return "Hey! 👋 I'm Ashesh. I'm an AI Engineer and grad student at NYU. What would you like to know?";
+  if (q.includes('project') || q.includes('build') || q.includes('github') || q.includes('portfolio'))
+    return "I've built several projects: an <strong>RL-based autonomous driving system</strong> using CARLA, a <strong>statistical portfolio optimization engine</strong>, an <strong>Apple Health data analyzer</strong>, a <strong>Rust media sync CLI (mediasync)</strong>, and a <strong>ZKP FPGA accelerator</strong>. Check them out on my GitHub!";
+  if (q.includes('experience') || q.includes('work') || q.includes('job') || q.includes('career') || q.includes('sagex'))
+    return "I've worked at <strong>SageX Global</strong> (AI Engineer + ML Intern) where I built RAG pipelines, fine-tuned LLMs, and deployed production AI systems. Currently at <strong>UniQreate</strong> as an AI Engineer. I also did neuroscience research at <strong>UC San Diego</strong> studying iron metabolism and neurodegenerative disorders.";
+  if (q.includes('skill') || q.includes('tech') || q.includes('stack') || q.includes('language') || q.includes('code'))
+    return "My core stack: <strong>Python, PyTorch, Rust, MLOps, NLP, RAG, LLMs, Azure, AWS, Docker, WebAssembly</strong>. I also work with NumPy, Pandas, Scikit-Learn, and FPGA hardware design. I'm comfortable across the full ML lifecycle — from research to production.";
+  if (q.includes('education') || q.includes('school') || q.includes('degree') || q.includes('study') || q.includes('nyu') || q.includes('ucsd'))
+    return "I'm pursuing an <strong>MS in Computer Engineering at NYU Tandon</strong> (2026-2028). I did my undergrad at <strong>UC San Diego</strong> — BS with Honors in Cognitive Science, specializing in Machine Learning and Neural Computation. I also hold an <strong>IB Diploma</strong> (39/45).";
+  if (q.includes('research') || q.includes('neuroscience') || q.includes('brain') || q.includes('iron') || q.includes('mri'))
+    return "At UCSD, I researched under Dr. Mary Boyle, studying the relationship between <strong>peripheral iron levels and neurodegenerative disorders</strong> using UK BioBank data. I also explored how metal exposure from vapes affects brain MRI imaging in the ABCD study cohort.";
+  if (q.includes('interest') || q.includes('passion') || q.includes('love') || q.includes('hobby'))
+    return "I'm fascinated by <strong>efficient ML inference</strong> — 1-bit and ternary quantized models that run in your browser. I love the intersection of hardware and software: FPGA accelerators, WebGPU, and making AI accessible without the cloud. Also a big fan of Rust and well-designed CLIs.";
+  if (q.includes('language') || q.includes('speak'))
+    return "I'm trilingual: <strong>English, Gujarati, and Hindi</strong> — all at native/bilingual proficiency.";
   
-  const loader = document.createElement('div');
-  loader.className = 'chat-loading-indicator';
-  loader.innerHTML = '<span></span><span></span><span></span>';
-  
-  div.appendChild(avatar);
-  div.appendChild(loader);
-  DOM.messages.appendChild(div);
-  DOM.messages.scrollTop = DOM.messages.scrollHeight;
+  return "That's a great question! As an AI Engineer and grad student at NYU, I'm passionate about efficient ML systems, 1-bit models, and building things that work at the edge. Ask me about my projects at SageX, my research at UCSD, or the tech I'm excited about!";
 }
 
-function removeLoadingIndicator() {
-  const el = document.getElementById('loadingIndicator');
-  if (el) el.remove();
+// ─── FORMAT TEXT ───────────────────────────────────────────
+function formatText(text) {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/\n/g, '<br>')
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    .replace(/`(.*?)`/g, '<code>$1</code>');
 }
 
-// ─── MODEL INITIALIZATION ─────────────────────────────────
-async function initModel() {
-  getDom();
-  
-  if (STATE.status === 'loading') return;
-  if (STATE.modelLoaded) {
-    setInputEnabled(true);
-    return;
-  }
-  
-  setStatus('loading', 'checking WebGPU support...', '1-bit · PrismML');
-  DOM.loadBtn.textContent = '⟳ Checking...';
-  DOM.loadBtn.disabled = true;
-  
-  // Check WebGPU
-  try {
-    if (navigator.gpu) {
-      const adapter = await navigator.gpu.requestAdapter();
-      if (adapter) {
-        STATE.webgpuAvailable = true;
-        setStatus('loading', 'WebGPU detected — loading model...', 
-          `WebGPU · ${adapter.name || 'GPU'}`);
-      } else {
-        setStatus('loading', 'WebGPU unavailable — falling back to CPU', 'CPU · WASM');
-      }
-    } else {
-      setStatus('loading', 'WebGPU not supported — using CPU', 'CPU · WASM');
-    }
-  } catch (e) {
-    setStatus('loading', 'WebGPU check failed — using CPU', 'CPU · WASM');
-  }
-  
-  // Try to load Transformers.js model
-  try {
-    addMessage('system', '🔄 Loading <strong>1-bit quantized language model</strong> from HuggingFace Hub...<br><small>First load: ~30s (290MB download, cached for future visits)</small>');
-    
-    const { pipeline, env } = await import(
-      'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.0.0'
-    );
-    
-    // Configure for browser
-    env.allowLocalModels = false;
-    env.useBrowserCache = true;
-    
-    const device = STATE.webgpuAvailable ? 'webgpu' : 'wasm';
-    const dtype = STATE.webgpuAvailable ? 'q4' : 'q8';
-    
-    setStatus('loading', `Loading model (${device}/${dtype})...`, `${device} · ${dtype}`);
-    
-    STATE.generator = await pipeline(
-      'text-generation',
-      'Xenova/gpt2',
-      {
-        device: device,
-        dtype: dtype,
-        progress_callback: (progress) => {
-          if (progress.status === 'progress') {
-            const pct = Math.round((progress.loaded / progress.total) * 100);
-            setStatus('loading', `Downloading model... ${pct}%`, `${Math.round(progress.loaded / 1024 / 1024)}MB`);
-          }
-        },
-      }
-    );
-    
-    STATE.modelLoaded = true;
-    STATE.messages = [{
-      role: 'system',
-      content: `You are Ashesh Kaji, an AI Engineer pursuing an MS in Computer Engineering at NYU Tandon. 
-      You did your BS with Honors in Cognitive Science (ML & Neural Computation) at UC San Diego.
-      You've worked at SageX Global and UniQreate as an AI/ML Engineer, building RAG pipelines and LLM systems.
-      You love efficient ML inference, 1-bit quantization, Rust, Python, and autonomous agents.
-      You're also a researcher who studied neuroscience and iron metabolism at UCSD.
-      You're from an Indian background and speak English, Gujarati, and Hindi.
-      Answer questions about yourself concisely and warmly.`
-    }];
-    
-    setStatus('online', 'Bonsai 1.7B · running locally', 
-      device === 'webgpu' ? 'WebGPU · 1-bit' : 'CPU · WASM');
-    
-    DOM.loadBtn.textContent = '✓ Ready';
-    DOM.loadBtn.style.background = 'var(--accent-purple)';
-    setInputEnabled(true);
-    
-    addMessage('system', '✅ <strong>Model loaded successfully!</strong> Running entirely in your browser via ' + 
-      (device === 'webgpu' ? 'WebGPU acceleration' : 'WebAssembly CPU') + 
-      '. Ask me anything about Ashesh.<br><small>1-bit quantization · zero server · zero telemetry</small>');
-    
-  } catch (err) {
-    console.warn('Model loading failed, using simulation:', err.message);
-    // Fallback to simulation
-    STATE.modelLoaded = true; // pretend loaded for UI
-    STATE.status = 'simulating';
-    
-    setStatus('online', 'Bonsai 1.7B · simulation mode', '1-bit · local');
-    DOM.loadBtn.textContent = '✓ Ready';
-    DOM.loadBtn.style.background = 'var(--accent-purple)';
-    setInputEnabled(true);
-    
-    addMessage('system', '⚡ Running in <strong>simulation mode</strong> — the full 1-bit model requires WebGPU in Chrome 113+.<br>This is a lightweight demo of the architecture; the real Bonsai 1.7B runs the same inference pipeline at 20-40 tok/s on GPU.<br><small>Try Chrome with WebGPU enabled for the full experience.</small>');
-  }
+// ─── SCROLL ────────────────────────────────────────────────
+function scrollToBottom() {
+  requestAnimationFrame(() => {
+    D.messages.scrollTop = D.messages.scrollHeight;
+  });
 }
 
-// ─── CHAT INTERACTION ─────────────────────────────────────
-function setInputEnabled(enabled) {
-  DOM.input.disabled = !enabled;
-  DOM.input.placeholder = enabled 
-    ? 'Ask me about Ashesh...' 
-    : 'Load model first...';
-  
-  if (enabled) {
-    DOM.input.focus();
-    DOM.input.addEventListener('keydown', handleKeydown);
-    DOM.loadBtn.onclick = () => sendMessage();
-    DOM.loadBtn.textContent = '▸ Send';
-    DOM.loadBtn.disabled = false;
-    DOM.loadBtn.style = '';
-  }
-}
-
+// ─── KEYDOWN ───────────────────────────────────────────────
 function handleKeydown(e) {
   if (e.key === 'Enter' && !e.shiftKey) {
     e.preventDefault();
@@ -245,74 +301,12 @@ function handleKeydown(e) {
   }
 }
 
-async function sendMessage() {
-  const text = DOM.input.value.trim();
-  if (!text || STATE.isGenerating) return;
-  
-  DOM.input.value = '';
-  DOM.input.disabled = true;
-  DOM.loadBtn.disabled = true;
-  STATE.isGenerating = true;
-  
-  addMessage('user', text);
-  addLoadingIndicator();
-  
-  try {
-    let response;
-    
-    if (STATE.generator && STATE.status !== 'simulating') {
-      // Use real Transformers.js model
-      STATE.messages.push({ role: 'user', content: text });
-      
-      const output = await STATE.generator(STATE.messages, {
-        max_new_tokens: 128,
-        temperature: 0.7,
-        do_sample: true,
-        top_k: 50,
-      });
-      
-      const generated = output[0].generated_text;
-      // Extract just the assistant response
-      const lastMessage = Array.isArray(generated) 
-        ? generated[generated.length - 1] 
-        : generated;
-      response = typeof lastMessage === 'string' 
-        ? lastMessage.slice(text.length).trim() 
-        : lastMessage.content || generated;
-      
-      STATE.messages.push({ role: 'assistant', content: response });
-    } else {
-      // Use simulation fallback
-      await new Promise(r => setTimeout(r, 600 + Math.random() * 800));
-      const key = matchKnowledge(text);
-      
-      if (key === 'greeting') {
-        response = "Hey there! 👋 I'm Ashesh Kaji. I'm an AI Engineer and grad student at NYU. What would you like to know about my work, projects, or background?";
-      } else {
-        response = KNOWLEDGE[key];
-      }
-    }
-    
-    removeLoadingIndicator();
-    addMessage('assistant', response);
-    
-  } catch (err) {
-    removeLoadingIndicator();
-    console.error('Generation error:', err);
-    
-    // Fallback to simulation on error
-    const key = matchKnowledge(text);
-    const response = key === 'greeting' 
-      ? "Hey! 👋 Ask me anything about Ashesh's experience, projects, or background."
-      : KNOWLEDGE[key];
-    addMessage('assistant', response);
-  }
-  
-  DOM.input.disabled = false;
-  DOM.loadBtn.disabled = false;
-  STATE.isGenerating = false;
-  DOM.input.focus();
+// ─── STATUS ────────────────────────────────────────────────
+function setStatus(status, text, modelText) {
+  if (D.statusDot) D.statusDot.className = 'chat-status-dot ' + status;
+  if (D.statusText) D.statusText.textContent = text;
+  if (D.modelInfo) D.modelInfo.textContent = modelText;
 }
 
-// ─── EXPORT ───────────────────────────────────────────────
+// ─── EXPORT ────────────────────────────────────────────────
 window.initModel = initModel;
