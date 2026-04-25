@@ -34,7 +34,7 @@
 <!-- HERO -->
 <section class="hero" id="hero">
     <div class="hero-inner">
-        <div class="hero-badge">⚡ Available for hire</div>
+        <div class="hero-badge">⚡ personal web world · local models</div>
         <h1 class="hero-name">Ashesh<span class="dot">.</span>Kaji</h1>
         <p class="hero-subtitle">
             <span id="typewriter"></span><span class="cursor"></span>
@@ -272,15 +272,16 @@
         </div>
         <div class="ask-info">
             <p>
-                This chat is powered entirely by <strong>PrismML's Bonsai</strong> — a <strong>1-bit quantized language model</strong> 
-                running <em>locally in your browser</em> via WebGPU + WebAssembly. No server. No API calls. No data leaves your machine.
+                This chat attempts to run the real <strong>onnx-community/Bonsai-1.7B-ONNX</strong> model with <strong>q1 1-bit weights</strong>
+                directly in your browser through WebGPU. No server. No API calls. No data leaves your machine.
+                If WebGPU or the model fails, the interface reports the exact failure and does <strong>not</strong> fabricate a response.
             </p>
             <div class="ask-badges">
-                <span class="ask-badge teal">WebGPU Accelerated</span>
-                <span class="ask-badge teal">1-bit Quantization</span>
-                <span class="ask-badge">~290MB Model</span>
+                <span class="ask-badge teal">WebGPU Required</span>
+                <span class="ask-badge teal">q1 1-bit Quantization</span>
+                <span class="ask-badge">Real ONNX Model</span>
                 <span class="ask-badge">100% Client-Side</span>
-                <span class="ask-badge teal">Zero Telemetry</span>
+                <span class="ask-badge teal">No Simulated Answers</span>
             </div>
         </div>
 
@@ -293,15 +294,19 @@
                         <div class="chat-subtitle" id="chatStatusText">click "Load Model" to begin</div>
                     </div>
                 </div>
-                <div class="chat-model-info" id="chatModelInfo">1-bit · PrismML</div>
+                <div class="chat-model-info" id="chatModelInfo">not loaded</div>
             </div>
+            <div class="chat-progress" id="chatProgress" hidden>
+                <div class="chat-progress-fill" id="chatProgressFill"></div>
+            </div>
+            <div class="chat-diagnostics" id="chatDiagnostics">No model has been loaded yet.</div>
             <div class="chat-messages" id="chatMessages">
                 <div class="chat-message">
                     <div class="chat-avatar assistant">AK</div>
                     <div class="chat-bubble assistant">
-                        <p>Hey! I'm a browser-native AI assistant powered by PrismML's <strong>Bonsai 1.7B</strong> — a 1-bit quantized language model running entirely in your browser via WebGPU.</p>
-                        <p>Ask me about Ashesh's experience, projects, skills, or interests. The model was trained on his background and will respond based on what it knows.</p>
-                        <p><strong>Click "Load Model" below</strong> to begin — first load takes ~30s (290MB download, cached after).</p>
+                        <p>Hey — this is the real browser-local Bonsai interface, not a canned chatbot.</p>
+                        <p>Click <strong>Load real Bonsai</strong> to check WebGPU, load the q1 ONNX model, and enable local generation. If anything fails, the exact error stays visible here.</p>
+                        <p>The model receives only a small factual profile context from this page and is instructed not to invent unknown details.</p>
                     </div>
                 </div>
             </div>
@@ -309,9 +314,13 @@
                 <input type="text" class="chat-input" id="chatInput" 
                        placeholder="Loading model first..." disabled
                        aria-label="Chat message">
-                <button class="chat-send" id="chatLoadBtn" onclick="initModel()">
-                    ⚡ Load Model
+                <button class="chat-send" id="chatLoadBtn" type="button">
+                    ⚡ Load real Bonsai
                 </button>
+            </div>
+            <div class="agent-test-row">
+                <button class="agent-test" id="chatSmokeBtn" type="button">run Bonsai smoke test</button>
+                <span>Pass condition: WebGPU ready + real model generation event.</span>
             </div>
         </div>
     </div>

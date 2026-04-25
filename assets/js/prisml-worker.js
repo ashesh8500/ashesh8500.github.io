@@ -1,234 +1,186 @@
 /**
- * prisml-worker.js — Web Worker for Bonsai 1-bit inference
- * 
- * Runs PrismML's Bonsai 1.7B ONNX model via Transformers.js + WebGPU.
- * Architecture: 1-bit quantization → WebGPU shaders → token streaming.
- * 
- * Model: onnx-community/Bonsai-1.7B-ONNX
- * No server. No API keys. Zero telemetry.
+ * prisml-worker.js — real Bonsai 1-bit inference worker
+ *
+ * This worker intentionally has NO simulation fallback.
+ * If WebGPU, model download, ONNX execution, or generation fails, the UI receives
+ * an error and must disclose it.
+ *
+ * Reference implementation checked against:
+ * https://huggingface.co/spaces/webml-community/bonsai-webgpu/raw/main/src/worker.js
  */
 
-// ─── IMPORTS (via importScripts for Worker compat) ──────────
-// Transformers.js is imported via importScripts from CDN at worker init.
-// The worker is created with { type: 'module' } so we use import syntax.
+import {
+  pipeline,
+  TextStreamer,
+  DynamicCache,
+  InterruptableStoppingCriteria,
+} from "https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.1.0";
 
-let generator = null;
-let pastKeyValues = null;
-let tokenizer = null;
-let isGenerating = false;
-let abortController = null;
-
-// ─── WORKER MESSAGE HANDLER ─────────────────────────────────
-self.onmessage = async (e) => {
-  const { type, data } = e.data;
-  
-  switch (type) {
-    case 'check':
-      await checkWebGPU();
-      break;
-    case 'load':
-      await loadModel(data);
-      break;
-    case 'generate':
-      await generate(data);
-      break;
-    case 'stop':
-      stopGeneration();
-      break;
-    case 'reset':
-      resetConversation();
-      break;
-  }
+const MODEL_IDS = {
+  "1.7b": "onnx-community/Bonsai-1.7B-ONNX",
 };
 
-// ─── WEbGPU CHECK ───────────────────────────────────────────
-async function checkWebGPU() {
-  try {
-    if (!navigator.gpu) {
-      self.postMessage({ type: 'status', status: 'no_webgpu', 
-        message: 'WebGPU API not available in this browser' });
-      return;
+class TextGenerationPipeline {
+  static instances = new Map();
+
+  static getInstance(modelKey, progress_callback = null) {
+    const modelId = MODEL_IDS[modelKey];
+    if (!modelId) throw new Error(`Unknown Bonsai model key: ${modelKey}`);
+
+    if (!this.instances.has(modelKey)) {
+      this.instances.set(
+        modelKey,
+        pipeline("text-generation", modelId, {
+          device: "webgpu",
+          dtype: "q1",
+          progress_callback,
+        }),
+      );
     }
-    const adapter = await navigator.gpu.requestAdapter();
-    if (!adapter) {
-      self.postMessage({ type: 'status', status: 'no_webgpu',
-        message: 'No WebGPU adapter found' });
-      return;
-    }
-    self.postMessage({ 
-      type: 'status', 
-      status: 'webgpu_ok',
-      adapter: adapter.name || 'Unknown GPU',
-      message: `WebGPU available: ${adapter.name || 'GPU'}`
-    });
-  } catch (err) {
-    self.postMessage({ 
-      type: 'status', 
-      status: 'no_webgpu',
-      message: `WebGPU check failed: ${err.message}`
-    });
+    return this.instances.get(modelKey);
   }
 }
 
-// ─── MODEL LOADING ──────────────────────────────────────────
-async function loadModel(modelSize) {
+const stoppingCriteria = new InterruptableStoppingCriteria();
+let pastKeyValuesCache = null;
+let currentModelKey = null;
+
+function disposePastKeyValues() {
+  pastKeyValuesCache?.dispose?.();
+  pastKeyValuesCache = null;
+}
+
+async function check() {
   try {
-    // Dynamically import Transformers.js in the worker
-    self.postMessage({ type: 'progress', stage: 'import', progress: 0, message: 'Loading Transformers.js...' });
-    
-    const { pipeline, DynamicCache, InterruptableStoppingCriteria, env } = await import(
-      'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.4.0'
-    );
-    
-    // Configure for browser
-    env.allowLocalModels = false;
-    env.useBrowserCache = true;
-    env.backends.onnx.wasm.wasmPaths = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.0/dist/';
-    
-    const MODEL_ID = 'onnx-community/Bonsai-1.7B-ONNX';
-    
-    self.postMessage({ type: 'progress', stage: 'download', progress: 0, 
-      message: 'Downloading Bonsai 1.7B (1-bit, ~290MB)...' });
-    
-    // Create the pipeline with WebGPU + 1-bit quantization
-    generator = await pipeline(
-      'text-generation',
-      MODEL_ID,
-      {
-        device: 'webgpu',
-        dtype: 'q1',
-        progress_callback: (info) => {
-          if (info.status === 'progress') {
-            const pct = info.total ? Math.round((info.loaded / info.total) * 100) : 0;
-            const loadedMB = Math.round((info.loaded || 0) / (1024 * 1024));
-            const totalMB = info.total ? Math.round(info.total / (1024 * 1024)) : 290;
-            self.postMessage({ 
-              type: 'progress', 
-              stage: 'download', 
-              progress: pct,
-              loaded: loadedMB,
-              total: totalMB,
-              message: `Downloading model... ${pct}% (${loadedMB}MB / ${totalMB}MB)`
-            });
-          } else if (info.status === 'initiate') {
-            self.postMessage({ type: 'progress', stage: 'download', progress: 5, 
-              message: 'Connecting to HuggingFace Hub...' });
-          }
-        },
+    const adapter = await navigator.gpu?.requestAdapter();
+    if (!adapter) throw new Error("WebGPU is not supported: no adapter found.");
+
+    let info = "WebGPU adapter available";
+    try {
+      if (typeof adapter.requestAdapterInfo === "function") {
+        const adapterInfo = await adapter.requestAdapterInfo();
+        info = [adapterInfo.vendor, adapterInfo.architecture, adapterInfo.device]
+          .filter(Boolean)
+          .join(" · ") || info;
       }
-    );
-    
-    tokenizer = generator.tokenizer;
-    
-    // Warmup: run a single token to compile WebGPU shaders
-    self.postMessage({ type: 'progress', stage: 'compile', progress: 95, 
-      message: 'Compiling WebGPU shaders for 1-bit inference...' });
-    
-    const inputs = tokenizer('a');
-    await generator.model.generate({ ...inputs, max_new_tokens: 1 });
-    
-    self.postMessage({ type: 'ready', message: 'Bonsai 1.7B loaded and ready' });
-    
-  } catch (err) {
-    console.error('Model load error:', err);
-    self.postMessage({ 
-      type: 'error', 
-      message: `Failed to load model: ${err.message}`,
-      fallback: true
-    });
+    } catch (_) {
+      // Adapter info is optional and browser-dependent.
+    }
+
+    self.postMessage({ status: "webgpu_ok", data: info });
+  } catch (e) {
+    self.postMessage({ status: "error", phase: "webgpu_check", data: e.toString() });
   }
 }
 
-// ─── TEXT GENERATION ────────────────────────────────────────
-async function generate(messages) {
-  if (!generator) {
-    self.postMessage({ type: 'error', message: 'Model not loaded' });
-    return;
-  }
-  
-  isGenerating = true;
-  let startTime = null;
-  let numTokens = 0;
-  let tps = 0;
-  
+async function load(modelKey) {
   try {
-    // Import needed classes
-    const { TextStreamer, DynamicCache, InterruptableStoppingCriteria } = await import(
-      'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.4.0'
-    );
-    
-    const stoppingCriteria = new InterruptableStoppingCriteria();
-    abortController = stoppingCriteria;
-    
-    const streamer = new TextStreamer(tokenizer, {
+    if (currentModelKey && currentModelKey !== modelKey) {
+      disposePastKeyValues();
+    }
+    currentModelKey = modelKey;
+
+    self.postMessage({ status: "loading", data: "Loading Bonsai 1.7B ONNX q1 model..." });
+
+    const generator = await TextGenerationPipeline.getInstance(modelKey, (info) => {
+      if (info.status === "progress_total") {
+        self.postMessage({
+          status: "progress_total",
+          progress: Number(info.progress ?? 0),
+          loaded: Number(info.loaded ?? 0),
+          total: Number(info.total ?? 0),
+        });
+      } else if (info.status === "initiate" || info.status === "download" || info.status === "ready") {
+        self.postMessage({ status: "loading", data: `${info.status}: ${info.file ?? "model artifact"}` });
+      }
+    });
+
+    self.postMessage({ status: "loading", data: "Optimizing model for 1-bit WebGPU execution..." });
+
+    const inputs = generator.tokenizer("a");
+    await generator.model.generate({ ...inputs, max_new_tokens: 1 });
+
+    self.postMessage({
+      status: "ready",
+      model: MODEL_IDS[modelKey],
+      dtype: "q1",
+      device: "webgpu",
+    });
+  } catch (e) {
+    self.postMessage({ status: "error", phase: "model_load", data: e.toString() });
+  }
+}
+
+async function generate(messages) {
+  try {
+    if (!currentModelKey) throw new Error("No model key selected. Load Bonsai first.");
+    const generator = await TextGenerationPipeline.getInstance(currentModelKey);
+
+    let startTime;
+    let numTokens = 0;
+    let tps;
+
+    const streamer = new TextStreamer(generator.tokenizer, {
       skip_prompt: true,
       skip_special_tokens: true,
-      callback_function: (text) => {
-        self.postMessage({ type: 'token', text, tps, numTokens });
+      callback_function: (output) => {
+        self.postMessage({ status: "update", output, tps, numTokens });
       },
       token_callback_function: () => {
-        startTime = startTime || performance.now();
-        numTokens++;
-        if (numTokens > 1) {
+        startTime ??= performance.now();
+        if (numTokens++ > 0) {
           tps = (numTokens / (performance.now() - startTime)) * 1000;
         }
       },
     });
-    
-    self.postMessage({ type: 'generating' });
-    
-    // Initialize or reuse KV cache
-    if (!pastKeyValues) {
-      const { DynamicCache: DC } = await import(
-        'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.4.0'
-      );
-      pastKeyValues = new DC();
-    }
-    
+
+    self.postMessage({ status: "start" });
+    pastKeyValuesCache ??= new DynamicCache();
+
     const output = await generator(messages, {
-      max_new_tokens: 256,
-      do_sample: true,
-      temperature: 0.7,
-      top_k: 40,
-      top_p: 0.9,
+      max_new_tokens: 384,
+      do_sample: false,
       streamer,
       stopping_criteria: stoppingCriteria,
-      past_key_values: pastKeyValues,
+      past_key_values: pastKeyValuesCache,
     });
-    
-    const fullText = output[0].generated_text;
-    const assistantMsg = Array.isArray(fullText) ? fullText.at(-1)?.content || fullText : fullText;
-    
-    self.postMessage({ 
-      type: 'done', 
-      text: typeof assistantMsg === 'string' ? assistantMsg : '',
-      tps,
-      numTokens
-    });
-    
-  } catch (err) {
-    if (err.message?.includes('interrupt') || err.message?.includes('abort')) {
-      self.postMessage({ type: 'interrupted' });
-    } else {
-      self.postMessage({ type: 'error', message: `Generation error: ${err.message}` });
+
+    let finalText = "";
+    const generated = output?.[0]?.generated_text;
+    if (Array.isArray(generated)) {
+      finalText = generated.at(-1)?.content ?? "";
+    } else if (typeof generated === "string") {
+      finalText = generated;
     }
-  } finally {
-    isGenerating = false;
+
+    self.postMessage({ status: "complete", output: finalText });
+  } catch (e) {
+    self.postMessage({ status: "error", phase: "generation", data: e.toString() });
   }
 }
 
-// ─── STOP GENERATION ────────────────────────────────────────
-function stopGeneration() {
-  if (abortController?.interrupt) {
-    abortController.interrupt();
+self.addEventListener("message", async (e) => {
+  const { type, data } = e.data;
+  switch (type) {
+    case "check":
+      await check();
+      break;
+    case "load":
+      await load(data);
+      break;
+    case "generate":
+      stoppingCriteria.reset();
+      await generate(data);
+      break;
+    case "interrupt":
+      stoppingCriteria.interrupt();
+      break;
+    case "reset":
+      disposePastKeyValues();
+      stoppingCriteria.reset();
+      self.postMessage({ status: "reset_done" });
+      break;
+    default:
+      self.postMessage({ status: "error", phase: "worker", data: `Unknown worker message type: ${type}` });
   }
-}
-
-// ─── RESET CONVERSATION ─────────────────────────────────────
-function resetConversation() {
-  if (pastKeyValues?.dispose) {
-    pastKeyValues.dispose();
-  }
-  pastKeyValues = null;
-  self.postMessage({ type: 'reset_done' });
-}
+});
