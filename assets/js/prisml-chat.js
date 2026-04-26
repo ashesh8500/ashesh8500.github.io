@@ -15,6 +15,16 @@ let currentAssistantBubble = null;
 let accumulatedText = "";
 let lastSmokeResult = null;
 
+/* ── OpenRouter fallback state ── */
+let orConnected = false;
+let orApiKey = null;
+let orAbortController = null;
+const OR_ENDPOINT = "https://openrouter.ai/api/v1/chat/completions";
+const OR_FREE_MODELS = [
+  "google/gemini-2.0-flash-001",
+  "meta-llama/llama-3.2-3b-instruct:free"
+];
+
 const PROFILE_CONTEXT = `
 You are a browser-local demo assistant on Ashesh Kaji's personal website.
 You are not Ashesh. You are not fine-tuned on private data. You should answer only from this factual profile context and from the visible website content.
@@ -48,6 +58,15 @@ function getDom() {
   D.progress = document.getElementById("chatProgress");
   D.progressFill = document.getElementById("chatProgressFill");
   D.diagnostics = document.getElementById("chatDiagnostics");
+
+  /* OpenRouter fallback elements */
+  D.orFallback = document.getElementById("openrouterFallback");
+  D.orApiKeyInput = document.getElementById("orApiKey");
+  D.orConnectBtn = document.getElementById("orConnectBtn");
+  D.orStatusDot = document.getElementById("orStatusDot");
+  D.orStatusText = document.getElementById("orStatusText");
+  D.orModelRow = document.getElementById("orModelRow");
+  D.orModelSelect = document.getElementById("orModelSelect");
 }
 
 function boot() {
@@ -59,6 +78,7 @@ function boot() {
   D.backdrop?.addEventListener("click", closeAgent);
   D.loadBtn.onclick = initModel;
   if (D.smokeBtn) D.smokeBtn.onclick = runSmokeTest;
+  if (D.orConnectBtn) D.orConnectBtn.onclick = connectOpenRouter;
   D.input?.addEventListener("keydown", (event) => {
     if (event.key === "Enter" && !event.shiftKey) {
       event.preventDefault();
@@ -249,7 +269,7 @@ function surfaceHardFailure(phase, message) {
   setDiagnostics("error", `[${phase}] ${message}`);
   if (D.input) {
     D.input.disabled = true;
-    D.input.placeholder = "Bonsai failed to load — no simulated answers are available";
+    D.input.placeholder = orConnected ? "Ask about Ashesh via OpenRouter" : "Bonsai failed to load — use OpenRouter fallback?";
   }
   if (D.loadBtn) {
     D.loadBtn.disabled = false;
@@ -262,14 +282,20 @@ function surfaceHardFailure(phase, message) {
   }
   if (D.smokeBtn) D.smokeBtn.disabled = false;
   addMessage("system error", `Bonsai did not run. No answer will be simulated.<br><code>${escapeHtml(`[${phase}] ${message}`)}</code>`);
+  /* Offer OpenRouter fallback */
+  showOpenRouterFallback();
   window.__bonsaiError = { phase, message };
   window.dispatchEvent(new CustomEvent("bonsai-error", { detail: window.__bonsaiError }));
 }
 
 function sendMessage() {
   getDom();
+  if (orConnected) {
+    sendOpenRouterMessage();
+    return;
+  }
   if (!modelReady || !worker) {
-    addMessage("system error", "The real Bonsai model is not ready. I will not fabricate a response. Click “Load real Bonsai” and wait for the ready state.");
+    addMessage("system error", "The real Bonsai model is not ready. Click \"Load real Bonsai\" to try local inference, or scroll down to use the OpenRouter API fallback.");
     return;
   }
   if (isGenerating) return;
@@ -286,6 +312,228 @@ function sendMessage() {
       { role: "user", content: text },
     ],
   });
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   OPENROUTER API FALLBACK
+   Activated only when the local Bonsai ONNX model cannot load.
+   API key lives in sessionStorage — never persisted to disk.
+   ══════════════════════════════════════════════════════════════════ */
+
+function showOpenRouterFallback() {
+  getDom();
+  if (!D.orFallback) return;
+  D.orFallback.hidden = false;
+  /* restore saved key */
+  if (!orApiKey) {
+    const saved = sessionStorage.getItem("or_api_key");
+    if (saved) {
+      orApiKey = saved;
+      if (D.orApiKeyInput) D.orApiKeyInput.value = saved;
+    }
+  }
+}
+
+async function connectOpenRouter() {
+  getDom();
+  if (orConnected) {
+    disconnectOpenRouter();
+    return;
+  }
+  const key = (D.orApiKeyInput?.value || "").trim();
+  if (!key) {
+    setOrStatus("error", "API key is required");
+    return;
+  }
+  orApiKey = key;
+  sessionStorage.setItem("or_api_key", key);
+
+  setOrStatus("connecting", "Verifying with OpenRouter…");
+  if (D.orConnectBtn) { D.orConnectBtn.disabled = true; D.orConnectBtn.textContent = "verifying…"; }
+
+  /* validate the key with a cheap call */
+  try {
+    const resp = await fetch(OR_ENDPOINT, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${key}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: OR_FREE_MODELS[0],
+        messages: [{ role: "user", content: "hi" }],
+        max_tokens: 1,
+      }),
+      signal: AbortSignal.timeout(10000),
+    });
+    if (!resp.ok) {
+      const err = await resp.text().catch(() => resp.statusText);
+      throw new Error(`OpenRouter returned ${resp.status}: ${err.slice(0, 200)}`);
+    }
+  } catch (err) {
+    setOrStatus("error", `Connection failed: ${err.message}`);
+    if (D.orConnectBtn) { D.orConnectBtn.disabled = false; D.orConnectBtn.textContent = "retry"; }
+    orApiKey = null;
+    sessionStorage.removeItem("or_api_key");
+    return;
+  }
+
+  orConnected = true;
+  if (D.orConnectBtn) {
+    D.orConnectBtn.disabled = false;
+    D.orConnectBtn.textContent = "disconnect";
+    D.orConnectBtn.classList.add("or-disconnect-btn");
+    D.orConnectBtn.onclick = disconnectOpenRouter;
+  }
+  if (D.orModelRow) D.orModelRow.hidden = false;
+  setOrStatus("connected", "OpenRouter API fallback is active");
+
+  /* enable chat */
+  if (D.input) {
+    D.input.disabled = false;
+    D.input.placeholder = "Ask about Ashesh — answered via OpenRouter API";
+  }
+  if (D.loadBtn) {
+    D.loadBtn.textContent = "send (API)";
+    D.loadBtn.onclick = sendMessage;
+    D.loadBtn.disabled = false;
+  }
+  if (D.smokeBtn) D.smokeBtn.disabled = true;
+
+  setDiagnostics("openrouter", `Connected to OpenRouter API. Model: ${D.orModelSelect?.value || OR_FREE_MODELS[0]}. The local Bonsai model was unavailable; this is a remote API fallback.`);
+  addMessage("system", `OpenRouter API fallback active (model: <code>${escapeHtml(D.orModelSelect?.value || OR_FREE_MODELS[0])}</code>). This is a remote API — your messages are sent to OpenRouter, not processed locally.`);
+
+  /* update the status area */
+  setStatus("online", "OpenRouter API fallback active", "API fallback");
+
+  /* load saved model preference */
+  const savedModel = sessionStorage.getItem("or_model");
+  if (savedModel && D.orModelSelect) D.orModelSelect.value = savedModel;
+  if (D.orModelSelect) D.orModelSelect.onchange = () => sessionStorage.setItem("or_model", D.orModelSelect.value);
+}
+
+function disconnectOpenRouter() {
+  orConnected = false;
+  orApiKey = null;
+  if (orAbortController) { orAbortController.abort(); orAbortController = null; }
+  sessionStorage.removeItem("or_api_key");
+  sessionStorage.removeItem("or_model");
+  getDom();
+  if (D.orModelRow) D.orModelRow.hidden = true;
+  if (D.orConnectBtn) {
+    D.orConnectBtn.disabled = false;
+    D.orConnectBtn.textContent = "connect";
+    D.orConnectBtn.classList.remove("or-disconnect-btn");
+    D.orConnectBtn.onclick = connectOpenRouter;
+  }
+  if (D.orApiKeyInput) D.orApiKeyInput.value = "";
+  setOrStatus("", "OpenRouter API fallback — disconnected");
+  if (D.input) {
+    D.input.disabled = true;
+    D.input.placeholder = "Bonsai failed — connect OpenRouter fallback to chat";
+  }
+  if (D.loadBtn) {
+    D.loadBtn.textContent = "retry real model";
+    D.loadBtn.onclick = () => { worker?.terminate?.(); worker = null; initModel(); };
+    D.loadBtn.disabled = false;
+  }
+  if (D.smokeBtn) D.smokeBtn.disabled = false;
+  setStatus("error", "Bonsai is not running", "disconnected");
+}
+
+async function sendOpenRouterMessage() {
+  getDom();
+  if (isGenerating) return;
+  const text = (D.input?.value || "").trim();
+  if (!text) return;
+  if (!orApiKey) {
+    addMessage("system error", "OpenRouter API key is missing. Reconnect the fallback.");
+    return;
+  }
+
+  addMessage("user", text);
+  if (D.input) D.input.value = "";
+  isGenerating = true;
+  accumulatedText = "";
+  currentAssistantBubble = addMessage("assistant", "", true);
+  setStatus("generating", "OpenRouter streaming", "streaming");
+  setDiagnostics("openrouter", `Streaming from ${D.orModelSelect?.value || OR_FREE_MODELS[0]}…`);
+
+  orAbortController = new AbortController();
+
+  try {
+    const resp = await fetch(OR_ENDPOINT, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${orApiKey}`,
+        "Content-Type": "application/json",
+        "HTTP-Referer": window.location.origin,
+        "X-Title": "Ashesh Kaji Personal Site",
+      },
+      body: JSON.stringify({
+        model: D.orModelSelect?.value || OR_FREE_MODELS[0],
+        messages: [
+          { role: "system", content: PROFILE_CONTEXT },
+          { role: "user", content: text },
+        ],
+        stream: true,
+        max_tokens: 512,
+      }),
+      signal: orAbortController.signal,
+    });
+
+    if (!resp.ok) {
+      const errBody = await resp.text().catch(() => resp.statusText);
+      throw new Error(`OpenRouter ${resp.status}: ${errBody.slice(0, 300)}`);
+    }
+
+    const reader = resp.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = "";
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split("\n");
+      buffer = lines.pop();
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (!trimmed || !trimmed.startsWith("data: ")) continue;
+        const data = trimmed.slice(6);
+        if (data === "[DONE]") continue;
+        try {
+          const parsed = JSON.parse(data);
+          const delta = parsed.choices?.[0]?.delta?.content;
+          if (delta) {
+            accumulatedText += delta;
+            if (currentAssistantBubble) currentAssistantBubble.innerHTML = renderText(accumulatedText);
+            scrollMessages();
+          }
+        } catch (_) { /* skip malformed chunks */ }
+      }
+    }
+  } catch (err) {
+    if (err.name === "AbortError") {
+      addMessage("system", "Generation cancelled.");
+    } else {
+      addMessage("system error", `OpenRouter API error: ${escapeHtml(err.message)}`);
+      setOrStatus("error", `API error: ${err.message}`);
+    }
+  }
+
+  isGenerating = false;
+  currentAssistantBubble = null;
+  setStatus("online", "OpenRouter API fallback active", "API fallback");
+  window.__bonsaiLastOutput = accumulatedText;
+  window.dispatchEvent(new CustomEvent("bonsai-complete", { detail: { output: accumulatedText } }));
+  scrollMessages();
+}
+
+function setOrStatus(kind, text) {
+  getDom();
+  if (D.orStatusDot) D.orStatusDot.className = `or-dot ${kind}`;
+  if (D.orStatusText) D.orStatusText.textContent = text;
 }
 
 async function runSmokeTest() {

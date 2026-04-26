@@ -322,6 +322,28 @@
                 <button class="agent-test" id="chatSmokeBtn" type="button">run Bonsai smoke test</button>
                 <span>Pass condition: WebGPU ready + real model generation event.</span>
             </div>
+            <div class="openrouter-fallback" id="openrouterFallback" hidden>
+                <div class="or-status">
+                    <span class="or-dot" id="orStatusDot"></span>
+                    <span id="orStatusText">OpenRouter API fallback &mdash; not connected</span>
+                </div>
+                <div class="or-input-row">
+                    <input type="password" class="chat-input or-key-input" id="orApiKey" 
+                           placeholder="Paste OpenRouter API key"
+                           autocomplete="off"
+                           aria-label="OpenRouter API key">
+                    <button class="agent-test or-connect-btn" id="orConnectBtn" type="button">
+                        connect
+                    </button>
+                </div>
+                <div class="or-model-row" id="orModelRow" hidden>
+                    <label class="or-label">model:</label>
+                    <select class="or-model-select" id="orModelSelect">
+                        <option value="google/gemini-2.0-flash-001">Gemini 2.0 Flash (free)</option>
+                        <option value="meta-llama/llama-3.2-3b-instruct:free">Llama 3.2 3B (free)</option>
+                    </select>
+                </div>
+            </div>
         </div>
     </div>
 </section>

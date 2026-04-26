@@ -1069,6 +1069,96 @@ a:hover { color: #00f0c0; }
 }
 
 /* ================================================================
+   OPENROUTER FALLBACK
+   ================================================================ */
+.openrouter-fallback {
+  display: none;
+  padding: 16px 20px;
+  border-top: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-subtle);
+  background: rgba(0, 0, 0, 0.2);
+  flex-direction: column;
+  gap: 10px;
+}
+.openrouter-fallback:not([hidden]) {
+  display: flex;
+}
+.or-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.or-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  flex-shrink: 0;
+}
+.or-dot.connected { background: var(--accent-purple); box-shadow: 0 0 8px var(--accent-purple); }
+.or-dot.connecting { background: var(--accent-amber); animation: pulse 1.5s infinite; }
+.or-dot.error { background: var(--accent-red); }
+.or-input-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.or-key-input {
+  flex: 1;
+  min-width: 0;
+}
+.or-key-input::placeholder {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+.or-connect-btn {
+  white-space: nowrap;
+}
+.or-model-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.or-label {
+  color: var(--text-muted);
+}
+.or-model-select {
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 4px 8px;
+  outline: none;
+  cursor: pointer;
+}
+.or-model-select:focus {
+  border-color: var(--accent-purple);
+}
+.or-disconnect-btn {
+  background: transparent;
+  border: 1px solid var(--accent-red);
+  color: var(--accent-red);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  margin-left: auto;
+  transition: all var(--transition-fast);
+}
+.or-disconnect-btn:hover {
+  background: rgba(255, 91, 91, 0.1);
+}
+
+/* ================================================================
    FOOTER
    ================================================================ */
 .footer {
