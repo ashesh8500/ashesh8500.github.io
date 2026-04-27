@@ -1,18 +1,19 @@
 # Ashesh Kaji — Personal Web World
 
-A Nous Hermes-inspired personal website built with pure HTML/CSS/JS: deep teal canvas, cream midground, warm glow/noise overlays, real GitHub project integration, a viewable resume page, and a globally accessible browser-local Bonsai model drawer.
+A Hermes-themed personal website built with pure HTML/CSS/JS: dark terminal-chic aesthetic, glowing accents, GitHub project integration, a browser-local Bonsai model drawer, a printable resume, and research project pages.
+
+**asheshkaji.com** · Deployed via GitHub Pages from this repo.
 
 ## Features
 
-- **Hermes/Nous visual language** — LENS_0-style teal canvas (`#041c1c`), cream midground (`#ffe6cb`), warm glow, thin borders, uppercase terminal navigation.
-- **Personal web world framing** — identity-first, not employment-seeking copy.
-- **Live GitHub projects** — fetches public repository data via the GitHub REST API.
-- **Global Ask drawer** — accessible from the nav, hero, floating launcher, or `Cmd/Ctrl+K`.
-- **Real Bonsai attempt only** — loads `onnx-community/Bonsai-1.7B-ONNX` with `dtype: q1` and `device: webgpu` via Transformers.js in a Web Worker.
-- **No fabricated fallback** — if WebGPU/model loading/generation fails, the UI shows the exact failure and refuses to simulate an answer.
-- **Smoke test hook** — append `?bonsai-smoke=1` or click “run Bonsai smoke test” to verify WebGPU + model-ready + generation.
-- **Viewable resume** — clean, printable `resume.html` page.
-- **Responsive** — desktop, tablet, and mobile friendly.
+- **Hermes UI** — dark teal canvas (`#08090d`), monospace typography, teal/purple accent glow
+- **Personal web world framing** — identity-first, not employment-seeking
+- **Live GitHub projects** — fetches public repos via GitHub REST API + hand-picked featured projects
+- **Resume page** — clean, printable `resume.html` with updated experience and project links
+- **Research write-up** — `projects/system-optimization-methods.html`, a blog-style post on portfolio allocation as layered system optimization
+- **Global Ask drawer** — browser-local Bonsai 1.7B (ONNX, q1) via WebGPU + Transformers.js
+- **No fabricated fallback** — if WebGPU/model loading fails, UI shows the exact error
+- **Responsive** — desktop, tablet, mobile
 
 ## Local Development
 
@@ -20,38 +21,28 @@ A Nous Hermes-inspired personal website built with pure HTML/CSS/JS: deep teal c
 python3 -m http.server 8080
 ```
 
-Open `http://localhost:8080` in a WebGPU-capable Chromium browser.
-
-For the committed Bonsai smoke test, use port 8766:
-
-```bash
-python3 -m http.server 8766
-# in another shell; HEADLESS=0 uses a normal Chrome window
-HEADLESS=0 node tests/bonsai-smoke.mjs
-```
-
-The test exits `0` only if WebGPU is accepted, Bonsai reaches `ready`, and a non-empty generation is produced. It exits non-zero with the exact browser/model error otherwise.
-
-## Bonsai Verification
-
-Manual:
-1. Open the site in Chrome/Edge with WebGPU enabled.
-2. Open the Ask drawer.
-3. Click `Load real Bonsai`.
-4. Wait for status: `Real Bonsai 1.7B q1 is running locally`.
-5. Click `run Bonsai smoke test`.
-
-Programmatic browser state exposed for testing:
-
-```js
-window.__bonsaiReady       // true only after real model ready
-window.__bonsaiError       // { phase, message } if loading/generation failed
-window.__bonsaiLastOutput  // last real generated output
-window.__bonsaiSmokeResult // { ok, output, model, dtype, device }
-```
-
-There is intentionally no CPU/WASM/simulation fallback for answers.
+Open `http://localhost:8080` in a WebGPU-capable Chromium browser for the full Bonsai experience.
 
 ## Deployment
 
-Push to `main`. GitHub Pages deploys from the repository root and preserves `CNAME` for `www.asheshkaji.com`.
+Push to `main`. GitHub Pages deploys from the repository root. The `CNAME` file maps `asheshkaji.com` and `www.asheshkaji.com`.
+
+DNS must have:
+- `A` records pointing to GitHub Pages IPs
+- `CNAME` for `www` → `ashesh8500.github.io`
+
+## Structure
+
+```
+├── index.html                          # Main portfolio page
+├── resume.html                         # Printable resume
+├── CNAME                               # Domain configuration
+├── projects/
+│   └── system-optimization-methods.html # Research write-up
+├── assets/
+│   ├── css/style.css                   # Hermes theme
+│   ├── js/main.js                      # UI + GitHub fetch
+│   ├── js/prisml-chat.js               # Bonsai chat interface
+│   └── js/prisml-worker.js             # Web Worker for model inference
+└── .github/workflows/deploy.yml        # GitHub Pages deploy action
+```

@@ -3,7 +3,4 @@
 .opencode/
 .claude/
 .hermes/
-target/
-Cargo.lock
-Cargo.toml
-Trunk.toml
+dist/

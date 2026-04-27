@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Optimization Methods — Ashesh Kaji</title>
+    <meta name="description" content="Portfolio allocation as layered system optimization — walk-forward validation, regime detection, and attractiveness scoring.">
+    <meta property="og:title" content="System Optimization Methods — Ashesh Kaji">
+    <meta property="og:description" content="Portfolio allocation as layered system optimization — walk-forward validation, regime detection, and attractiveness scoring.">
+    <meta property="og:type" content="website">
+    <meta name="theme-color" content="#0d1117">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <style>
+        .post-page {
+            max-width: 780px;
+            margin: 0 auto;
+            padding: 80px 24px;
+        }
+
+        .post-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: var(--font-mono);
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 32px;
+            transition: color var(--transition-fast);
+        }
+        .post-back:hover { color: var(--accent-teal); }
+
+        .post-meta {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .post-badge {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 100px;
+            border: 1px solid var(--accent-teal);
+            color: var(--accent-teal);
+            background: var(--accent-teal-glow);
+            letter-spacing: 0.5px;
+        }
+
+        .post-badge.wip {
+            border-color: var(--accent-amber);
+            color: var(--accent-amber);
+            background: rgba(210, 153, 29, 0.1);
+        }
+
+        .post-date {
+            font-family: var(--font-mono);
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .post-title {
+            font-family: var(--font-mono);
+            font-size: clamp(24px, 4vw, 34px);
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1.3;
+            margin-bottom: 12px;
+        }
+
+        .post-subtitle {
+            font-size: 17px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 40px;
+            padding-bottom: 32px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .post-body h2 {
+            font-family: var(--font-mono);
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 40px 0 12px;
+        }
+
+        .post-body h3 {
+            font-family: var(--font-mono);
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--accent-teal);
+            margin: 28px 0 8px;
+        }
+
+        .post-body p {
+            font-size: 16px;
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin: 12px 0;
+        }
+
+        .post-body strong {
+            color: var(--text-primary);
+        }
+
+        .post-body code {
+            font-family: var(--font-mono);
+            font-size: 13px;
+            background: var(--bg-card);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-teal);
+            border: 1px solid var(--border-subtle);
+        }
+
+        .post-body ul, .post-body ol {
+            margin: 12px 0;
+            padding-left: 20px;
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        .post-body li { margin-bottom: 6px; }
+
+        .post-callout {
+            margin: 32px 0;
+            padding: 20px 24px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-subtle);
+            background: var(--bg-card);
+        }
+
+        .post-callout.wip {
+            border-color: rgba(210, 153, 29, 0.25);
+            background: rgba(210, 153, 29, 0.05);
+        }
+
+        .post-callout.wip h4 {
+            font-family: var(--font-mono);
+            font-size: 13px;
+            color: var(--accent-amber);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .post-callout p {
+            font-size: 14px;
+            margin: 4px 0;
+        }
+
+        .post-links {
+            margin-top: 48px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border-subtle);
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .post-link {
+            font-family: var(--font-mono);
+            font-size: 13px;
+            color: var(--accent-teal);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            transition: all var(--transition-fast);
+        }
+
+        .post-link:hover {
+            border-color: var(--accent-teal);
+            background: var(--accent-teal-glow);
+        }
+
+        .concept-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin: 20px 0;
+        }
+
+        .concept-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 20px;
+        }
+
+        .concept-card h4 {
+            font-family: var(--font-mono);
+            font-size: 14px;
+            color: var(--accent-teal);
+            margin-bottom: 6px;
+        }
+
+        .concept-card p {
+            font-size: 13px;
+            margin: 4px 0;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        @media (max-width: 600px) {
+            .post-page { padding: 60px 16px; }
+            .concept-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="nav" id="nav">
+    <div class="nav-inner">
+        <a href="/" class="nav-logo">~/ashesh <span>// research</span></a>
+        <ul class="nav-links">
+            <li><a href="../index.html">← back to portfolio</a></li>
+        </ul>
+    </div>
+</nav>
+
+<div class="post-page">
+    <a href="../index.html" class="post-back">← Back to projects</a>
+
+    <div class="post-meta">
+        <span class="post-badge">Research</span>
+        <span class="post-badge wip">Work in Progress</span>
+        <span class="post-date">Spring 2026</span>
+    </div>
+
+    <h1 class="post-title">Portfolio Allocation as Layered System Optimization</h1>
+
+    <p class="post-subtitle">
+        A research exploration into reframing portfolio construction not as a single prediction problem, but as a 
+        <strong>stacked optimization architecture</strong> — where candidate screening, regime detection, position sizing, 
+        and risk controls operate as independent tunable layers with walk-forward provenance tracking.
+    </p>
+
+    <div class="post-callout wip">
+        <h4>⚠ Work in Progress</h4>
+        <p>
+            This page outlines the research direction, methodology, and preliminary findings. 
+            The study is actively evolving — additional pilot universes, regime classifiers, and 
+            PufferLib-based RL allocation layers are in development. The current implementation 
+            runs screened walk-forward backtests with provenance ledgers tracked per experiment run.
+        </p>
+    </div>
+
+    <div class="post-body">
+
+        <h2>Why Layered Optimization?</h2>
+
+        <p>
+            Traditional portfolio optimization typically treats the problem as a single-stage mathematical program: 
+            given a universe of assets and some return/covariance estimates, find the weight vector that maximizes 
+            a risk-adjusted objective (Sharpe, Sortino, minimum variance, etc.). This works cleanly in theory but 
+            struggles in practice because <strong>real markets exhibit regime shifts, non-stationary correlations, 
+            and survivorship effects</strong> that a flat optimization cannot anticipate.
+        </p>
+
+        <p>
+            The key insight is that portfolio construction naturally decomposes into distinct decisions — 
+            <em>which assets to consider</em>, <em>what market regime we're in</em>, <em>how to size positions</em>, 
+            and <em>what risk constraints to enforce</em>. Each of these can be treated as a separate optimization 
+            layer with its own objective, state representation, and feedback signal. The layers are stacked: 
+            outputs from one layer become inputs or constraints for the next.
+        </p>
+
+        <div class="concept-grid">
+            <div class="concept-card">
+                <h4>Layer 1 — Pilot Screening</h4>
+                <p>Filters the investable universe using fundamental and technical criteria. Produces a screened candidate set per rebalance period.</p>
+            </div>
+            <div class="concept-card">
+                <h4>Layer 2 — Attractiveness Scoring</h4>
+                <p>Assigns a composite score to each candidate using multi-indicator fusion: momentum, mean-reversion, volatility-normalized signals.</p>
+            </div>
+            <div class="concept-card">
+                <h4>Layer 3 — Regime Detection</h4>
+                <p>Classifies the current market regime (trending, mean-reverting, high-vol, crisis) to modulate risk budgets and strategy weights.</p>
+            </div>
+            <div class="concept-card">
+                <h4>Layer 4 — Allocation</h4>
+                <p>Converts scores and regime into position weights. Supports rule-based sizing, mean-variance optimization, and RL policy approaches.</p>
+            </div>
+        </div>
+
+        <h2>Methodology</h2>
+
+        <h3>Walk-Forward Validation</h3>
+        <p>
+            All backtests use a strict <strong>walk-forward (anchored expanding window)</strong> framework to avoid look-ahead bias. 
+            Each rebalance period trains on all data up to that point, generates a forward allocation, and records out-of-sample 
+            returns. No future information leaks into any layer's parameters.
+        </p>
+
+        <h3>Provenance Ledgers</h3>
+        <p>
+            Every experiment run produces a <strong>provenance ledger</strong>: a structured log of which screening criteria 
+            were active, what regime was detected per period, which signals contributed to the attractiveness score, and 
+            the resulting allocation vector. This makes it possible to trace any portfolio outcome back to the specific 
+            decisions made at each layer — essential for debugging and understanding what drives performance.
+        </p>
+
+        <h3>Pilot Universe Design</h3>
+        <p>
+            Multiple screened pilot universes are tested in parallel:
+        </p>
+        <ul>
+            <li><strong>Momentum-screened:</strong> assets above a trailing return threshold with liquidity filters</li>
+            <li><strong>Low-vol screened:</strong> assets with below-median realized volatility</li>
+            <li><strong>Multi-factor screened:</strong> composite filter combining momentum, quality, and size factors</li>
+            <li><strong>Unconstrained:</strong> full universe as a baseline</li>
+        </ul>
+
+        <h3>Regime Detection Approaches</h3>
+        <p>
+            Several regime classifiers are compared:
+        </p>
+        <ul>
+            <li><strong>Rolling volatility quantiles</strong> — simple, interpretable, fast</li>
+            <li><strong>Hidden Markov Models (HMM)</strong> — probabilistic regime assignment with smoother transitions</li>
+            <li><strong>Trend-following filter</strong> — moving-average crossovers with adaptive thresholds</li>
+        </ul>
+
+        <h2>RL Allocation Layer (In Development)</h2>
+        <p>
+            The current rule-based allocation layer (equal-weight top-N, volatility-weighted) serves as a strong baseline. 
+            The next phase replaces this with a <strong>reinforcement learning policy</strong> trained using 
+            <strong>PufferLib</strong>, where the state space includes the attractiveness scores, regime probabilities, 
+            and portfolio-level risk metrics. The action space is continuous position sizing, with the reward function 
+            defined as risk-adjusted return over a forward window.
+        </p>
+        <p>
+            This is where the layered approach shines: the RL agent doesn't need to learn screening or regime detection 
+            from raw price data — those are already handled by lower layers. Its job is strictly <em>given these signals 
+            and this regime, how much should I allocate?</em> This reduces the state space dramatically and should lead 
+            to faster, more stable training.
+        </p>
+
+        <h2>Current Findings</h2>
+        <p>
+            Preliminary walk-forward results across multiple pilot universes show several consistent patterns:
+        </p>
+        <ul>
+            <li><strong>Screening matters:</strong> screened universes consistently outperform their unconstrained counterparts on risk-adjusted metrics, especially during drawdown periods</li>
+            <li><strong>Regime-awareness reduces tail risk:</strong> dynamic risk budgeting based on detected regime reduces maximum drawdown and volatility-of-volatility compared to static allocations</li>
+            <li><strong>Provenance tracking reveals hidden drift:</strong> several strategies that looked good on aggregate metrics showed clear strategy decay when examined period-by-period through the ledger</li>
+        </ul>
+
+        <div class="post-callout">
+            <p>
+                <strong>Next steps:</strong> Complete PufferLib RL integration for the allocation layer, add cross-asset-class
+                pilot universes, implement transaction cost modeling, and produce a formal paper with full statistical 
+                significance testing across all layer combinations.
+            </p>
+        </div>
+
+    </div>
+
+    <div class="post-links">
+        <a href="https://github.com/ashesh8500/fractal" target="_blank" rel="noopener" class="post-link">
+            📁 Fractal Research Repo ↗
+        </a>
+        <a href="../index.html" class="post-link">
+            ← Back to Portfolio
+        </a>
+    </div>
+</div>
+
+<script src="../assets/js/main.js"></script>
+</body>
+</html>
