@@ -14,6 +14,7 @@ let isGenerating = false;
 let currentAssistantBubble = null;
 let accumulatedText = "";
 let lastSmokeResult = null;
+window.__bonsaiTokenCallbacks = []; // companion.js hooks
 
 /* ── OpenRouter fallback state ── */
 let orConnected = false;
@@ -146,6 +147,7 @@ async function initModel() {
 
   try {
     worker = new Worker(new URL("assets/js/prisml-worker.js", window.location.href), { type: "module" });
+    window._bonsaiWorker = worker;
     worker.onmessage = handleWorkerMessage;
     worker.onerror = (err) => {
       const message = err.message || "Module worker crashed.";
@@ -207,6 +209,7 @@ function handleWorkerMessage(e) {
       accumulatedText = "";
       currentAssistantBubble = addMessage("assistant", "", true);
       setStatus("generating", "Bonsai generating", "streaming");
+      window.__bonsaiTokenCallbacks.forEach(cb => cb({ type: "start" }));
       break;
 
     case "update":
@@ -214,6 +217,7 @@ function handleWorkerMessage(e) {
       if (currentAssistantBubble) currentAssistantBubble.innerHTML = renderText(accumulatedText);
       if (d.tps != null) setStatus("generating", `Bonsai generating · ${Number(d.tps).toFixed(1)} tok/s`, `${d.numTokens || 0} tok`);
       scrollMessages();
+      window.__bonsaiTokenCallbacks.forEach(cb => cb({ type: "update", text: d.output || "", accumulated: accumulatedText }));
       break;
 
     case "complete":
@@ -225,6 +229,7 @@ function handleWorkerMessage(e) {
       currentAssistantBubble = null;
       window.__bonsaiLastOutput = accumulatedText || d.output || "";
       window.dispatchEvent(new CustomEvent("bonsai-complete", { detail: { output: window.__bonsaiLastOutput } }));
+      window.__bonsaiTokenCallbacks.forEach(cb => cb({ type: "complete", text: accumulatedText || d.output || "" }));
       break;
 
     case "reset_done":
@@ -233,6 +238,7 @@ function handleWorkerMessage(e) {
 
     case "error":
       surfaceHardFailure(d.phase || "model", d.data || "Unknown Bonsai failure");
+      window.__bonsaiTokenCallbacks.forEach(cb => cb({ type: "error", phase: d.phase, message: d.data }));
       break;
 
     default:
@@ -652,5 +658,6 @@ function formatBytes(bytes) {
 window.initModel = initModel;
 window.sendMessage = sendMessage;
 window.runBonsaiSmokeTest = runSmokeTest;
+window._bonsaiWorker = null; // exposed for companion.js
 
 document.addEventListener("DOMContentLoaded", boot);

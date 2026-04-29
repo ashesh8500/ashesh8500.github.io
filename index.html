@@ -15,6 +15,75 @@
 </head>
 <body>
 
+<!-- ═══════════════════════════════════════════════════════════
+     VIDEO-GAME AI COMPANION — Floating alongside the user
+     ═══════════════════════════════════════════════════════════ -->
+<div class="companion" id="companion">
+  <div class="companion-avatar state-idle" id="companionAvatar" title="Ask me anything — press ⌘K">
+    <div class="companion-face">
+      <div class="companion-eyes">
+        <span class="companion-eye left"></span>
+        <span class="companion-eye right"></span>
+      </div>
+      <span class="companion-mouth"></span>
+    </div>
+  </div>
+  <div class="companion-glow"></div>
+  <div class="companion-speech" id="companionSpeech" hidden>
+    <p>Hey! Ask me anything about Ashesh.</p>
+  </div>
+</div>
+
+<!-- Chat Panel (expands from companion) -->
+<div class="chat-panel" id="chatPanel" hidden>
+  <div class="chat-panel-header">
+    <div class="cp-title-area">
+      <span class="cp-status-dot bonsai" id="cpStatusDot"></span>
+      <span class="cp-status-line" id="cpStatusLine">Local Bonsai 1.7B · WebGPU</span>
+      <span class="cp-model-badge bonsai" id="cpModelBadge">local</span>
+    </div>
+    <div class="inference-toggle">
+      <span class="toggle-label active" data-mode="bonsai">⚡ Local</span>
+      <button class="toggle-switch" id="inferenceToggle" aria-label="Toggle inference mode">
+        <span class="toggle-thumb bonsai" id="toggleThumb"></span>
+      </button>
+      <span class="toggle-label" data-mode="deepseek">🌐 API</span>
+    </div>
+    <button class="chat-panel-close" id="chatPanelClose" aria-label="Close chat">×</button>
+  </div>
+
+  <!-- DeepSeek key section (hidden when in bonsai mode) -->
+  <div class="ds-key-section" id="dsKeySection" style="display:none;">
+    <div class="ds-key-row">
+      <input type="password" class="ds-key-input" id="dsApiKeyInput" 
+             placeholder="Paste DeepSeek API key"
+             autocomplete="off"
+             aria-label="DeepSeek API key">
+      <button class="ds-key-btn" id="dsKeyConnectBtn" type="button">connect</button>
+    </div>
+    <span class="ds-key-status" id="dsKeyStatus">Enter your DeepSeek API key. Stored only in this browser session.</span>
+  </div>
+
+  <!-- Messages -->
+  <div class="cp-messages" id="cpMessages">
+    <div class="cp-message system">
+      <div class="cp-avatar system">⚡</div>
+      <div class="cp-bubble system">
+        Hey! I'm a floating AI companion. I can run <strong>local Bonsai 1.7B</strong> via WebGPU or <strong>DeepSeek V4 Flash</strong> via API.<br>
+        Toggle between modes above, or just start typing.
+      </div>
+    </div>
+  </div>
+
+  <!-- Input -->
+  <div class="cp-input-area">
+    <input type="text" class="cp-input" id="cpInput" 
+           placeholder="Ask about Ashesh..."
+           aria-label="Chat message">
+    <button class="cp-send-btn" id="cpSendBtn" type="button">send</button>
+  </div>
+</div>
+
 <!-- NAVIGATION -->
 <nav class="nav" id="nav">
     <div class="nav-inner">
@@ -264,6 +333,10 @@
                 directly in your browser through WebGPU. No server. No API calls. No data leaves your machine.
                 If WebGPU or the model fails, the interface reports the exact failure and does <strong>not</strong> fabricate a response.
             </p>
+            <p style="margin-top:8px; color: var(--accent-purple);">
+                💡 <strong>New:</strong> A floating AI companion lives at the bottom-right of every page — 
+                click it or press <strong>⌘K</strong> to chat. Toggle between local Bonsai and DeepSeek V4 Flash.
+            </p>
             <div class="ask-badges">
                 <span class="ask-badge teal">WebGPU Required</span>
                 <span class="ask-badge teal">q1 1-bit Quantization</span>
@@ -357,5 +430,6 @@
 
 <script src="assets/js/main.js"></script>
 <script type="module" src="assets/js/prisml-chat.js"></script>
+<script src="assets/js/companion.js"></script>
 </body>
 </html>
