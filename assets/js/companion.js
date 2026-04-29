@@ -326,18 +326,16 @@ function setDsKeyStatus(kind, text) {
    ══════════════════════════════════════════════════════ */
 
 function sendMessage() {
-  console.log("[companion] sendMessage called", { isGenerating, panelOpen, mode: inferenceMode, hasKey: !!dsApiKey });
   if (isGenerating) return;
   const inputEl = COMPANION.input;
   if (!inputEl) {
-    console.warn("[companion] input element is null");
-    addMessage("system", "Chat input not found. Please refresh the page.");
+    addMessage("system error", "Chat input missing. Please refresh.");
     return;
   }
   const text = (inputEl.value || "").trim();
-  console.log("[companion] text:", JSON.stringify(text));
   if (!text) return;
 
+  /* Echo user message */
   addMessage("user", text);
   inputEl.value = "";
 
@@ -349,67 +347,48 @@ function sendMessage() {
 }
 
 function sendBonsaiMessage(text) {
-  /* Use the shared Bonsai worker + callback system */
-  if (!window._bonsaiWorker) {
-    if (typeof window.initModel === "function") {
-      addMessage("system", "Loading Bonsai model...");
-      setCompanionState("thinking");
-      window.initModel().then(ok => {
-        if (ok && window._bonsaiWorker) {
-          _doBonsaiGenerate(text);
-        } else {
-          addMessage("system", "Bonsai failed to load. Switch to DeepSeek mode (🌐 toggle) or check WebGPU support.");
-          setCompanionState("error");
-          showSpeech("⚠️ Bonsai unavailable — try API mode", 4000);
-          setTimeout(() => setCompanionState("idle"), 4000);
-        }
-      });
-    } else {
-      addMessage("system", "Bonsai model system not available. Switch to DeepSeek mode (🌐 toggle).");
-    }
+  /* ── Mirror page-based ask-section behavior exactly ── */
+  if (!window.__bonsaiReady || !window._bonsaiWorker) {
+    addMessage("system", "The real Bonsai model is not ready. No simulated answer.");
+    addMessage("system", "Options: click ⚡ Load real Bonsai in the Ask Me section below, or switch the toggle above to 🌐 DeepSeek API mode and paste your key.");
+    setCompanionState("error");
+    showSpeech("⚠️ Bonsai not loaded", 3000);
+    setTimeout(() => setCompanionState("idle"), 3000);
     return;
   }
-  _doBonsaiGenerate(text);
-}
 
-function _doBonsaiGenerate(text) {
-  if (!window._bonsaiWorker) return;
-
+  /* Bonsai is ready — stream through worker */
   isGenerating = true;
   accumulatedText = "";
   currentBubble = addMessage("assistant", "", true);
   setCompanionState("thinking");
-  showSpeech("", 0);
 
-  /* Register one-shot callback */
-  const callback = (data) => {
+  var cb = function (data) {
     if (data.type === "start") {
       setCompanionState("speaking");
     } else if (data.type === "update") {
       if (currentBubble) currentBubble.innerHTML = renderText(data.accumulated);
       scrollMessages();
     } else if (data.type === "complete") {
-      if (currentBubble && !accumulatedText) {
+      if (currentBubble && !currentBubble.textContent) {
         currentBubble.innerHTML = renderText(data.text);
       }
       isGenerating = false;
       currentBubble = null;
-      if (companionState === "speaking") setCompanionState("idle");
-      /* Remove self from callbacks */
-      window.__bonsaiTokenCallbacks = window.__bonsaiTokenCallbacks.filter(cb => cb !== callback);
+      setCompanionState("idle");
+      window.__bonsaiTokenCallbacks = window.__bonsaiTokenCallbacks.filter(function (c) { return c !== cb; });
     } else if (data.type === "error") {
-      addMessage("system error", `Bonsai error: ${escapeHtml(data.message || "unknown")}`);
+      addMessage("system error", "Bonsai error: " + escapeHtml(data.message || "unknown"));
       isGenerating = false;
       currentBubble = null;
       setCompanionState("error");
-      showSpeech("⚠️ Bonsai error — try API mode", 4000);
-      setTimeout(() => setCompanionState("idle"), 4000);
-      window.__bonsaiTokenCallbacks = window.__bonsaiTokenCallbacks.filter(cb => cb !== callback);
+      showSpeech("⚠️ Bonsai error", 3000);
+      setTimeout(function () { setCompanionState("idle"); }, 3000);
+      window.__bonsaiTokenCallbacks = window.__bonsaiTokenCallbacks.filter(function (c) { return c !== cb; });
     }
   };
 
-  window.__bonsaiTokenCallbacks.push(callback);
-
+  window.__bonsaiTokenCallbacks.push(cb);
   window._bonsaiWorker.postMessage({
     type: "generate",
     data: [
@@ -509,19 +488,24 @@ async function sendDeepSeekMessage(text) {
    MESSAGES UI
    ══════════════════════════════════════════════════════ */
 
-function addMessage(role, content, returnBubble = false) {
+function addMessage(role, content, returnBubble) {
   if (!COMPANION.messages) return null;
+  if (returnBubble === undefined) returnBubble = false;
 
-  const row = document.createElement("div");
-  const normRole = role.includes("user") ? "user" : role.includes("error") ? "error" : role.includes("system") ? "system" : "assistant";
-  row.className = `cp-message ${normRole}`;
+  var row = document.createElement("div");
+  var normRole;
+  if (role.indexOf("user") !== -1) normRole = "user";
+  else if (role.indexOf("error") !== -1) normRole = "error";
+  else if (role.indexOf("system") !== -1) normRole = "system";
+  else normRole = "assistant";
+  row.className = "cp-message " + normRole;
 
-  const avatar = document.createElement("div");
-  avatar.className = `cp-avatar ${normRole}`;
+  var avatar = document.createElement("div");
+  avatar.className = "cp-avatar " + normRole;
   avatar.textContent = normRole === "user" ? "YOU" : normRole === "system" ? "⚡" : "DS";
 
-  const bubble = document.createElement("div");
-  bubble.className = `cp-bubble ${normRole}`;
+  var bubble = document.createElement("div");
+  bubble.className = "cp-bubble " + normRole;
   bubble.innerHTML = normRole === "user" ? escapeHtml(content) : renderText(content);
 
   row.appendChild(avatar);
