@@ -76,25 +76,44 @@ function bootCompanion() {
     else openPanel();
   });
 
-  COMPANION.closeBtn?.addEventListener("click", (e) => {
-    e.stopPropagation();
-    closePanel();
-  });
+  if (COMPANION.closeBtn) {
+    COMPANION.closeBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      closePanel();
+    });
+  }
 
-  COMPANION.toggle?.addEventListener("click", () => {
-    const newMode = inferenceMode === "bonsai" ? "deepseek" : "bonsai";
-    setInferenceMode(newMode);
-  });
+  if (COMPANION.toggle) {
+    COMPANION.toggle.addEventListener("click", () => {
+      const newMode = inferenceMode === "bonsai" ? "deepseek" : "bonsai";
+      setInferenceMode(newMode);
+    });
+  }
 
-  COMPANION.sendBtn?.addEventListener("click", sendMessage);
-  COMPANION.input?.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" && !e.shiftKey) {
+  /* ── Send button ── */
+  if (COMPANION.sendBtn) {
+    COMPANION.sendBtn.addEventListener("click", function(e) {
       e.preventDefault();
       sendMessage();
-    }
-  });
+    });
+  } else {
+    console.warn("[companion] cpSendBtn not found in DOM");
+  }
 
-  COMPANION.dsKeyBtn?.addEventListener("click", connectDeepSeek);
+  if (COMPANION.input) {
+    COMPANION.input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+  } else {
+    console.warn("[companion] cpInput not found in DOM");
+  }
+
+  if (COMPANION.dsKeyBtn) {
+    COMPANION.dsKeyBtn.addEventListener("click", connectDeepSeek);
+  }
 
   /* ── Keyboard shortcuts ── */
   document.addEventListener("keydown", (e) => {
@@ -129,15 +148,18 @@ function showSpeech(text, duration = 4000) {
   if (!COMPANION.speech) return;
   clearTimeout(speechTimeout);
   COMPANION.speech.innerHTML = `<p>${escapeHtml(text)}</p>`;
+  COMPANION.speech.removeAttribute("hidden");
   COMPANION.speech.classList.add("visible");
   speechTimeout = setTimeout(() => {
     COMPANION.speech?.classList.remove("visible");
+    COMPANION.speech?.setAttribute("hidden", "");
   }, duration);
 }
 
 function hideSpeech() {
   clearTimeout(speechTimeout);
   COMPANION.speech?.classList.remove("visible");
+  COMPANION.speech?.setAttribute("hidden", "");
 }
 
 function startIdleCycle() {
@@ -165,6 +187,7 @@ function openPanel() {
   panelOpen = true;
   hideSpeech();
   COMPANION.panel?.classList.add("open");
+  COMPANION.panel?.removeAttribute("hidden");
   COMPANION.wrapper?.classList.add("panel-open");
   document.body.classList.add("companion-panel-open");
   setCompanionState("listening");
@@ -174,6 +197,7 @@ function openPanel() {
 function closePanel() {
   panelOpen = false;
   COMPANION.panel?.classList.remove("open");
+  COMPANION.panel?.setAttribute("hidden", "");
   COMPANION.wrapper?.classList.remove("panel-open");
   document.body.classList.remove("companion-panel-open");
   setCompanionState("idle");
@@ -302,12 +326,20 @@ function setDsKeyStatus(kind, text) {
    ══════════════════════════════════════════════════════ */
 
 function sendMessage() {
+  console.log("[companion] sendMessage called", { isGenerating, panelOpen, mode: inferenceMode, hasKey: !!dsApiKey });
   if (isGenerating) return;
-  const text = (COMPANION.input?.value || "").trim();
+  const inputEl = COMPANION.input;
+  if (!inputEl) {
+    console.warn("[companion] input element is null");
+    addMessage("system", "Chat input not found. Please refresh the page.");
+    return;
+  }
+  const text = (inputEl.value || "").trim();
+  console.log("[companion] text:", JSON.stringify(text));
   if (!text) return;
 
   addMessage("user", text);
-  if (COMPANION.input) COMPANION.input.value = "";
+  inputEl.value = "";
 
   if (inferenceMode === "bonsai") {
     sendBonsaiMessage(text);
