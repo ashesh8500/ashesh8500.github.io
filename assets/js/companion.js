@@ -94,7 +94,7 @@ function bootCompanion() {
   if (COMPANION.sendBtn) {
     COMPANION.sendBtn.addEventListener("click", function(e) {
       e.preventDefault();
-      sendMessage();
+      companionSend();
     });
   } else {
     console.warn("[companion] cpSendBtn not found in DOM");
@@ -104,7 +104,7 @@ function bootCompanion() {
     COMPANION.input.addEventListener("keydown", (e) => {
       if (e.key === "Enter" && !e.shiftKey) {
         e.preventDefault();
-        sendMessage();
+        companionSend();
       }
     });
   } else {
@@ -325,7 +325,7 @@ function setDsKeyStatus(kind, text) {
    MESSAGE SENDING
    ══════════════════════════════════════════════════════ */
 
-function sendMessage() {
+function companionSend() {
   if (isGenerating) return;
   const inputEl = COMPANION.input;
   if (!inputEl) {
