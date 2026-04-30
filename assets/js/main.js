@@ -108,8 +108,10 @@ function initMobileNav() {
 }
 
 // ─── FADE-IN OBSERVER ─────────────────────────────────────
+let fadeObserver = null;
+
 function initFadeInObserver() {
-  const observer = new IntersectionObserver((entries) => {
+  fadeObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         entry.target.classList.add('visible');
@@ -117,7 +119,12 @@ function initFadeInObserver() {
     });
   }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
   
-  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+  observeFadeIns();
+}
+
+function observeFadeIns() {
+  if (!fadeObserver) return;
+  document.querySelectorAll('.fade-in:not(.visible)').forEach(el => fadeObserver.observe(el));
 }
 
 // ─── GITHUB PROJECTS ──────────────────────────────────────
@@ -143,6 +150,9 @@ async function fetchGitHubProjects() {
     
     // Add highlights for specific non-GitHub projects
     addFeaturedProjects(grid);
+
+    // Re-observe newly created cards
+    observeFadeIns();
     
   } catch (err) {
     console.error('Failed to fetch repos:', err);
