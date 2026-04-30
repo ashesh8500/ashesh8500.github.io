@@ -9,7 +9,7 @@
  */
 
 const COMPANION = {};
-const DEEPSEEK_ENDPOINT = "https://api.deepseek.com/v1/chat/completions";
+const DEEPSEEK_ENDPOINT = "https://deepseek-proxy.ashesh8500.workers.dev";
 const DEEPSEEK_MODEL = "deepseek-v4-flash"; // DeepSeek V4 Flash (fast, 284B total / 13B active params)
 
 const PROFILE_CONTEXT = `
@@ -29,7 +29,6 @@ Factual profile context:
 
 /* ── Inference mode ── */
 let inferenceMode = sessionStorage.getItem("hermes_inference_mode") || "bonsai"; // "bonsai" | "deepseek"
-let dsApiKey = sessionStorage.getItem("ds_api_key") || null;
 let dsAbortController = null;
 let isGenerating = false;
 let currentBubble = null;
@@ -56,19 +55,12 @@ function bootCompanion() {
   COMPANION.statusLine = document.getElementById("cpStatusLine");
   COMPANION.modelBadge = document.getElementById("cpModelBadge");
   COMPANION.statusDot = document.getElementById("cpStatusDot");
-  COMPANION.dsKeySection = document.getElementById("dsKeySection");
-  COMPANION.dsKeyInput = document.getElementById("dsApiKeyInput");
-  COMPANION.dsKeyBtn = document.getElementById("dsKeyConnectBtn");
-  COMPANION.dsKeyStatus = document.getElementById("dsKeyStatus");
 
   if (!COMPANION.avatar) return;
 
   /* ── Init toggle to match saved mode ── */
   setToggleUI(inferenceMode);
   updateStatusDisplay();
-  if (COMPANION.dsKeySection) {
-    COMPANION.dsKeySection.style.display = inferenceMode === "deepseek" ? "flex" : "none";
-  }
 
   /* ── Events ── */
   COMPANION.avatar.addEventListener("click", () => {
@@ -109,10 +101,6 @@ function bootCompanion() {
     });
   } else {
     console.warn("[companion] cpInput not found in DOM");
-  }
-
-  if (COMPANION.dsKeyBtn) {
-    COMPANION.dsKeyBtn.addEventListener("click", connectDeepSeek);
   }
 
   /* ── Keyboard shortcuts ── */
@@ -213,19 +201,12 @@ function setInferenceMode(mode) {
   setToggleUI(mode);
   updateStatusDisplay();
 
-  /* Show/hide DeepSeek key section */
-  if (COMPANION.dsKeySection) {
-    COMPANION.dsKeySection.style.display = mode === "deepseek" ? "flex" : "none";
-  }
-
   /* Adjust input placeholder */
   if (COMPANION.input) {
     if (mode === "bonsai") {
       COMPANION.input.placeholder = "Ask about Ashesh — local Bonsai";
     } else {
-      COMPANION.input.placeholder = dsApiKey
-        ? "Ask about Ashesh — DeepSeek V4 Flash"
-        : "Paste DeepSeek key below to enable API chat";
+      COMPANION.input.placeholder = "Ask about Ashesh — DeepSeek V4 Flash";
     }
   }
 
@@ -256,68 +237,6 @@ function updateStatusDisplay() {
   if (COMPANION.modelBadge) {
     COMPANION.modelBadge.textContent = inferenceMode === "bonsai" ? "local" : "api";
     COMPANION.modelBadge.className = `cp-model-badge ${inferenceMode}`;
-  }
-}
-
-/* ══════════════════════════════════════════════════════
-   DEEPSEEK KEY MANAGEMENT
-   ══════════════════════════════════════════════════════ */
-
-async function connectDeepSeek() {
-  const input = COMPANION.dsKeyInput;
-  const key = (input?.value || "").trim();
-  if (!key) {
-    setDsKeyStatus("error", "Paste your DeepSeek API key");
-    return;
-  }
-
-  setDsKeyStatus("connecting", "Verifying…");
-  if (COMPANION.dsKeyBtn) COMPANION.dsKeyBtn.disabled = true;
-
-  try {
-    const resp = await fetch(DEEPSEEK_ENDPOINT, {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${key}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: DEEPSEEK_MODEL,
-        messages: [{ role: "user", content: "hi" }],
-        max_tokens: 1,
-        thinking: { type: "disabled" },
-      }),
-      signal: AbortSignal.timeout(8000),
-    });
-    if (!resp.ok) {
-      const err = await resp.text().catch(() => resp.statusText);
-      throw new Error(`DeepSeek ${resp.status}: ${err.slice(0, 200)}`);
-    }
-  } catch (err) {
-    setDsKeyStatus("error", `Failed: ${err.message}`);
-    if (COMPANION.dsKeyBtn) COMPANION.dsKeyBtn.disabled = false;
-    return;
-  }
-
-  dsApiKey = key;
-  sessionStorage.setItem("ds_api_key", key);
-  if (input) input.value = "";
-  setDsKeyStatus("connected", "Connected ✓");
-  if (COMPANION.dsKeyBtn) {
-    COMPANION.dsKeyBtn.textContent = "✓ connected";
-    COMPANION.dsKeyBtn.className = "ds-key-btn connected";
-  }
-  if (COMPANION.input) {
-    COMPANION.input.placeholder = "Ask about Ashesh — DeepSeek V4 Flash";
-    COMPANION.input.disabled = false;
-  }
-  showSpeech("🌐 DeepSeek V4 Flash is ready!", 3000);
-}
-
-function setDsKeyStatus(kind, text) {
-  if (COMPANION.dsKeyStatus) {
-    COMPANION.dsKeyStatus.textContent = text;
-    COMPANION.dsKeyStatus.className = `ds-key-status ${kind}`;
   }
 }
 
@@ -399,11 +318,6 @@ function sendBonsaiMessage(text) {
 }
 
 async function sendDeepSeekMessage(text) {
-  if (!dsApiKey) {
-    addMessage("system", "DeepSeek API key not connected. Paste your key below.");
-    return;
-  }
-
   isGenerating = true;
   accumulatedText = "";
   currentBubble = addMessage("assistant", "", true);
@@ -416,7 +330,6 @@ async function sendDeepSeekMessage(text) {
     const resp = await fetch(DEEPSEEK_ENDPOINT, {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${dsApiKey}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
@@ -550,24 +463,7 @@ function escapeHtml(text) {
    ══════════════════════════════════════════════════════ */
 
 function restoreSession() {
-  dsApiKey = sessionStorage.getItem("ds_api_key") || null;
   inferenceMode = sessionStorage.getItem("hermes_inference_mode") || "bonsai";
-  
-  if (dsApiKey) {
-    /* Auto-connect if key exists */
-    setDsKeyStatus("connected", "Connected ✓");
-    if (COMPANION.dsKeyBtn) {
-      COMPANION.dsKeyBtn.textContent = "✓ connected";
-      COMPANION.dsKeyBtn.className = "ds-key-btn connected";
-      COMPANION.dsKeyBtn.disabled = true;
-    }
-    if (COMPANION.input) {
-      COMPANION.input.disabled = false;
-      if (inferenceMode === "deepseek") {
-        COMPANION.input.placeholder = "Ask about Ashesh — DeepSeek V4 Flash";
-      }
-    }
-  }
 }
 
 /* ══════════════════════════════════════════════════════

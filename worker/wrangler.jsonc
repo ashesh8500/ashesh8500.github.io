@@ -1,0 +1,14 @@
+{
+  "$schema": "https://raw.githubusercontent.com/cloudflare/workers-sdk/main/packages/wrangler/config-schema.json",
+  "name": "deepseek-proxy",
+  "main": "deepseek-proxy.js",
+  "workers_dev": true,
+  "compatibility_date": "2025-04-29",
+  "compatibility_flags": ["nodejs_compat"],
+  "kv_namespaces": [
+    {
+      "binding": "RATE_LIMITER",
+      "id": "65fe4537e2bb45e68eafc03c0552c4dd"
+    }
+  ]
+}
