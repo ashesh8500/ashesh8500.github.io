@@ -167,7 +167,7 @@ async function fetchGitHubProjects() {
 
 function createProjectCard(repo) {
   const card = document.createElement('div');
-  card.className = 'project-card fade-in';
+  card.className = 'project-card fade-in visible';
   
   const lang = repo.language || 'Other';
   const langClass = lang.toLowerCase();
@@ -251,7 +251,7 @@ function addFeaturedProjects(grid) {
   
   featured.forEach(f => {
     const card = document.createElement('div');
-    card.className = 'project-card fade-in';
+    card.className = 'project-card fade-in visible';
     card.innerHTML = `
       <div class="project-header">
         <div class="project-icon ml">${f.icon}</div>
