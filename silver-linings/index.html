@@ -6,7 +6,7 @@
   <title>Silver Linings — Save the Date</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@200;300&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Inter:wght@200;300&family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;1,500&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after {
       margin: 0;
@@ -15,16 +15,15 @@
     }
 
     :root {
-      --bg-deep: #08080c;
-      --silver-1: #f2f2f7;
-      --silver-2: #d8d8e2;
-      --silver-3: #c0c0cc;
-      --silver-4: #e8e8f0;
-      --silver-5: #a8a8b4;
+      --bg-deep: #060609;
+      --silver-bright: #fafaff;
+      --silver-mid: #d4d4e0;
+      --silver-deep: #a0a0b0;
+      --silver-dark: #787888;
       --champagne: #d4c5a9;
       --champagne-light: #ede0cc;
-      --text-muted: #8a8a96;
-      --transition-slow: 800ms cubic-bezier(0.22, 0.61, 0.36, 1);
+      --text-muted: #7a7a88;
+      --transition-slow: 900ms cubic-bezier(0.22, 0.61, 0.36, 1);
       --transition-medium: 500ms cubic-bezier(0.22, 0.61, 0.36, 1);
     }
 
@@ -41,6 +40,21 @@
       -webkit-user-select: none;
     }
 
+    /* ── Background Vignette ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background: radial-gradient(
+        ellipse 80% 60% at 50% 45%,
+        rgba(20,20,28,0) 0%,
+        rgba(6,6,9,0.6) 60%,
+        rgba(2,2,4,0.92) 100%
+      );
+    }
+
     /* ── Fireworks Canvas ── */
     #fireworks {
       position: fixed;
@@ -55,16 +69,17 @@
       pointer-events: none;
       z-index: 1;
       border-radius: 50%;
-      background: radial-gradient(circle, rgba(232,232,240,0.8) 0%, rgba(200,200,212,0) 70%);
+      background: radial-gradient(circle, rgba(240,238,248,0.85) 0%, rgba(200,200,216,0) 70%);
       animation: floatUp var(--dur) var(--delay) linear forwards;
       opacity: 0;
+      filter: blur(0.5px);
     }
 
     @keyframes floatUp {
-      0%   { opacity: 0; transform: translateY(0) scale(0.5); }
-      10%  { opacity: 0.7; }
-      80%  { opacity: 0.3; }
-      100% { opacity: 0; transform: translateY(-100vh) scale(1.2); }
+      0%   { opacity: 0; transform: translateY(0) scale(0.4); }
+      8%   { opacity: 0.75; }
+      75%  { opacity: 0.25; }
+      100% { opacity: 0; transform: translateY(-100vh) scale(1.3); }
     }
 
     /* ── Main Content ── */
@@ -80,71 +95,156 @@
       text-align: center;
     }
 
-    /* ── Decorative Top Rule ── */
-    .top-rule {
-      width: 1px;
-      height: 60px;
-      background: linear-gradient(to bottom,
-        transparent 0%,
-        rgba(200,200,212,0.4) 30%,
-        rgba(240,240,245,0.7) 50%,
-        rgba(200,200,212,0.4) 70%,
-        transparent 100%
-      );
-      margin-bottom: 2.5rem;
-      animation: rulePulse 4s ease-in-out infinite;
+    /* ── Ornamental Top Rules (thin-thick-thin) ── */
+    .top-rules {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      margin-bottom: 2.2rem;
+      opacity: 0;
+      animation: fadeRise 1.5s var(--transition-slow) 0.1s forwards;
     }
 
-    @keyframes rulePulse {
-      0%, 100% { opacity: 0.5; }
-      50%      { opacity: 1; }
+    .rule-thin {
+      width: 90px;
+      height: 1px;
+      background: linear-gradient(to right,
+        transparent 0%,
+        rgba(180,180,196,0.5) 30%,
+        rgba(230,230,240,0.7) 50%,
+        rgba(180,180,196,0.5) 70%,
+        transparent 100%
+      );
+    }
+
+    .rule-thick {
+      width: 160px;
+      height: 2px;
+      background: linear-gradient(to right,
+        transparent 0%,
+        rgba(200,200,216,0.3) 20%,
+        rgba(245,245,250,0.8) 50%,
+        rgba(200,200,216,0.3) 80%,
+        transparent 100%
+      );
     }
 
     /* ── Title: "Silver Linings" ── */
     .title {
       font-family: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
-      font-weight: 500;
-      font-size: clamp(3rem, 8vw, 7.5rem);
-      line-height: 1.08;
-      letter-spacing: -0.01em;
-      margin-bottom: 0.15em;
+      font-weight: 700;
+      font-size: clamp(3.2rem, 8.5vw, 8rem);
+      line-height: 1.05;
+      letter-spacing: 0.005em;
+      margin-bottom: 0.08em;
 
-      /* Metallic silver gradient */
+      /* Deep metallic silver gradient — more stops, higher contrast */
       background: linear-gradient(
-        175deg,
-        #f8f8fc 0%,
-        #e0e0ea 12%,
-        #f4f4f8 25%,
-        #c8c8d4 38%,
-        #ececf4 50%,
-        #b8b8c4 62%,
-        #e4e4ee 75%,
-        #d0d0da 88%,
-        #b0b0bc 100%
+        170deg,
+        #ffffff 0%,
+        #ececf4 6%,
+        #ffffff 14%,
+        #d0d0dc 22%,
+        #f4f4fa 32%,
+        #c0c0ce 42%,
+        #e8e8f2 52%,
+        #b8b8c8 60%,
+        #f0f0f6 70%,
+        #c8c8d6 80%,
+        #a8a8b8 90%,
+        #9494a4 100%
       );
       -webkit-background-clip: text;
       background-clip: text;
       -webkit-text-fill-color: transparent;
 
-      /* Subtle shimmer animation — light catching polished silver */
-      animation: silverShimmer 5s ease-in-out infinite;
-      background-size: 100% 200%;
+      /* Metallic depth via layered drop-shadows */
+      filter:
+        drop-shadow(0 0 30px rgba(210,210,230,0.12))
+        drop-shadow(0 2px 6px rgba(0,0,0,0.35));
+
+      /* Shimmer — light sweeping across polished silver */
+      animation: silverShimmer 6s ease-in-out infinite;
+      background-size: 100% 250%;
     }
 
     @keyframes silverShimmer {
       0%, 100% { background-position: 0% 0%; }
-      50%      { background-position: 0% 100%; }
+      40%      { background-position: 0% 70%; }
+      60%      { background-position: 0% 100%; }
     }
 
-    /* ── Subtitle / Year ── */
+    /* ── Subtitle ── */
     .subtitle {
       font-family: 'Inter', system-ui, sans-serif;
       font-weight: 200;
       font-size: clamp(0.7rem, 1.4vw, 0.95rem);
-      letter-spacing: 0.32em;
+      letter-spacing: 0.34em;
       text-transform: uppercase;
       color: var(--champagne);
-      margin-bottom: 3rem;
+      margin-bottom: 2rem;
+      opacity: 0;
+      animation: fadeRise 1.5s var(--transition-slow) 0.35s forwards;
+    }
+
+    /* ── Hosts: Trupti & Sailav Kaji ── */
+    .hosts-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 2.4rem;
+      opacity: 0;
+      animation: fadeRise 1.5s var(--transition-slow) 0.55s forwards;
+    }
+
+    .hosts-ornament {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .hosts-ornament-line {
+      width: 40px;
+      height: 1px;
+      background: linear-gradient(to right,
+        transparent 0%,
+        rgba(180,180,196,0.6) 50%,
+        transparent 100%
+      );
+    }
+
+    .hosts-ornament-diamond {
+      color: var(--silver-mid);
+      font-size: 0.45rem;
+      opacity: 0.5;
+    }
+
+    .hosts-names {
+      font-family: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
+      font-weight: 500;
+      font-style: italic;
+      font-size: clamp(1.05rem, 2vw, 1.45rem);
+      letter-spacing: 0.06em;
+      color: var(--silver-mid);
+    }
+
+    .hosts-ampersand {
+      font-style: normal;
+      font-family: 'Playfair Display', Georgia, serif;
+      color: var(--champagne);
+      margin: 0 0.15em;
+    }
+
+    .hosts-invite {
+      font-family: 'Inter', system-ui, sans-serif;
+      font-weight: 200;
+      font-size: clamp(0.58rem, 1vw, 0.7rem);
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
     }
 
     /* ── Quote ── */
@@ -153,15 +253,12 @@
       font-weight: 400;
       font-style: italic;
       font-size: clamp(1.1rem, 2.2vw, 1.7rem);
-      line-height: 1.55;
-      color: var(--silver-2);
+      line-height: 1.6;
+      color: var(--silver-mid);
       max-width: 28em;
-      margin-bottom: 2.5rem;
-      opacity: 0.85;
-    }
-
-    .quote em {
-      font-style: normal;
+      margin-bottom: 2.8rem;
+      opacity: 0;
+      animation: fadeRise 1.5s var(--transition-slow) 0.75s forwards;
     }
 
     .quote .highlight {
@@ -173,6 +270,8 @@
     /* ── Date ── */
     .date-block {
       margin-bottom: 2rem;
+      opacity: 0;
+      animation: fadeRise 1.5s var(--transition-slow) 0.9s forwards;
     }
 
     .date-label {
@@ -182,39 +281,41 @@
       letter-spacing: 0.28em;
       text-transform: uppercase;
       color: var(--text-muted);
-      margin-bottom: 0.6rem;
+      margin-bottom: 0.7rem;
     }
 
     .date-main {
       font-family: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
-      font-weight: 500;
+      font-weight: 600;
       font-size: clamp(2.2rem, 5vw, 4rem);
       line-height: 1.12;
-      letter-spacing: 0.02em;
-      color: var(--silver-2);
+      letter-spacing: 0.03em;
+      color: var(--silver-mid);
     }
 
     .date-divider {
       display: inline-block;
       width: 2rem;
       height: 1px;
-      background: rgba(180,180,192,0.5);
+      background: rgba(190,190,200,0.55);
       vertical-align: middle;
-      margin: 0 0.15em;
+      margin: 0 0.18em;
     }
 
     /* ── Bottom Rule ── */
     .bottom-rule {
-      width: 80px;
+      width: 100px;
       height: 1px;
       background: linear-gradient(to right,
         transparent 0%,
-        rgba(200,200,212,0.5) 40%,
-        rgba(240,240,245,0.4) 50%,
-        rgba(200,200,212,0.5) 60%,
+        rgba(200,200,216,0.4) 35%,
+        rgba(245,245,250,0.55) 50%,
+        rgba(200,200,216,0.4) 65%,
         transparent 100%
       );
       margin-bottom: 1.8rem;
+      opacity: 0;
+      animation: fadeRise 1.5s var(--transition-slow) 1.05s forwards;
     }
 
     /* ── Footer ── */
@@ -222,31 +323,19 @@
       font-family: 'Inter', system-ui, sans-serif;
       font-weight: 200;
       font-size: clamp(0.65rem, 1.2vw, 0.8rem);
-      letter-spacing: 0.2em;
+      letter-spacing: 0.22em;
       text-transform: uppercase;
       color: var(--text-muted);
-      opacity: 0.7;
+      opacity: 0;
+      animation: fadeRise 1.5s var(--transition-slow) 1.15s forwards;
     }
 
     /* ── Entrance Animation ── */
-    .fade-in {
-      opacity: 0;
-      animation: fadeRise 1.4s var(--transition-slow) forwards;
-    }
-
-    .fade-in-1 { animation-delay: 0.1s; }
-    .fade-in-2 { animation-delay: 0.3s; }
-    .fade-in-3 { animation-delay: 0.55s; }
-    .fade-in-4 { animation-delay: 0.8s; }
-    .fade-in-5 { animation-delay: 1.0s; }
-    .fade-in-6 { animation-delay: 1.2s; }
-    .fade-in-7 { animation-delay: 1.4s; }
-
     @keyframes fadeRise {
       from {
         opacity: 0;
-        transform: translateY(12px);
-        filter: blur(4px);
+        transform: translateY(14px);
+        filter: blur(5px);
       }
       to {
         opacity: 1;
@@ -260,22 +349,27 @@
       .container {
         padding: 1.5rem;
       }
-      .top-rule {
-        height: 40px;
-        margin-bottom: 1.8rem;
+      .top-rules {
+        gap: 4px;
+        margin-bottom: 1.6rem;
       }
-      .date-divider {
-        width: 1.2rem;
-      }
+      .rule-thin { width: 60px; }
+      .rule-thick { width: 110px; }
+      .hosts-ornament-line { width: 28px; }
+      .hosts-section { margin-bottom: 1.8rem; }
+      .quote { margin-bottom: 2rem; }
+      .date-divider { width: 1.2rem; }
     }
 
     @media (prefers-reduced-motion: reduce) {
-      .title, .top-rule, .fade-in {
+      .title, .top-rules, .subtitle, .hosts-section, .quote, .date-block, .bottom-rule, .footer-text {
         animation: none;
+        opacity: 1;
       }
       .title {
-        -webkit-text-fill-color: var(--silver-2);
+        -webkit-text-fill-color: var(--silver-mid);
         background: none;
+        filter: none;
       }
     }
   </style>
@@ -285,44 +379,66 @@
   <canvas id="fireworks"></canvas>
 
   <div class="container">
-    <div class="top-rule fade-in fade-in-1"></div>
+    <div class="top-rules">
+      <div class="rule-thin"></div>
+      <div class="rule-thick"></div>
+      <div class="rule-thin"></div>
+    </div>
 
-    <h1 class="title fade-in fade-in-2">Silver Linings</h1>
+    <h1 class="title">Silver Linings</h1>
 
-    <div class="subtitle fade-in fade-in-3">An Anniversary Celebration</div>
+    <div class="subtitle">An Anniversary Celebration</div>
 
-    <p class="quote fade-in fade-in-4">
+    <div class="hosts-section">
+      <div class="hosts-ornament">
+        <span class="hosts-ornament-line"></span>
+        <span class="hosts-ornament-diamond">◆</span>
+        <span class="hosts-ornament-line"></span>
+      </div>
+      <div class="hosts-names">
+        Trupti <span class="hosts-ampersand">&amp;</span> Sailav Kaji
+      </div>
+      <div class="hosts-ornament">
+        <span class="hosts-ornament-line"></span>
+        <span class="hosts-ornament-diamond">◆</span>
+        <span class="hosts-ornament-line"></span>
+      </div>
+      <div class="hosts-invite">request the pleasure of your company</div>
+    </div>
+
+    <p class="quote">
       Three hundred and sixty-four days are yours to command.<br>
       <span class="highlight">This one, however,</span> is reserved for us.
     </p>
 
-    <div class="date-block fade-in fade-in-5">
+    <div class="date-block">
       <div class="date-label">Save the Date</div>
       <div class="date-main">
         May<span class="date-divider"></span>31<span class="date-divider"></span>2026
       </div>
     </div>
 
-    <div class="bottom-rule fade-in fade-in-6"></div>
+    <div class="bottom-rule"></div>
 
-    <div class="footer-text fade-in fade-in-7">
+    <div class="footer-text">
       Formal Invitation to Follow
     </div>
   </div>
 
   <script>
     (function() {
-      // ──────────────────────────────────────────────
+      // ═══════════════════════════════════════════
       //  AMBIENT FIREWORKS  —  Silver & Champagne
-      // ──────────────────────────────────────────────
+      // ═══════════════════════════════════════════
       const canvas = document.getElementById('fireworks');
       const ctx = canvas.getContext('2d');
 
       let W, H;
       const bursts = [];
-      const sparkles = [];   // tiny floating ambient sparkles
-      const MAX_BURSTS = 4;
-      const PARTICLE_LIFE = 3.2;  // seconds
+      const sparkles = [];
+      const trails = [];      // lingering light trails
+      const MAX_BURSTS = 5;
+      const PARTICLE_LIFE = 3.5;
 
       function resize() {
         W = canvas.width = window.innerWidth;
@@ -331,69 +447,79 @@
       window.addEventListener('resize', resize);
       resize();
 
-      // ── Color Palette ──
+      // ── Palettes ──
       const SILVERS = [
-        { r: 240, g: 240, b: 248 },   // bright silver-white
-        { r: 220, g: 220, b: 232 },   // soft silver
-        { r: 200, g: 200, b: 214 },   // mid silver
-        { r: 180, g: 180, b: 196 },   // deeper silver
+        { r: 245, g: 244, b: 252 },
+        { r: 225, g: 224, b: 238 },
+        { r: 205, g: 204, b: 220 },
+        { r: 185, g: 184, b: 200 },
       ];
       const CHAMPAGNES = [
-        { r: 237, g: 224, b: 204 },   // champagne
-        { r: 220, g: 200, b: 170 },   // warm champagne
-        { r: 212, g: 197, b: 169 },   // muted champagne
+        { r: 240, g: 228, b: 208 },
+        { r: 224, g: 206, b: 176 },
+        { r: 216, g: 200, b: 172 },
       ];
       const GOLDS = [
-        { r: 230, g: 200, b: 140 },   // soft gold
-        { r: 210, g: 180, b: 120 },   // deeper gold
+        { r: 235, g: 208, b: 148 },
+        { r: 218, g: 188, b: 128 },
       ];
 
-      function randomFrom(arr) {
+      function pick(arr) {
         return arr[Math.floor(Math.random() * arr.length)];
       }
 
-      function lerpColor(c1, c2, t) {
-        return {
-          r: c1.r + (c2.r - c1.r) * t,
-          g: c1.g + (c2.g - c1.g) * t,
-          b: c1.b + (c2.b - c1.b) * t,
-        };
+      // ── Central sparkle burst (small diamond-like flash at burst origin) ──
+      function spawnFlash(cx, cy, color) {
+        for (let i = 0; i < 8; i++) {
+          const angle = (Math.PI * 2 * i) / 8;
+          const len = 8 + Math.random() * 25;
+          trails.push({
+            x1: cx, y1: cy,
+            x2: cx + Math.cos(angle) * len,
+            y2: cy + Math.sin(angle) * len,
+            life: 0.6 + Math.random() * 0.8,
+            maxLife: 1.4,
+            color,
+          });
+        }
+        if (trails.length > 60) trails.splice(0, trails.length - 60);
       }
 
       // ── Burst ──
       function spawnBurst() {
-        const cx = W * 0.2 + Math.random() * W * 0.6;  // mostly in center 60%
-        const cy = H * 0.15 + Math.random() * H * 0.5;  // upper half
-        const count = 60 + Math.floor(Math.random() * 80);
-        const palette = Math.random() < 0.6 ? SILVERS
+        const cx = W * 0.18 + Math.random() * W * 0.64;
+        const cy = H * 0.12 + Math.random() * H * 0.48;
+        const count = 70 + Math.floor(Math.random() * 100);
+        const palette = Math.random() < 0.55 ? SILVERS
                        : Math.random() < 0.7 ? CHAMPAGNES
                        : GOLDS;
 
+        const baseColor = pick(palette);
+        spawnFlash(cx, cy, baseColor);
+
         const particles = [];
         for (let i = 0; i < count; i++) {
-          const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.3;
-          const speed = 40 + Math.random() * 180;
-          const color = randomFrom(palette);
-          const variant = {
-            r: color.r + (Math.random() - 0.5) * 30,
-            g: color.g + (Math.random() - 0.5) * 30,
-            b: color.b + (Math.random() - 0.5) * 30,
-          };
+          const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.35;
+          const speed = 35 + Math.random() * 200;
+          const color = pick(palette);
           particles.push({
             x: cx,
             y: cy,
             vx: Math.cos(angle) * speed,
             vy: Math.sin(angle) * speed,
-            life: PARTICLE_LIFE * (0.5 + Math.random() * 0.5),
+            life: PARTICLE_LIFE * (0.4 + Math.random() * 0.6),
             maxLife: PARTICLE_LIFE,
-            color: variant,
-            size: 0.8 + Math.random() * 2.2,
-            gravity: 15 + Math.random() * 30,
-            drag: 0.96 + Math.random() * 0.03,
+            color: {
+              r: color.r + (Math.random() - 0.5) * 35,
+              g: color.g + (Math.random() - 0.5) * 35,
+              b: color.b + (Math.random() - 0.5) * 35,
+            },
+            size: 0.7 + Math.random() * 2.8,
+            gravity: 12 + Math.random() * 35,
+            drag: 0.955 + Math.random() * 0.035,
           });
         }
         bursts.push({ particles, age: 0 });
-        // Cap bursts
         while (bursts.length > MAX_BURSTS) bursts.shift();
       }
 
@@ -402,18 +528,17 @@
         sparkles.push({
           x: Math.random() * W,
           y: Math.random() * H,
-          life: 2 + Math.random() * 4,
-          maxLife: 6,
-          size: 0.5 + Math.random() * 1.5,
-          twinkleSpeed: 0.03 + Math.random() * 0.07,
+          life: 1.5 + Math.random() * 5,
+          maxLife: 6.5,
+          size: 0.4 + Math.random() * 1.8,
+          twinkleSpeed: 0.025 + Math.random() * 0.08,
           twinkleOffset: Math.random() * Math.PI * 2,
         });
-        if (sparkles.length > 40) sparkles.shift();
+        if (sparkles.length > 55) sparkles.shift();
       }
 
       // ── Update ──
       function update(dt) {
-        // Update burst particles
         for (let b = bursts.length - 1; b >= 0; b--) {
           const burst = bursts[b];
           burst.age += dt;
@@ -425,16 +550,18 @@
             pt.vy *= pt.drag;
             pt.x += pt.vx * dt;
             pt.y += pt.vy * dt;
-            if (pt.life <= 0) {
-              burst.particles.splice(p, 1);
-            }
+            if (pt.life <= 0) burst.particles.splice(p, 1);
           }
-          if (burst.particles.length === 0 || burst.age > PARTICLE_LIFE + 1) {
+          if (burst.particles.length === 0 || burst.age > PARTICLE_LIFE + 1.5) {
             bursts.splice(b, 1);
           }
         }
 
-        // Update sparkles
+        for (let t = trails.length - 1; t >= 0; t--) {
+          trails[t].life -= dt;
+          if (trails[t].life <= 0) trails.splice(t, 1);
+        }
+
         for (let s = sparkles.length - 1; s >= 0; s--) {
           sparkles[s].life -= dt;
           if (sparkles[s].life <= 0) sparkles.splice(s, 1);
@@ -445,21 +572,32 @@
       function draw() {
         ctx.clearRect(0, 0, W, H);
 
-        // Draw bursts
+        // Trails (diamond flash rays)
+        for (const t of trails) {
+          const alpha = Math.max(0, t.life / t.maxLife) * 0.5;
+          ctx.strokeStyle = `rgba(${t.color.r},${t.color.g},${t.color.b},${alpha})`;
+          ctx.lineWidth = 0.6;
+          ctx.beginPath();
+          ctx.moveTo(t.x1, t.y1);
+          ctx.lineTo(t.x2, t.y2);
+          ctx.stroke();
+        }
+
+        // Burst particles
         for (const burst of bursts) {
           for (const pt of burst.particles) {
             const alpha = Math.max(0, pt.life / pt.maxLife);
-            const size = pt.size * (0.4 + alpha * 0.6);
-            const fade = alpha * 0.8;
+            const size = pt.size * (0.35 + alpha * 0.65);
+            const fade = alpha * 0.85;
 
             // Glow
-            const glow = ctx.createRadialGradient(pt.x, pt.y, 0, pt.x, pt.y, size * 3);
-            glow.addColorStop(0, `rgba(${pt.color.r},${pt.color.g},${pt.color.b},${fade * 0.5})`);
-            glow.addColorStop(0.5, `rgba(${pt.color.r},${pt.color.g},${pt.color.b},${fade * 0.15})`);
+            const glow = ctx.createRadialGradient(pt.x, pt.y, 0, pt.x, pt.y, size * 3.5);
+            glow.addColorStop(0, `rgba(${pt.color.r},${pt.color.g},${pt.color.b},${fade * 0.45})`);
+            glow.addColorStop(0.4, `rgba(${pt.color.r},${pt.color.g},${pt.color.b},${fade * 0.12})`);
             glow.addColorStop(1, 'rgba(0,0,0,0)');
             ctx.fillStyle = glow;
             ctx.beginPath();
-            ctx.arc(pt.x, pt.y, size * 3, 0, Math.PI * 2);
+            ctx.arc(pt.x, pt.y, size * 3.5, 0, Math.PI * 2);
             ctx.fill();
 
             // Core
@@ -470,11 +608,11 @@
           }
         }
 
-        // Draw ambient sparkles
+        // Ambient sparkles
         for (const s of sparkles) {
-          const twinkle = 0.3 + 0.7 * Math.abs(Math.sin(s.twinkleOffset + performance.now() * 0.001 * s.twinkleSpeed));
-          const alpha = Math.max(0, s.life / s.maxLife) * twinkle * 0.5;
-          ctx.fillStyle = `rgba(235,235,242,${alpha})`;
+          const twinkle = 0.25 + 0.75 * Math.abs(Math.sin(s.twinkleOffset + performance.now() * 0.001 * s.twinkleSpeed));
+          const alpha = Math.max(0, s.life / s.maxLife) * twinkle * 0.45;
+          ctx.fillStyle = `rgba(238,236,246,${alpha})`;
           ctx.beginPath();
           ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
           ctx.fill();
@@ -483,34 +621,34 @@
 
       // ── Spawn timers ──
       let burstTimer = 0;
-      const BURST_INTERVAL_MIN = 2.5;  // seconds
-      const BURST_INTERVAL_MAX = 6.0;
-
       let sparkleTimer = 0;
-      const SPARKLE_INTERVAL = 0.3;
 
       function scheduleNextBurst() {
-        burstTimer = BURST_INTERVAL_MIN + Math.random() * (BURST_INTERVAL_MAX - BURST_INTERVAL_MIN);
+        burstTimer = 2.2 + Math.random() * 5;
       }
       scheduleNextBurst();
 
-      // Initial burst after a short delay
+      // Initial burst after short delay, then a second one soon after
       setTimeout(() => {
         spawnBurst();
         scheduleNextBurst();
-      }, 400);
+      }, 350);
+
+      setTimeout(() => {
+        if (bursts.length === 0) spawnBurst();
+      }, 900);
 
       // ── Ambient floating dust particles (DOM) ──
       function spawnDustParticle() {
         const el = document.createElement('div');
         el.className = 'particle';
-        const size = 1 + Math.random() * 3;
-        const dur = 6 + Math.random() * 10;
-        const delay = Math.random() * 3;
+        const size = 1 + Math.random() * 3.5;
+        const dur = 7 + Math.random() * 12;
+        const delay = Math.random() * 4;
         el.style.cssText = `
           width: ${size}px;
           height: ${size}px;
-          left: ${10 + Math.random() * 80}%;
+          left: ${5 + Math.random() * 90}%;
           bottom: -10px;
           --dur: ${dur}s;
           --delay: ${delay}s;
@@ -525,22 +663,19 @@
         const dt = Math.min((time - lastTime) / 1000, 0.1);
         lastTime = time;
 
-        // Burst timer
         burstTimer -= dt;
         if (burstTimer <= 0) {
           spawnBurst();
           scheduleNextBurst();
         }
 
-        // Sparkle timer
         sparkleTimer -= dt;
         if (sparkleTimer <= 0) {
           spawnSparkle();
-          sparkleTimer = SPARKLE_INTERVAL;
+          sparkleTimer = 0.25;
         }
 
-        // Dust particles
-        if (Math.random() < 0.15) spawnDustParticle();
+        if (Math.random() < 0.18) spawnDustParticle();
 
         update(dt);
         draw();
