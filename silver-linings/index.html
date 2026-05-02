@@ -73,7 +73,9 @@
       z-index: 1;
       border-radius: 50%;
       background: radial-gradient(circle, rgba(240,238,248,0.85) 0%, rgba(200,200,216,0) 70%);
-      animation: floatUp var(--dur) var(--delay) linear forwards;
+      animation-name: floatUp;
+      animation-timing-function: linear;
+      animation-fill-mode: forwards;
       opacity: 0;
       filter: blur(0.5px);
     }
@@ -105,8 +107,11 @@
       align-items: center;
       gap: 5px;
       margin-bottom: 2.2rem;
-      opacity: 0;
-      animation: fadeRise 1.5s var(--transition-slow) 0.1s forwards;
+      animation-name: fadeRise;
+      animation-duration: 1.5s;
+      animation-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
+      animation-delay: 0.1s;
+      animation-fill-mode: forwards;
     }
 
     .rule-thin {
@@ -187,8 +192,11 @@
       text-transform: uppercase;
       color: var(--champagne);
       margin-bottom: 2rem;
-      opacity: 0;
-      animation: fadeRise 1.5s var(--transition-slow) 0.35s forwards;
+      animation-name: fadeRise;
+      animation-duration: 1.5s;
+      animation-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
+      animation-delay: 0.35s;
+      animation-fill-mode: forwards;
     }
 
     /* ── Hosts: Trupti & Sailav Kaji ── */
@@ -198,8 +206,11 @@
       align-items: center;
       gap: 0.6rem;
       margin-bottom: 2.4rem;
-      opacity: 0;
-      animation: fadeRise 1.5s var(--transition-slow) 0.55s forwards;
+      animation-name: fadeRise;
+      animation-duration: 1.5s;
+      animation-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
+      animation-delay: 0.55s;
+      animation-fill-mode: forwards;
     }
 
     .hosts-ornament {
@@ -260,8 +271,11 @@
       color: var(--silver-mid);
       max-width: 28em;
       margin-bottom: 2.8rem;
-      opacity: 0;
-      animation: fadeRise 1.5s var(--transition-slow) 0.75s forwards;
+      animation-name: fadeRise;
+      animation-duration: 1.5s;
+      animation-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
+      animation-delay: 0.75s;
+      animation-fill-mode: forwards;
     }
 
     .quote .highlight {
@@ -273,8 +287,11 @@
     /* ── Date ── */
     .date-block {
       margin-bottom: 2rem;
-      opacity: 0;
-      animation: fadeRise 1.5s var(--transition-slow) 0.9s forwards;
+      animation-name: fadeRise;
+      animation-duration: 1.5s;
+      animation-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
+      animation-delay: 0.9s;
+      animation-fill-mode: forwards;
     }
 
     .date-label {
@@ -317,8 +334,11 @@
         transparent 100%
       );
       margin-bottom: 1.8rem;
-      opacity: 0;
-      animation: fadeRise 1.5s var(--transition-slow) 1.05s forwards;
+      animation-name: fadeRise;
+      animation-duration: 1.5s;
+      animation-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
+      animation-delay: 1.05s;
+      animation-fill-mode: forwards;
     }
 
     /* ── Footer ── */
@@ -329,8 +349,11 @@
       letter-spacing: 0.22em;
       text-transform: uppercase;
       color: var(--text-muted);
-      opacity: 0;
-      animation: fadeRise 1.5s var(--transition-slow) 1.15s forwards;
+      animation-name: fadeRise;
+      animation-duration: 1.5s;
+      animation-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
+      animation-delay: 1.15s;
+      animation-fill-mode: forwards;
     }
 
     /* ── Entrance Animation ── */
@@ -653,9 +676,9 @@
           height: ${size}px;
           left: ${5 + Math.random() * 90}%;
           bottom: -10px;
-          --dur: ${dur}s;
-          --delay: ${delay}s;
         `;
+        el.style.animationDuration = dur + 's';
+        el.style.animationDelay = delay + 's';
         document.body.appendChild(el);
         setTimeout(() => el.remove(), (dur + delay) * 1000 + 500);
       }
