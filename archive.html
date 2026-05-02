@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Archive — Ashesh Kaji</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-deep: #08090d;
+      --bg-primary: #0d1117;
+      --bg-card: #131820;
+      --bg-card-hover: #1a2230;
+      --accent-teal: #00d4aa;
+      --accent-purple: #8b5cf6;
+      --accent-amber: #f0b429;
+      --accent-rose: #f472b6;
+      --accent-sky: #38bdf8;
+      --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+      --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+      --text-primary: #e6edf3;
+      --text-secondary: #b0b8c4;
+      --text-muted: #8b949e;
+      --border-subtle: rgba(255,255,255,0.06);
+      --border-card: rgba(255,255,255,0.08);
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --transition-fast: 150ms ease;
+      --transition-smooth: 300ms ease;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg-deep);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    .archive-header {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 4rem 2rem 2rem;
+    }
+
+    .back-link {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-bottom: 1.5rem;
+      transition: color var(--transition-fast);
+    }
+    .back-link:hover { color: var(--accent-teal); }
+
+    .archive-title {
+      font-family: var(--font-mono);
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 0.3rem;
+    }
+
+    .archive-subtitle {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+    }
+
+    .archive-subtitle span {
+      color: var(--accent-teal);
+    }
+
+    /* ── Stats bar ── */
+    .stats-bar {
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+    }
+
+    .stat-pill {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      color: var(--text-secondary);
+    }
+    .stat-pill strong { color: var(--text-primary); }
+
+    /* ── Filters ── */
+    .filter-bar {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 2.5rem;
+    }
+
+    .filter-btn {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      padding: 0.5rem 1.2rem;
+      border-radius: 24px;
+      border: 1px solid var(--border-card);
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      white-space: nowrap;
+    }
+    .filter-btn:hover {
+      border-color: var(--accent-teal);
+      color: var(--text-primary);
+    }
+    .filter-btn.active {
+      background: rgba(0,212,170,0.12);
+      border-color: var(--accent-teal);
+      color: var(--accent-teal);
+    }
+    .filter-btn .count {
+      font-size: 0.65rem;
+      opacity: 0.6;
+      margin-left: 0.3rem;
+    }
+
+    /* ── Search ── */
+    .search-wrap {
+      position: relative;
+      max-width: 400px;
+      margin-bottom: 2.5rem;
+    }
+    .search-input {
+      width: 100%;
+      padding: 0.6rem 1rem 0.6rem 2.5rem;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-card);
+      background: var(--bg-card);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color var(--transition-fast);
+    }
+    .search-input:focus {
+      border-color: var(--accent-teal);
+    }
+    .search-input::placeholder { color: var(--text-muted); }
+    .search-icon {
+      position: absolute;
+      left: 0.8rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      pointer-events: none;
+    }
+
+    /* ── Results info ── */
+    .results-info {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+    }
+
+    /* ── Card grid ── */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem 4rem;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-md);
+      padding: 1.4rem;
+      transition: all var(--transition-smooth);
+      cursor: default;
+      position: relative;
+      overflow: hidden;
+    }
+    .card:hover {
+      background: var(--bg-card-hover);
+      border-color: rgba(255,255,255,0.12);
+      transform: translateY(-2px);
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 3px;
+      height: 100%;
+      transition: width var(--transition-smooth);
+    }
+    .card.cat-coursework::before { background: var(--accent-sky); }
+    .card.cat-research::before { background: var(--accent-teal); }
+    .card.cat-project::before { background: var(--accent-purple); }
+    .card.cat-ibdp::before { background: var(--accent-amber); }
+
+    .card-badge {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-sm);
+      margin-bottom: 0.7rem;
+      font-weight: 500;
+    }
+    .badge-coursework { background: rgba(56,189,248,0.12); color: var(--accent-sky); }
+    .badge-research { background: rgba(0,212,170,0.12); color: var(--accent-teal); }
+    .badge-project { background: rgba(139,92,246,0.12); color: var(--accent-purple); }
+    .badge-ibdp { background: rgba(240,180,41,0.12); color: var(--accent-amber); }
+
+    .card-title {
+      font-family: var(--font-sans);
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.4rem;
+      line-height: 1.35;
+    }
+
+    .card-meta {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      margin-bottom: 0.6rem;
+    }
+
+    .card-desc {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      margin-bottom: 0.8rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .card-skills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+    }
+
+    .skill-tag {
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      padding: 0.15rem 0.55rem;
+      border-radius: var(--radius-sm);
+      background: rgba(255,255,255,0.04);
+      color: var(--text-muted);
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .card-empty {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 4rem 2rem;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+    }
+
+    /* ── Footer ── */
+    .archive-footer {
+      text-align: center;
+      padding: 3rem 2rem;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border-subtle);
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .archive-footer a {
+      color: var(--accent-teal);
+      text-decoration: none;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 640px) {
+      .archive-header { padding: 2rem 1.2rem 1.5rem; }
+      .card-grid { padding: 0 1.2rem 3rem; grid-template-columns: 1fr; }
+      .filter-bar { gap: 0.35rem; }
+      .filter-btn { font-size: 0.7rem; padding: 0.4rem 0.9rem; }
+      .stats-bar { gap: 0.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="archive-header">
+    <a href="/" class="back-link">← Back to asheshkaji.com</a>
+    <h1 class="archive-title">Archive</h1>
+    <p class="archive-subtitle">A complete index of <span id="total-count">—</span> works across coursework, research, projects, and IBDP.</p>
+
+    <div class="stats-bar" id="stats-bar"></div>
+
+    <div class="filter-bar" id="filter-bar"></div>
+
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
+      <input type="text" class="search-input" id="search" placeholder="Search by title, skill, or description...">
+    </div>
+
+    <div class="results-info" id="results-info"></div>
+  </div>
+
+  <div class="card-grid" id="card-grid"></div>
+
+  <div class="archive-footer">
+    Generated from <a href="https://github.com/ashesh8500/ashesh8500.github.io">ashesh8500/ashesh8500.github.io</a> · Index: 83 entries · Updated May 2026
+  </div>
+
+  <script src="assets/js/archive-data.js"></script>
+  <script>
+    (function() {
+      const data = typeof ARCHIVE_DATA !== 'undefined' ? ARCHIVE_DATA : [];
+      const grid = document.getElementById('card-grid');
+      const filterBar = document.getElementById('filter-bar');
+      const statsBar = document.getElementById('stats-bar');
+      const resultsInfo = document.getElementById('results-info');
+      const searchInput = document.getElementById('search');
+      const totalCount = document.getElementById('total-count');
+
+      let activeFilter = 'all';
+      let searchQuery = '';
+
+      // Category config
+      const categories = {
+        all: { label: 'All', badge: '', emoji: '' },
+        coursework: { label: 'Coursework', badge: 'badge-coursework', color: '#38bdf8' },
+        research: { label: 'Research', badge: 'badge-research', color: '#00d4aa' },
+        project: { label: 'Projects', badge: 'badge-project', color: '#8b5cf6' },
+        ibdp: { label: 'IBDP', badge: 'badge-ibdp', color: '#f0b429' },
+      };
+
+      function getCatBadge(cat) {
+        const map = { coursework: 'badge-coursework', research: 'badge-research', project: 'badge-project', ibdp: 'badge-ibdp' };
+        return map[cat] || '';
+      }
+
+      // Count by category
+      const counts = {};
+      data.forEach(e => { counts[e.category] = (counts[e.category] || 0) + 1; });
+      counts.all = data.length;
+      totalCount.textContent = data.length;
+
+      // Stats bar
+      statsBar.innerHTML = Object.entries(categories).filter(([k]) => k !== 'all').map(([k, v]) => {
+        return `<div class="stat-pill"><strong>${counts[k] || 0}</strong> ${v.label}</div>`;
+      }).join('');
+
+      // Filter bar
+      function renderFilters() {
+        filterBar.innerHTML = Object.entries(categories).map(([k, v]) => {
+          const c = counts[k] || 0;
+          return `<button class="filter-btn${activeFilter === k ? ' active' : ''}" data-cat="${k}">${v.label}<span class="count">${c}</span></button>`;
+        }).join('');
+
+        filterBar.querySelectorAll('.filter-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            activeFilter = btn.dataset.cat;
+            renderFilters();
+            renderCards();
+          });
+        });
+      }
+
+      // Render cards
+      function renderCards() {
+        let filtered = data;
+
+        if (activeFilter !== 'all') {
+          filtered = filtered.filter(e => e.category === activeFilter);
+        }
+
+        if (searchQuery.trim()) {
+          const q = searchQuery.toLowerCase();
+          filtered = filtered.filter(e => {
+            const haystack = [
+              e.title, e.description, e.significance,
+              e.subject, e.semester, e.course_code, e.language, e.type,
+              ...(e.skills || [])
+            ].join(' ').toLowerCase();
+            return haystack.includes(q);
+          });
+        }
+
+        resultsInfo.textContent = `Showing ${filtered.length} of ${data.length} entries`;
+
+        if (filtered.length === 0) {
+          grid.innerHTML = '<div class="card-empty">No entries match your filters. Try a different category or search term.</div>';
+          return;
+        }
+
+        grid.innerHTML = filtered.map(e => {
+          const badgeClass = getCatBadge(e.category);
+          const catLabel = categories[e.category]?.label || e.category;
+          const catClass = 'cat-' + e.category;
+
+          let meta = '';
+          if (e.semester) meta += e.semester;
+          if (e.institution && e.institution !== meta.trim()) {
+            meta += (meta ? ' · ' : '') + e.institution;
+          }
+          if (e.subject) meta += (meta ? ' · ' : '') + e.subject;
+          if (e.language) meta += (meta ? ' · ' : '') + e.language;
+          if (e.date) meta += (meta ? ' · ' : '') + e.date;
+
+          const skills = (e.skills || []).slice(0, 5).map(s =>
+            `<span class="skill-tag">${s}</span>`
+          ).join('');
+
+          return `
+            <div class="card ${catClass}">
+              <span class="card-badge ${badgeClass}">${catLabel}</span>
+              <div class="card-title">${escapeHtml(e.title)}</div>
+              ${meta ? `<div class="card-meta">${escapeHtml(meta)}</div>` : ''}
+              ${e.description ? `<div class="card-desc">${escapeHtml(e.description)}</div>` : ''}
+              ${skills ? `<div class="card-skills">${skills}</div>` : ''}
+            </div>
+          `;
+        }).join('');
+      }
+
+      function escapeHtml(str) {
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+      }
+
+      // Search
+      searchInput.addEventListener('input', () => {
+        searchQuery = searchInput.value;
+        renderCards();
+      });
+
+      // Init
+      renderFilters();
+      renderCards();
+    })();
+  </script>
+
+</body>
+</html>
