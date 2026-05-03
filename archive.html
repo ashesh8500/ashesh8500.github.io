@@ -274,6 +274,33 @@
       border: 1px solid rgba(255,255,255,0.05);
     }
 
+    .card-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.7rem;
+      padding-top: 0.7rem;
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .card-link {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      padding: 0.2rem 0.7rem;
+      border-radius: var(--radius-sm);
+      text-decoration: none;
+      border: 1px solid var(--border-card);
+      color: var(--accent-teal);
+      transition: all var(--transition-fast);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    .card-link:hover {
+      background: rgba(0,212,170,0.1);
+      border-color: var(--accent-teal);
+    }
+
     .card-empty {
       grid-column: 1 / -1;
       text-align: center;
@@ -435,6 +462,14 @@
             `<span class="skill-tag">${s}</span>`
           ).join('');
 
+          // Web-accessible links only (skip file://)
+          const links = (e.links || []).filter(l => l.url && l.url.startsWith('http'));
+          const linksHtml = links.length ? `
+            <div class="card-links">
+              ${links.map(l => `<a class="card-link" href="${escapeHtml(l.url)}" target="_blank" rel="noopener">${l.label === 'GitHub' ? '⟶' : '↗'} ${escapeHtml(l.label)}</a>`).join('')}
+            </div>
+          ` : '';
+
           return `
             <div class="card ${catClass}">
               <span class="card-badge ${badgeClass}">${catLabel}</span>
@@ -442,6 +477,7 @@
               ${meta ? `<div class="card-meta">${escapeHtml(meta)}</div>` : ''}
               ${e.description ? `<div class="card-desc">${escapeHtml(e.description)}</div>` : ''}
               ${skills ? `<div class="card-skills">${skills}</div>` : ''}
+              ${linksHtml}
             </div>
           `;
         }).join('');

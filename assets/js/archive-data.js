@@ -1,5 +1,4 @@
 // Auto-generated from ~/.hermes/portfolio/index.json
-// Regenerate with: python3 scripts/build_archive_data.py
 const ARCHIVE_DATA = [
   {
     "id": "ibdp-001",
@@ -16,7 +15,17 @@ const ARCHIVE_DATA = [
       "business case analysis"
     ],
     "significance": "Demonstrates Ashesh's early ability to conduct sustained independent research and formal academic writing \u2014 a bridge between his business/economics in",
-    "subject": "Economics"
+    "subject": "Economics",
+    "links": [
+      {
+        "label": "View file",
+        "url": "file:///Users/asheshkaji/OneDrive/Documents/EE plan.docx"
+      },
+      {
+        "label": "View file",
+        "url": "file:///Users/asheshkaji/OneDrive/Documents/EE.docx"
+      }
+    ]
   },
   {
     "id": "ibdp-002",
@@ -34,7 +43,17 @@ const ARCHIVE_DATA = [
       "computational thinking"
     ],
     "significance": "This IA is the seed of Ashesh's entire intellectual trajectory \u2014 neural networks applied mathematically in high school directly foreshadows his ML/NN ",
-    "subject": "Mathematics AA HL"
+    "subject": "Mathematics AA HL",
+    "links": [
+      {
+        "label": "View file",
+        "url": "file:///Users/asheshkaji/OneDrive/Documents/Math ia/math ia draft.tex"
+      },
+      {
+        "label": "View file",
+        "url": "file:///Users/asheshkaji/OneDrive/Documents/Math ia/math ia draft.pdf"
+      }
+    ]
   },
   {
     "id": "ibdp-003",
@@ -51,7 +70,17 @@ const ARCHIVE_DATA = [
       "lab technique"
     ],
     "significance": "Shows Ashesh's grounding in experimental science and quantitative biology \u2014 a precursor to his later research on iron levels, NAFLD, neurodegenerative",
-    "subject": "Biology"
+    "subject": "Biology",
+    "links": [
+      {
+        "label": "View file",
+        "url": "file:///Users/asheshkaji/OneDrive/Documents/Biology IA Document.docx"
+      },
+      {
+        "label": "View file",
+        "url": "file:///Users/asheshkaji/OneDrive/Documents/Biology draft.docx"
+      }
+    ]
   },
   {
     "id": "ibdp-004",
@@ -69,7 +98,17 @@ const ARCHIVE_DATA = [
       "presentation"
     ],
     "significance": "Demonstrates Ashesh's capacity for rigorous experimental science with multi-variable data collection and LaTeX-based scientific writing \u2014 the kind of ",
-    "subject": "Chemistry HL"
+    "subject": "Chemistry HL",
+    "links": [
+      {
+        "label": "View file",
+        "url": "file:///Users/asheshkaji/OneDrive/Documents/Chemistry Internal Assessment document.docx"
+      },
+      {
+        "label": "View file",
+        "url": "file:///Users/asheshkaji/OneDrive/Documents/Chemistry IA Draft.docx"
+      }
+    ]
   },
   {
     "id": "ibdp-005",
@@ -86,7 +125,17 @@ const ARCHIVE_DATA = [
       "scientific writing"
     ],
     "significance": "Completes Ashesh's triad of science IAs (Biology, Chemistry, Physics), showing broad experimental competence across the natural sciences \u2014 a foundatio",
-    "subject": "Physics HL"
+    "subject": "Physics HL",
+    "links": [
+      {
+        "label": "View file",
+        "url": "file:///Users/asheshkaji/OneDrive/Documents/Physics IA Proposal.docx"
+      },
+      {
+        "label": "View file",
+        "url": "file:///Users/asheshkaji/OneDrive/Documents/Physics IA Proposal.pdf"
+      }
+    ]
   },
   {
     "id": "ibdp-006",
@@ -103,7 +152,17 @@ const ARCHIVE_DATA = [
       "academic writing"
     ],
     "significance": "TOK is the philosophical spine of the IB \u2014 this essay shows Ashesh grappling with how we know what we know, a meta-cognitive thread that runs through ",
-    "subject": "Theory of Knowledge"
+    "subject": "Theory of Knowledge",
+    "links": [
+      {
+        "label": "View file",
+        "url": "file:///Users/asheshkaji/OneDrive/Documents/Theory of Knowledge draft.docx"
+      },
+      {
+        "label": "View file",
+        "url": "file:///Users/asheshkaji/OneDrive/Documents/TOK Essay Draft.docx"
+      }
+    ]
   },
   {
     "id": "ibdp-007",
@@ -119,7 +178,17 @@ const ARCHIVE_DATA = [
       "real-world application"
     ],
     "significance": "The presentation component demonstrates Ashesh's ability to articulate complex epistemological ideas verbally \u2014 a skill that would serve him well in c",
-    "subject": "Theory of Knowledge"
+    "subject": "Theory of Knowledge",
+    "links": [
+      {
+        "label": "View file",
+        "url": "file:///Users/asheshkaji/OneDrive/Documents/TOK Presentation.pptx"
+      },
+      {
+        "label": "View file",
+        "url": "file:///Users/asheshkaji/OneDrive/Documents/Tok Presentation script.docx"
+      }
+    ]
   },
   {
     "id": "ibdp-008",
@@ -136,7 +205,17 @@ const ARCHIVE_DATA = [
       "close reading"
     ],
     "significance": "The IO reveals Ashesh's engagement with literature as a mode of inquiry into identity and mental health \u2014 humanistic concerns that complement his tech",
-    "subject": "English Literature"
+    "subject": "English Literature",
+    "links": [
+      {
+        "label": "View file",
+        "url": "file:///Users/asheshkaji/OneDrive/Documents/Literature Mock IO.docx"
+      },
+      {
+        "label": "View file",
+        "url": "file:///Users/asheshkaji/OneDrive/Documents/Literature Final IO Notes.docx"
+      }
+    ]
   },
   {
     "id": "ibdp-009",
@@ -151,7 +230,13 @@ const ARCHIVE_DATA = [
       "algorithmic thinking"
     ],
     "significance": "The Computer Science essay, alongside the Neural Networks Math IA, forms the dual foundation of Ashesh's computational interests that would later defi",
-    "subject": "Computer Science"
+    "subject": "Computer Science",
+    "links": [
+      {
+        "label": "View file",
+        "url": "file:///Users/asheshkaji/OneDrive/Documents/Computer Science Essay.docx"
+      }
+    ]
   },
   {
     "id": "ibdp-010",
@@ -167,7 +252,17 @@ const ARCHIVE_DATA = [
       "market analysis"
     ],
     "significance": "Shows Ashesh's early interest in applying theoretical frameworks to real-world technology companies \u2014 the same analytical lens he would later bring to",
-    "subject": "Economics"
+    "subject": "Economics",
+    "links": [
+      {
+        "label": "View file",
+        "url": "file:///Users/asheshkaji/OneDrive/Documents/Musk Economics project.docx"
+      },
+      {
+        "label": "View file",
+        "url": "file:///Users/asheshkaji/OneDrive/Documents/Musk Econ Project redo.docx"
+      }
+    ]
   },
   {
     "id": "ibdp-011",
@@ -181,7 +276,13 @@ const ARCHIVE_DATA = [
       "time management"
     ],
     "significance": "Contextual artifact marking the beginning of Ashesh's IB journey \u2014 a planning document that preceded two years of intensive academic work culminating ",
-    "subject": "General"
+    "subject": "General",
+    "links": [
+      {
+        "label": "View file",
+        "url": "file:///Users/asheshkaji/OneDrive/Documents/Archives/IBY1 TT 2019 - 2020 .xlsx"
+      }
+    ]
   },
   {
     "id": "ibdp-012",
@@ -196,7 +297,17 @@ const ARCHIVE_DATA = [
       "exam preparation"
     ],
     "significance": "Supplementary material showing the groundwork behind the Physics IA \u2014 Ashesh's systematic study habits that enabled strong performance across three HL",
-    "subject": "Physics HL"
+    "subject": "Physics HL",
+    "links": [
+      {
+        "label": "View file",
+        "url": "file:///Users/asheshkaji/OneDrive/Documents/Archives/Physics Notes.docx"
+      },
+      {
+        "label": "View file",
+        "url": "file:///Users/asheshkaji/OneDrive/Documents/Archives/Physics Notes-Ambis.docx"
+      }
+    ]
   },
   {
     "id": "ibdp-013",
@@ -210,7 +321,17 @@ const ARCHIVE_DATA = [
       "curriculum knowledge"
     ],
     "significance": "Reference materials confirm Ashesh's probable HL subjects (Math, Physics, Chemistry) and SL subjects (Biology, English Literature, Economics/Business)",
-    "subject": "Multiple"
+    "subject": "Multiple",
+    "links": [
+      {
+        "label": "View file",
+        "url": "file:///Users/asheshkaji/OneDrive/Documents/ib textbooks/Mathematics AA HL Pearson.pdf"
+      },
+      {
+        "label": "View file",
+        "url": "file:///Users/asheshkaji/OneDrive/Documents/ib textbooks/Mathematics HL - Analysis and Approaches - OXFORD 2019.pdf"
+      }
+    ]
   },
   {
     "id": "research-001",
@@ -229,7 +350,16 @@ const ARCHIVE_DATA = [
     ],
     "significance": "First large-scale ABCD analysis linking nicotine endorsement to impulsivity with family-clustered GEE and vertex-wise MRI \u2014 robust behavioral signal, ",
     "institution": "UC San Diego, Department of Cognitive Science",
-    "lab": ""
+    "links": [
+      {
+        "label": "honors_thesis.tex",
+        "url": "file:///Users/asheshkaji/Documents/University Files/honors_project/honors_tex/honors_thesis.tex"
+      },
+      {
+        "label": "honors_thesis.pdf",
+        "url": "file:///Users/asheshkaji/Documents/University Files/honors_project/honors_tex/honors_thesis.pdf"
+      }
+    ]
   },
   {
     "id": "research-002",
@@ -245,7 +375,16 @@ const ARCHIVE_DATA = [
     ],
     "significance": "Manuscript variant with focused vaping angle.",
     "institution": "UC San Diego",
-    "lab": ""
+    "links": [
+      {
+        "label": "vaping_impulsivity.tex",
+        "url": "file:///Users/asheshkaji/Documents/University Files/honors_project/vaping_paper_package/vaping_impulsivity.tex"
+      },
+      {
+        "label": "vaping_impulsivity.pdf",
+        "url": "file:///Users/asheshkaji/Documents/University Files/honors_project/vaping_paper_package/vaping_impulsivity.pdf"
+      }
+    ]
   },
   {
     "id": "research-003",
@@ -262,7 +401,16 @@ const ARCHIVE_DATA = [
     ],
     "significance": "Contributed to lab investigating NAFLD-brain iron connection; built data processing tools. Note: many files are OneDrive cloud placeholders (not local",
     "institution": "Boyle Lab, UC San Diego",
-    "lab": ""
+    "links": [
+      {
+        "label": "gui_app.py",
+        "url": "file:///Users/asheshkaji/Documents/University Files/Boyle Lab/Code/gui_app.py"
+      },
+      {
+        "label": "ukb_helper.py",
+        "url": "file:///Users/asheshkaji/Documents/University Files/Boyle Lab/Code/ukb_helper.py"
+      }
+    ]
   },
   {
     "id": "research-004",
@@ -276,7 +424,12 @@ const ARCHIVE_DATA = [
     ],
     "significance": "Shows broad research interests spanning deep learning, neuroscience, finance, and health.",
     "institution": "Personal",
-    "lab": ""
+    "links": [
+      {
+        "label": "",
+        "url": "file:///Users/asheshkaji/Documents/University Files/Research papers/"
+      }
+    ]
   },
   {
     "id": "research-005",
@@ -291,7 +444,12 @@ const ARCHIVE_DATA = [
     ],
     "significance": "Stanford-level RL coursework with RiverSwim MDP and commute time problems.",
     "institution": "Stanford University (visiting/online)",
-    "lab": ""
+    "links": [
+      {
+        "label": "",
+        "url": "file:///Users/asheshkaji/Documents/University Files/Stanford/assignment1_template/"
+      }
+    ]
   },
   {
     "id": "proj-001",
@@ -315,8 +473,17 @@ const ARCHIVE_DATA = [
       "TypeScript"
     ],
     "status": "active",
-    "live_url": "https://valuationwebadmin.web.app",
-    "repo_name": "fractal"
+    "repo_name": "fractal",
+    "links": [
+      {
+        "label": "GitHub",
+        "url": "https://github.com/ashesh8500/fractal"
+      },
+      {
+        "label": "Live",
+        "url": "https://valuationwebadmin.web.app"
+      }
+    ]
   },
   {
     "id": "proj-002",
@@ -339,8 +506,13 @@ const ARCHIVE_DATA = [
       "Python"
     ],
     "status": "archived",
-    "live_url": null,
-    "repo_name": "fractal_grpc"
+    "repo_name": "fractal_grpc",
+    "links": [
+      {
+        "label": "GitHub",
+        "url": "https://github.com/ashesh8500/fractal"
+      }
+    ]
   },
   {
     "id": "proj-003",
@@ -363,8 +535,13 @@ const ARCHIVE_DATA = [
       "Python"
     ],
     "status": "complete",
-    "live_url": null,
-    "repo_name": "portfolio_app"
+    "repo_name": "portfolio_app",
+    "links": [
+      {
+        "label": "GitHub",
+        "url": "https://github.com/ashesh8500/projectfractal"
+      }
+    ]
   },
   {
     "id": "proj-004",
@@ -387,7 +564,6 @@ const ARCHIVE_DATA = [
       "Rust"
     ],
     "status": "archived",
-    "live_url": null,
     "repo_name": "projectfractal"
   },
   {
@@ -411,7 +587,6 @@ const ARCHIVE_DATA = [
       "React Native"
     ],
     "status": "active",
-    "live_url": null,
     "repo_name": "afterparty"
   },
   {
@@ -434,7 +609,6 @@ const ARCHIVE_DATA = [
       "Rust"
     ],
     "status": "prototype",
-    "live_url": null,
     "repo_name": "bookshelf"
   },
   {
@@ -456,7 +630,6 @@ const ARCHIVE_DATA = [
       "Rust"
     ],
     "status": "active",
-    "live_url": null,
     "repo_name": "bookshelf_v2"
   },
   {
@@ -479,8 +652,13 @@ const ARCHIVE_DATA = [
       "Python"
     ],
     "status": "complete",
-    "live_url": null,
-    "repo_name": "nanochat"
+    "repo_name": "nanochat",
+    "links": [
+      {
+        "label": "GitHub",
+        "url": "https://github.com/karpathy/nanochat"
+      }
+    ]
   },
   {
     "id": "proj-009",
@@ -501,7 +679,6 @@ const ARCHIVE_DATA = [
       "Python"
     ],
     "status": "prototype",
-    "live_url": null,
     "repo_name": "poker"
   },
   {
@@ -524,8 +701,13 @@ const ARCHIVE_DATA = [
       "Rust"
     ],
     "status": "complete",
-    "live_url": null,
-    "repo_name": "wdtv"
+    "repo_name": "wdtv",
+    "links": [
+      {
+        "label": "GitHub",
+        "url": "https://github.com/ashesh8500/mediasync"
+      }
+    ]
   },
   {
     "id": "proj-011",
@@ -547,7 +729,6 @@ const ARCHIVE_DATA = [
       "Python"
     ],
     "status": "complete",
-    "live_url": null,
     "repo_name": "report_generator"
   },
   {
@@ -570,8 +751,13 @@ const ARCHIVE_DATA = [
       "Python"
     ],
     "status": "prototype",
-    "live_url": null,
-    "repo_name": "pysilicon"
+    "repo_name": "pysilicon",
+    "links": [
+      {
+        "label": "GitHub",
+        "url": "https://github.com/sdrangan/pysilicon"
+      }
+    ]
   },
   {
     "id": "proj-013",
@@ -594,7 +780,6 @@ const ARCHIVE_DATA = [
       "Jupyter"
     ],
     "status": "complete",
-    "live_url": null,
     "repo_name": "aadhar_hackathon"
   },
   {
@@ -618,7 +803,6 @@ const ARCHIVE_DATA = [
       "Rust"
     ],
     "status": "prototype",
-    "live_url": null,
     "repo_name": "learn"
   },
   {
@@ -642,7 +826,6 @@ const ARCHIVE_DATA = [
       "Rust"
     ],
     "status": "archive",
-    "live_url": null,
     "repo_name": "misc"
   },
   {
@@ -665,7 +848,6 @@ const ARCHIVE_DATA = [
       "JavaScript"
     ],
     "status": "complete",
-    "live_url": null,
     "repo_name": "musk_photobook"
   },
   {
@@ -685,7 +867,6 @@ const ARCHIVE_DATA = [
       "Python"
     ],
     "status": "prototype",
-    "live_url": null,
     "repo_name": "pyhls"
   },
   {
@@ -705,7 +886,6 @@ const ARCHIVE_DATA = [
       "Rust"
     ],
     "status": "prototype",
-    "live_url": null,
     "repo_name": "tpatti"
   },
   {
@@ -723,7 +903,13 @@ const ARCHIVE_DATA = [
     "significance": "Introductory cognitive science course with focus on technology's cognitive impact; written assignments demonstrate analytical reasoning.",
     "semester": "Winter '22",
     "course_code": "COGS10",
-    "institution": "UCSD"
+    "institution": "UCSD",
+    "links": [
+      {
+        "label": "View files",
+        "url": "file:///Users/asheshkaji/Documents/University Files/W'22/COGS10/"
+      }
+    ]
   },
   {
     "id": "nyu-002",
@@ -740,7 +926,13 @@ const ARCHIVE_DATA = [
     "significance": "Comprehensive neurobiology foundation with detailed handwritten notes across three major modules.",
     "semester": "Winter '22",
     "course_code": "COGS17",
-    "institution": "UCSD"
+    "institution": "UCSD",
+    "links": [
+      {
+        "label": "View files",
+        "url": "file:///Users/asheshkaji/Documents/University Files/W'22/COGS17/"
+      }
+    ]
   },
   {
     "id": "nyu-003",
@@ -757,7 +949,13 @@ const ARCHIVE_DATA = [
     "significance": "First programming course; final project uses Jupyter Book framework, indicating early exposure to computational notebooks and documentation.",
     "semester": "Winter '22",
     "course_code": "COGS18",
-    "institution": "UCSD"
+    "institution": "UCSD",
+    "links": [
+      {
+        "label": "View files",
+        "url": "file:///Users/asheshkaji/Documents/University Files/W'22/COGS18/"
+      }
+    ]
   },
   {
     "id": "nyu-004",
@@ -774,7 +972,13 @@ const ARCHIVE_DATA = [
     "significance": "Core mathematics requirement with extensive lecture notes and problem sets.",
     "semester": "Winter '22",
     "course_code": "MATH20B",
-    "institution": "UCSD"
+    "institution": "UCSD",
+    "links": [
+      {
+        "label": "View files",
+        "url": "file:///Users/asheshkaji/Documents/University Files/W'22/MATH20B/"
+      }
+    ]
   },
   {
     "id": "nyu-005",
@@ -791,7 +995,13 @@ const ARCHIVE_DATA = [
     "significance": "Foundational cognitive science survey course introducing multiple subdisciplines.",
     "semester": "Spring '22",
     "course_code": "COGS1",
-    "institution": "UCSD"
+    "institution": "UCSD",
+    "links": [
+      {
+        "label": "View files",
+        "url": "file:///Users/asheshkaji/Documents/University Files/S'22/COGS1/"
+      }
+    ]
   },
   {
     "id": "nyu-006",
@@ -808,7 +1018,13 @@ const ARCHIVE_DATA = [
     "significance": "Rigorous multivariable calculus with extensive problem-solving practice.",
     "semester": "Spring '22",
     "course_code": "MATH20C",
-    "institution": "UCSD"
+    "institution": "UCSD",
+    "links": [
+      {
+        "label": "View files",
+        "url": "file:///Users/asheshkaji/Documents/University Files/S'22/"
+      }
+    ]
   },
   {
     "id": "nyu-007",
@@ -827,7 +1043,13 @@ const ARCHIVE_DATA = [
     "significance": "Rigorous philosophy course with 4 substantial essays; demonstrates advanced analytical writing and philosophical reasoning.",
     "semester": "Spring '22",
     "course_code": "PHIL15",
-    "institution": "UCSD"
+    "institution": "UCSD",
+    "links": [
+      {
+        "label": "View files",
+        "url": "file:///Users/asheshkaji/Documents/University Files/S'22/PHIl15/"
+      }
+    ]
   },
   {
     "id": "nyu-008",
@@ -843,7 +1065,13 @@ const ARCHIVE_DATA = [
     "significance": "Early exposure to scientific computing with MATLAB.",
     "semester": "Spring '22",
     "course_code": "MATLAB",
-    "institution": "UCSD"
+    "institution": "UCSD",
+    "links": [
+      {
+        "label": "View files",
+        "url": "file:///Users/asheshkaji/Documents/University Files/S'22/"
+      }
+    ]
   },
   {
     "id": "nyu-009",
@@ -861,7 +1089,13 @@ const ARCHIVE_DATA = [
     "significance": "Foundational writing course; strong portfolio of analytical essays with instructor feedback.",
     "semester": "Summer '22",
     "course_code": "CAT1",
-    "institution": "UCSD"
+    "institution": "UCSD",
+    "links": [
+      {
+        "label": "View files",
+        "url": "file:///Users/asheshkaji/Documents/University Files/Summer '22/CAT1/"
+      }
+    ]
   },
   {
     "id": "nyu-010",
@@ -877,7 +1111,13 @@ const ARCHIVE_DATA = [
     "significance": "Summer preview of neuroanatomy; overlap with Fall '22 COGS 107A.",
     "semester": "Summer '22",
     "course_code": "COGS107A",
-    "institution": "UCSD"
+    "institution": "UCSD",
+    "links": [
+      {
+        "label": "View files",
+        "url": "file:///Users/asheshkaji/Documents/University Files/Summer '22/"
+      }
+    ]
   },
   {
     "id": "nyu-011",
@@ -894,7 +1134,13 @@ const ARCHIVE_DATA = [
     "significance": "Core neuroscience course; extensive lecture materials across sensory and motor systems.",
     "semester": "Fall '22",
     "course_code": "COGS107A",
-    "institution": "UCSD"
+    "institution": "UCSD",
+    "links": [
+      {
+        "label": "View files",
+        "url": "file:///Users/asheshkaji/Documents/University Files/Fall '22/COGS107A/"
+      }
+    ]
   },
   {
     "id": "nyu-012",
@@ -912,7 +1158,13 @@ const ARCHIVE_DATA = [
     "significance": "Business/management elective; applied psychology of teams and leadership.",
     "semester": "Fall '22",
     "course_code": "MGT18",
-    "institution": "UCSD"
+    "institution": "UCSD",
+    "links": [
+      {
+        "label": "View files",
+        "url": "file:///Users/asheshkaji/Documents/University Files/Fall '22/MGT18/"
+      }
+    ]
   },
   {
     "id": "nyu-013",
@@ -930,7 +1182,13 @@ const ARCHIVE_DATA = [
     "significance": "Rigorous upper-division calculus with complete homework set (HW1-HW8) and exams.",
     "semester": "Fall '22",
     "course_code": "MATH20E",
-    "institution": "UCSD"
+    "institution": "UCSD",
+    "links": [
+      {
+        "label": "View files",
+        "url": "file:///Users/asheshkaji/Documents/University Files/Fall '22/Math 20e/"
+      }
+    ]
   },
   {
     "id": "nyu-014",
@@ -947,7 +1205,13 @@ const ARCHIVE_DATA = [
     "significance": "Arts elective demonstrating musical literacy and performance skills.",
     "semester": "Fall '22",
     "course_code": "MUS1A",
-    "institution": "UCSD"
+    "institution": "UCSD",
+    "links": [
+      {
+        "label": "View files",
+        "url": "file:///Users/asheshkaji/Documents/University Files/Fall '22/Music 1a/"
+      }
+    ]
   },
   {
     "id": "nyu-015",
@@ -964,7 +1228,13 @@ const ARCHIVE_DATA = [
     "significance": "Arts/humanities elective exploring film and performance.",
     "semester": "Fall '22",
     "course_code": "TDGE11",
-    "institution": "UCSD"
+    "institution": "UCSD",
+    "links": [
+      {
+        "label": "View files",
+        "url": "file:///Users/asheshkaji/Documents/University Files/Fall '22/TDGE 11/"
+      }
+    ]
   },
   {
     "id": "nyu-016",
@@ -982,7 +1252,13 @@ const ARCHIVE_DATA = [
     "significance": "Strong writing portfolio with four polished essays and peer review artifacts.",
     "semester": "Winter '23",
     "course_code": "CAT2",
-    "institution": "UCSD"
+    "institution": "UCSD",
+    "links": [
+      {
+        "label": "View files",
+        "url": "file:///Users/asheshkaji/Documents/University Files/Winter '23/CAT 2/"
+      }
+    ]
   },
   {
     "id": "nyu-017",
@@ -1002,7 +1278,13 @@ const ARCHIVE_DATA = [
     "significance": "Applied research methods course with Jupyter notebook for behavioral coding; bridges cognitive science and data analysis.",
     "semester": "Winter '23",
     "course_code": "COGS13",
-    "institution": "UCSD"
+    "institution": "UCSD",
+    "links": [
+      {
+        "label": "View files",
+        "url": "file:///Users/asheshkaji/Documents/University Files/Winter '23/COGS13/"
+      }
+    ]
   },
   {
     "id": "nyu-018",
@@ -1019,7 +1301,13 @@ const ARCHIVE_DATA = [
     "significance": "Methodological foundation for cognitive science research.",
     "semester": "Winter '23",
     "course_code": "COGS14A",
-    "institution": "UCSD"
+    "institution": "UCSD",
+    "links": [
+      {
+        "label": "View files",
+        "url": "file:///Users/asheshkaji/Documents/University Files/Winter '23/COGS14A/"
+      }
+    ]
   },
   {
     "id": "nyu-019",
@@ -1037,7 +1325,13 @@ const ARCHIVE_DATA = [
     "significance": "Core probability course with complete problem sets and research essay integrating probability with a domain application.",
     "semester": "Winter '23",
     "course_code": "MATH180A",
-    "institution": "UCSD"
+    "institution": "UCSD",
+    "links": [
+      {
+        "label": "View files",
+        "url": "file:///Users/asheshkaji/Documents/University Files/Winter '23/MATH180A/"
+      }
+    ]
   },
   {
     "id": "nyu-020",
@@ -1055,7 +1349,13 @@ const ARCHIVE_DATA = [
     "significance": "NYU cognitive psychology core; thorough study materials show strong engagement with material.",
     "semester": "Fall '24",
     "course_code": "COGS101B",
-    "institution": "NYU"
+    "institution": "NYU",
+    "links": [
+      {
+        "label": "View files",
+        "url": "file:///Users/asheshkaji/Documents/University Files/Fall '24/cogs101b/"
+      }
+    ]
   },
   {
     "id": "nyu-021",
@@ -1074,7 +1374,13 @@ const ARCHIVE_DATA = [
     "significance": "Core neuroscience at NYU with comprehensive lecture and review materials across all major systems.",
     "semester": "Fall '24",
     "course_code": "COGS107B",
-    "institution": "NYU"
+    "institution": "NYU",
+    "links": [
+      {
+        "label": "View files",
+        "url": "file:///Users/asheshkaji/Documents/University Files/Fall '24/cogs107b/"
+      }
+    ]
   },
   {
     "id": "nyu-022",
@@ -1094,7 +1400,13 @@ const ARCHIVE_DATA = [
     "significance": "Most technically impressive course \u2014 built a Rust+Python Apple Health data processor with Docker/Streamlit, analyzed real personal health data, and pr",
     "semester": "Fall '24",
     "course_code": "COGS160",
-    "institution": "NYU"
+    "institution": "NYU",
+    "links": [
+      {
+        "label": "View files",
+        "url": "file:///Users/asheshkaji/Documents/University Files/Fall '24/cogs160/"
+      }
+    ]
   },
   {
     "id": "nyu-023",
@@ -1114,7 +1426,13 @@ const ARCHIVE_DATA = [
     "significance": "Advanced seminar with massive reading load (~50 papers); weekly reflections show deep engagement with cutting-edge metabolic neuroscience. PPA project",
     "semester": "Fall '24",
     "course_code": "COGS163",
-    "institution": "NYU"
+    "institution": "NYU",
+    "links": [
+      {
+        "label": "View files",
+        "url": "file:///Users/asheshkaji/Documents/University Files/Fall '24/cogs163/"
+      }
+    ]
   },
   {
     "id": "nyu-024",
@@ -1132,7 +1450,13 @@ const ARCHIVE_DATA = [
     "significance": "Advanced writing and research seminar; final portfolio demonstrates synthesis of cultural criticism and technology studies.",
     "semester": "Spring '23",
     "course_code": "CAT3",
-    "institution": "UCSD"
+    "institution": "UCSD",
+    "links": [
+      {
+        "label": "View files",
+        "url": "file:///Users/asheshkaji/Documents/University Files/Spring '23/CAT3/"
+      }
+    ]
   },
   {
     "id": "nyu-025",
@@ -1150,7 +1474,13 @@ const ARCHIVE_DATA = [
     "significance": "Capstone cognitive science seminar bridging philosophy, neuroscience, and engineering perspectives on human-machine integration.",
     "semester": "Spring '23",
     "course_code": "COGS100",
-    "institution": "UCSD"
+    "institution": "UCSD",
+    "links": [
+      {
+        "label": "View files",
+        "url": "file:///Users/asheshkaji/Documents/University Files/Spring '23/COGS100/"
+      }
+    ]
   },
   {
     "id": "nyu-026",
@@ -1170,7 +1500,13 @@ const ARCHIVE_DATA = [
     "significance": "Core ML course with extensive hands-on implementation across the full supervised learning pipeline; group project demonstrates collaborative ML workfl",
     "semester": "Spring '23",
     "course_code": "COGS118A",
-    "institution": "UCSD"
+    "institution": "UCSD",
+    "links": [
+      {
+        "label": "View files",
+        "url": "file:///Users/asheshkaji/Documents/University Files/Spring '23/COGS118A/"
+      }
+    ]
   },
   {
     "id": "nyu-027",
@@ -1188,7 +1524,13 @@ const ARCHIVE_DATA = [
     "significance": "Statistical methods foundation for cognitive science research; covers parametric tests essential for experimental psychology.",
     "semester": "Spring '23",
     "course_code": "COGS14B",
-    "institution": "UCSD"
+    "institution": "UCSD",
+    "links": [
+      {
+        "label": "View files",
+        "url": "file:///Users/asheshkaji/Documents/University Files/Spring '23/COGS14B/"
+      }
+    ]
   },
   {
     "id": "nyu-028",
@@ -1206,7 +1548,13 @@ const ARCHIVE_DATA = [
     "significance": "Applied rhetoric course with multi-modal final project integrating visual design, audio, and written argument.",
     "semester": "Spring '24",
     "course_code": "CAT125",
-    "institution": "UCSD"
+    "institution": "UCSD",
+    "links": [
+      {
+        "label": "View files",
+        "url": "file:///Users/asheshkaji/Documents/University Files/Spring '24/CAT125/"
+      }
+    ]
   },
   {
     "id": "nyu-029",
@@ -1224,7 +1572,13 @@ const ARCHIVE_DATA = [
     "significance": "Core cognitive science perception course with Obsidian-based note-taking system; covers all major sensory modalities.",
     "semester": "Spring '24",
     "course_code": "COGS101A",
-    "institution": "UCSD"
+    "institution": "UCSD",
+    "links": [
+      {
+        "label": "View files",
+        "url": "file:///Users/asheshkaji/Documents/University Files/Spring '24/COGS101A/"
+      }
+    ]
   },
   {
     "id": "nyu-030",
@@ -1240,7 +1594,13 @@ const ARCHIVE_DATA = [
     "significance": "No accessible artifacts; course coverage inferred from UCSD COGS181 catalog description.",
     "semester": "Spring '24",
     "course_code": "COGS181",
-    "institution": "UCSD"
+    "institution": "UCSD",
+    "links": [
+      {
+        "label": "View files",
+        "url": "file:///Users/asheshkaji/Documents/University Files/Spring '24/COGS181/"
+      }
+    ]
   },
   {
     "id": "nyu-031",
@@ -1260,7 +1620,13 @@ const ARCHIVE_DATA = [
     "significance": "Highest-signal course from Spring '24; ICLR-format final paper demonstrates research-level ML writing and implementation. Note: course directory is lo",
     "semester": "Spring '24",
     "course_code": "COGS185",
-    "institution": "UCSD"
+    "institution": "UCSD",
+    "links": [
+      {
+        "label": "View files",
+        "url": "file:///Users/asheshkaji/Documents/University Files/Spring '24/cogs185/"
+      }
+    ]
   },
   {
     "id": "nyu-032",
@@ -1278,7 +1644,13 @@ const ARCHIVE_DATA = [
     "significance": "Teaching experience for introductory Python; demonstrates ability to explain technical concepts and lead lab sessions.",
     "semester": "Spring '24",
     "course_code": "COGS18TA",
-    "institution": "UCSD"
+    "institution": "UCSD",
+    "links": [
+      {
+        "label": "View files",
+        "url": "file:///Users/asheshkaji/Documents/University Files/Spring '24/COGS18TA/"
+      }
+    ]
   },
   {
     "id": "nyu-033",
@@ -1298,7 +1670,13 @@ const ARCHIVE_DATA = [
     "significance": "Core architecture course with substantial implementation project; pipeline simulator demonstrates processor design fundamentals.",
     "semester": "Spring '26",
     "course_code": "CSA",
-    "institution": "NYU"
+    "institution": "NYU",
+    "links": [
+      {
+        "label": "View files",
+        "url": "file:///Users/asheshkaji/Documents/nyu/26_spring/ComputerSystemsArchitecture/"
+      }
+    ]
   },
   {
     "id": "nyu-034",
@@ -1318,7 +1696,13 @@ const ARCHIVE_DATA = [
     "significance": "Most technically dense course; spans ZKP hardware, custom toolchain development, and novel memory accelerator design. fp_zkphire targets HPCA 2026 pap",
     "semester": "Spring '26",
     "course_code": "SPTOPICS",
-    "institution": "NYU"
+    "institution": "NYU",
+    "links": [
+      {
+        "label": "View files",
+        "url": "file:///Users/asheshkaji/Documents/nyu/26_spring/special_topics/"
+      }
+    ]
   },
   {
     "id": "nyu-035",
@@ -1338,7 +1722,13 @@ const ARCHIVE_DATA = [
     "significance": "Flagship Spring '26 project with polished multi-modal deliverables: interactive web presentation, narrated audio, formal LaTeX paper, and fully reprod",
     "semester": "Spring '26",
     "course_code": "SYSOPT",
-    "institution": "NYU"
+    "institution": "NYU",
+    "links": [
+      {
+        "label": "View files",
+        "url": "file:///Users/asheshkaji/Documents/nyu/26_spring/systemopt/"
+      }
+    ]
   },
   {
     "id": "nyu-036",
@@ -1354,7 +1744,13 @@ const ARCHIVE_DATA = [
     "significance": "Core ML course bridging UCSD foundations to NYU context; cloud stubs prevent deeper inspection.",
     "semester": "Fall '25",
     "course_code": "COGS118A",
-    "institution": "NYU"
+    "institution": "NYU",
+    "links": [
+      {
+        "label": "View files",
+        "url": "file:///Users/asheshkaji/Documents/University Files/Fall '25/"
+      }
+    ]
   },
   {
     "id": "nyu-037",
@@ -1372,7 +1768,13 @@ const ARCHIVE_DATA = [
     "significance": "Applied ML course with hands-on housing price prediction lab and network scanning project; small file count (5) suggests active development or cloud-s",
     "semester": "Fall '25",
     "course_code": "MachineLearning",
-    "institution": "NYU"
+    "institution": "NYU",
+    "links": [
+      {
+        "label": "View files",
+        "url": "file:///Users/asheshkaji/Documents/University Files/Fall '25/MachineLearning/"
+      }
+    ]
   },
   {
     "id": "nyu-038",
@@ -1391,7 +1793,13 @@ const ARCHIVE_DATA = [
     "significance": "Rigorous graduate architecture course with multiple textbooks; 6 local files including Hennessy & Patterson canonical text.",
     "semester": "Fall '25",
     "course_code": "ECE6913",
-    "institution": "NYU"
+    "institution": "NYU",
+    "links": [
+      {
+        "label": "View files",
+        "url": "file:///Users/asheshkaji/Documents/University Files/Fall '25/ComputerSystemsArchitecture/"
+      }
+    ]
   },
   {
     "id": "nyu-039",
@@ -1410,7 +1818,13 @@ const ARCHIVE_DATA = [
     "significance": "Graduate VLSI course with 11 local files; includes Cadence tool training and foundational textbook chapters.",
     "semester": "Fall '25",
     "course_code": "ECE6473",
-    "institution": "NYU"
+    "institution": "NYU",
+    "links": [
+      {
+        "label": "View files",
+        "url": "file:///Users/asheshkaji/Documents/University Files/Fall '25/VLSI/"
+      }
+    ]
   },
   {
     "id": "nyu-040",
@@ -1429,7 +1843,13 @@ const ARCHIVE_DATA = [
     "significance": "Data science course with homework covering EDA, inference, and text analysis; 704 files including git repos and zipped archives.",
     "semester": "Winter '24",
     "course_code": "COGS108",
-    "institution": "NYU"
+    "institution": "NYU",
+    "links": [
+      {
+        "label": "View files",
+        "url": "file:///Users/asheshkaji/Documents/University Files/Winter '24/cogs108/"
+      }
+    ]
   },
   {
     "id": "nyu-041",
@@ -1448,7 +1868,13 @@ const ARCHIVE_DATA = [
     "significance": "Unsupervised ML covering clustering (K-means, hierarchical, spectral, GMM) and dimensionality reduction (PCA, kPCA, LDA); 573 files with lectures + no",
     "semester": "Winter '24",
     "course_code": "COGS118B",
-    "institution": "NYU"
+    "institution": "NYU",
+    "links": [
+      {
+        "label": "View files",
+        "url": "file:///Users/asheshkaji/Documents/University Files/Winter '24/cogs118b/"
+      }
+    ]
   },
   {
     "id": "nyu-042",
@@ -1467,7 +1893,13 @@ const ARCHIVE_DATA = [
     "significance": "Substantial neural networks course with 210K files (massive repo); final project in ICLR conference format, multiple coding homeworks with Jupyter not",
     "semester": "Winter '24",
     "course_code": "COGS181",
-    "institution": "NYU"
+    "institution": "NYU",
+    "links": [
+      {
+        "label": "View files",
+        "url": "file:///Users/asheshkaji/Documents/University Files/Winter '24/cogs181/"
+      }
+    ]
   },
   {
     "id": "nyu-043",
@@ -1484,7 +1916,13 @@ const ARCHIVE_DATA = [
     "significance": "Dance/movement course with breath technique study and written submission; smallest Winter '24 course at 2 files.",
     "semester": "Winter '24",
     "course_code": "TDMV2",
-    "institution": "NYU"
+    "institution": "NYU",
+    "links": [
+      {
+        "label": "View files",
+        "url": "file:///Users/asheshkaji/Documents/University Files/Winter '24/tdmv2/"
+      }
+    ]
   },
   {
     "id": "nyu-044",
@@ -1503,7 +1941,13 @@ const ARCHIVE_DATA = [
     "significance": "Broad cognitive science survey with TA role evident from grading scripts and section slides; 44 files with large lecture PDFs.",
     "semester": "Winter '25",
     "course_code": "COGS11",
-    "institution": "NYU"
+    "institution": "NYU",
+    "links": [
+      {
+        "label": "View files",
+        "url": "file:///Users/asheshkaji/Documents/University Files/Winter 25/cogs11/"
+      }
+    ]
   },
   {
     "id": "nyu-045",
@@ -1523,7 +1967,13 @@ const ARCHIVE_DATA = [
     "significance": "Significant AI course with 1,077 files; heavy RL focus with MuJoCo simulation, MuZero lunar lander, and formal technical report.",
     "semester": "Winter '25",
     "course_code": "COGS188",
-    "institution": "NYU"
+    "institution": "NYU",
+    "links": [
+      {
+        "label": "View files",
+        "url": "file:///Users/asheshkaji/Documents/University Files/Winter 25/cogs188/"
+      }
+    ]
   },
   {
     "id": "nyu-046",
@@ -1543,7 +1993,13 @@ const ARCHIVE_DATA = [
     "significance": "Advanced cognitive science seminar with 1,295 files; final project on serial bias in LSTMs (CNN-LSTM model), multiple presentations, and cutting-edge ",
     "semester": "S25",
     "course_code": "COGS202",
-    "institution": "NYU"
+    "institution": "NYU",
+    "links": [
+      {
+        "label": "View files",
+        "url": "file:///Users/asheshkaji/Documents/University Files/S25/cogs202/"
+      }
+    ]
   },
   {
     "id": "nyu-047",
@@ -1561,6 +2017,12 @@ const ARCHIVE_DATA = [
     "significance": "Introductory acting course with 8 files; scene prep and play analysis for contemporary works.",
     "semester": "S25",
     "course_code": "TDAC1",
-    "institution": "NYU"
+    "institution": "NYU",
+    "links": [
+      {
+        "label": "View files",
+        "url": "file:///Users/asheshkaji/Documents/University Files/S25/tdac1/"
+      }
+    ]
   }
 ];
