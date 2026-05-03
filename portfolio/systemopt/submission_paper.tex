@@ -1,0 +1,272 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage{multirow}
+
+\title{Improving Snapshot 2 on Broad ETF Universes:\\A Lean Drawdown-Aware Portfolio Redesign}
+\author{GPT-5.4 Research Attempt}
+\date{March 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+The original Snapshot 2 portfolio optimizer improved on a baseline classroom-style framework, but it remained fragile: drawdowns were still large and performance degraded when tested on broad index-style baskets. This paper presents a lean redesign aimed at a more defensible research goal: improving drawdown-adjusted performance rather than maximizing raw return in a single sample. The revised strategy combines absolute momentum gating, cross-sectional momentum scoring, breadth-based risk budgeting, shrinkage covariance, volatility targeting, and a defensive sleeve. On a broad ETF universe from 2007--2026, the redesigned strategy achieves an 8.05\% CAGR, 12.0\% annualized volatility, 0.71 Sharpe ratio, and an 18.5\% maximum drawdown. It does not beat SPY on CAGR, but it materially improves the path of returns: SPY loses 50.7\% peak-to-trough and a 60/40 benchmark loses 29.8\%, while the redesigned strategy limits drawdown to 18.5\% and posts the strongest Calmar ratio in the benchmark set. Crisis-window analysis shows especially strong behavior in the 2008 crisis and the 2022 inflation shock, though the strategy lags during the rapid 2020 rebound. The main conclusion is therefore modest but useful: the redesign makes Snapshot 2 materially more robust on broad ETF baskets, with better downside control and more competitive risk-adjusted performance.
+\end{abstract}
+
+\section{Introduction}
+
+The earlier Snapshot 2 experiment attempted to modernize a convex portfolio optimizer with CVaR, factor covariance, data screening, and regime detection. In practice, however, the legacy implementation still suffered from two issues. First, its drawdown profile remained too severe for the claim of ``modern risk control.'' Second, when judged against simple broad-market and diversified ETF strategies, its return profile was not strong enough to justify the added complexity.
+
+This paper reframes the objective. Rather than trying to dominate SPY on raw CAGR, the revised study asks a narrower and more credible question: can Snapshot 2 be redesigned into a broad-ETF allocator with meaningfully better drawdown control and stronger drawdown-adjusted performance than simple benchmark portfolios?
+
+The answer is encouraging. The redesigned strategy does not maximize upside in every regime, but it is substantially more resilient in prolonged stress episodes and produces the strongest return-per-drawdown trade-off in the benchmark suite.
+
+\section{Why the Legacy Snapshot 2 Needed Revision}
+
+The code review of the earlier implementation exposed several weaknesses that made the original results hard to trust as a broad-allocation study:
+
+\begin{itemize}
+    \item The factor covariance estimate was computed but not actually used inside the optimizer.
+    \item The regime parameter $\lambda$ was updated, but in practice it had little or no effect on the final optimization objective.
+    \item Signal generation relied on a narrow, unstable momentum signal with limited defensive structure.
+    \item The backtest engine was too simplistic for strong claims about turnover or robustness.
+\end{itemize}
+
+These issues motivated a redesign rather than another round of patching. The revised strategy therefore keeps the spirit of Snapshot 2---risk-aware allocation with adaptive structure---but replaces the brittle components with a leaner, more interpretable pipeline.
+
+\section{Method}
+
+\subsection{Universe and Rebalancing}
+
+The study uses a broad liquid ETF universe:
+
+\begin{center}
+\texttt{SPY, QQQ, EFA, EEM, VNQ, DBC, LQD, IEF, GLD, BIL}
+\end{center}
+
+The first seven assets form the risky sleeve and the last three assets form the defensive sleeve. Prices are adjusted closes from Yahoo Finance. The strategy rebalances monthly using daily data, with a linear transaction cost assumption of 5 bps per unit of turnover.
+
+\subsection{Signal Stack}
+
+For each risky asset $i$, the revised signal is
+
+\begin{equation}
+s_i = 0.50 z(r_{126,i}) + 0.35 z(r_{252,i}) - 0.10 z(r_{21,i}) - 0.05 z(\sigma_{63,i}),
+\end{equation}
+
+where $r_{k,i}$ is the trailing $k$-day return, $\sigma_{63,i}$ is the 63-day realized volatility, and $z(\cdot)$ denotes a cross-sectional z-score. The first two terms reward medium-term trend, the third term discourages chasing very recent short-term moves, and the last term lightly penalizes extreme realized volatility.
+
+An asset is only eligible for the risky sleeve when both conditions hold:
+
+\begin{equation}
+r_{252,i} > 0, \qquad P_i > \text{MA}_{200,i}.
+\end{equation}
+
+This absolute trend gate is the main drawdown-control mechanism.
+
+\subsection{Breadth and Risk Budget}
+
+Let $b_t$ be the fraction of risky assets that pass the eligibility filter. The portfolio allocates a risky budget $B_t$ according to breadth:
+
+\begin{equation}
+B_t =
+\begin{cases}
+1.00, & b_t \ge 0.60, \\
+1.00, & 0.40 \le b_t < 0.60, \\
+0.60, & 0.20 \le b_t < 0.40, \\
+0.20, & b_t < 0.20.
+\end{cases}
+\end{equation}
+
+The budget is further reduced when portfolio drawdown becomes large. If live drawdown exceeds 10\%, the risky sleeve is multiplied by 0.8; if it exceeds 15\%, it is multiplied by 0.5.
+
+\subsection{Risk-Aware Allocation}
+
+On eligible risky assets, weights are chosen by solving
+
+\begin{equation}
+\max_{w} \; s^\top w - \lambda w^\top \Sigma w - \kappa \lVert w - w_{t-1} \rVert_2^2
+\end{equation}
+
+subject to
+
+\begin{equation}
+\sum_i w_i = B_t, \qquad 0 \le w_i \le w_{\max}.
+\end{equation}
+
+Here $\Sigma$ is a diagonally shrunk covariance estimate based on the trailing 126 trading days, $\lambda = 4.0$, $\kappa = 8.0$, and $w_{\max} = 0.30$. Ex ante portfolio volatility is then scaled toward an 18\% target, but never levered above the risky budget cap.
+
+The residual capital, $1 - \sum_i w_i$, is assigned to the defensive sleeve \texttt{IEF/GLD/BIL} using inverse-volatility weights, restricted to defensive assets with non-catastrophic medium-term momentum. This design gives the optimizer somewhere safe to go instead of forcing full risk exposure at all times.
+
+\section{Experimental Design}
+
+The revised strategy is evaluated against five simple but informative benchmarks:
+
+\begin{enumerate}
+    \item \textbf{SPY}: buy-and-hold U.S. equity beta.
+    \item \textbf{60/40}: monthly rebalanced SPY/IEF.
+    \item \textbf{Equal Weight}: equal-weight broad ETF basket.
+    \item \textbf{Inverse Vol}: trailing 63-day inverse-volatility weighting.
+    \item \textbf{Dual Momentum}: monthly top-3 momentum selection with a defensive fallback.
+\end{enumerate}
+
+The sample runs from 2007-01-03 through 2026-03-23. The primary metrics are CAGR, annualized volatility, Sharpe ratio, maximum drawdown, and Calmar ratio.
+
+\section{Results}
+
+\subsection{Full-Sample Comparison}
+
+Table~\ref{tab:main} reports the main results.
+
+\begin{table}[H]
+\centering
+\caption{Full-sample performance, 2007--2026.}
+\label{tab:main}
+\begin{tabular}{lrrrrr}
+\toprule
+Strategy & CAGR & Vol. & Sharpe & Max DD & Calmar \\
+\midrule
+SPY & 10.65\% & 19.33\% & 0.621 & -50.70\% & 0.210 \\
+60/40 & 8.14\% & 11.13\% & 0.760 & -29.78\% & 0.273 \\
+Equal Weight & 7.05\% & 13.48\% & 0.573 & -39.58\% & 0.178 \\
+Inverse Vol & 6.07\% & 9.30\% & 0.681 & -27.47\% & 0.221 \\
+Dual Momentum & 5.87\% & 15.54\% & 0.446 & -44.32\% & 0.132 \\
+Improved Snapshot 2 & 8.05\% & 12.03\% & 0.705 & -18.48\% & 0.436 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The redesigned strategy does not beat SPY on CAGR. However, that is not the strongest comparison. Its key result is that it produces an 8.05\% CAGR with only an 18.5\% maximum drawdown, giving it the strongest Calmar ratio in the benchmark set. Relative to 60/40, it gives up very little CAGR (8.05\% vs 8.14\%) while materially reducing drawdown (18.5\% vs 29.8\%). Relative to inverse-vol, it preserves similarly defensive behavior but earns substantially more return.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{../results/figures/equity_curves.png}
+\caption{Growth of \$1 for the benchmark suite.}
+\label{fig:equity}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{../results/figures/drawdowns.png}
+\caption{Drawdown paths. The redesigned strategy stays materially shallower than SPY and 60/40.}
+\label{fig:drawdown}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.7\textwidth]{../results/figures/risk_return.png}
+\caption{Risk-return positioning. The redesigned strategy sits near the balanced-portfolio region, but with much better downside control.}
+\label{fig:riskreturn}
+\end{figure}
+
+\subsection{Crisis Windows}
+
+The strongest evidence for the redesign comes from stress regimes. Table~\ref{tab:crisis} summarizes three important windows.
+
+\begin{table}[H]
+\centering
+\caption{Crisis-window results. Returns and maximum drawdowns are reported within each window.}
+\label{tab:crisis}
+\begin{tabular}{llrr}
+\toprule
+Window & Strategy & Return & Max DD \\
+\midrule
+\multirow{4}{*}{2008 GFC} 
+ & SPY & -31.95\% & -50.70\% \\
+ & 60/40 & -15.22\% & -29.78\% \\
+ & Inverse Vol & -11.77\% & -27.47\% \\
+ & Improved Snapshot 2 & \phantom{-}5.27\% & -7.07\% \\
+\midrule
+\multirow{4}{*}{2020 COVID} 
+ & SPY & -3.88\% & -33.72\% \\
+ & 60/40 & \phantom{-}2.07\% & -19.13\% \\
+ & Inverse Vol & \phantom{-}0.27\% & -19.52\% \\
+ & Improved Snapshot 2 & -4.17\% & -17.67\% \\
+\midrule
+\multirow{4}{*}{2022 Inflation Shock} 
+ & SPY & -18.65\% & -24.50\% \\
+ & 60/40 & -16.37\% & -20.67\% \\
+ & Inverse Vol & -14.12\% & -20.10\% \\
+ & Improved Snapshot 2 & -1.59\% & -6.93\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The redesigned strategy is especially strong in the 2008 and 2022 windows. In 2008 it is the only strategy in this subset with a positive cumulative return. In 2022 it is close to flat while every benchmark suffers a double-digit loss. The 2020 window is the main counterexample: the strategy contains drawdown well, but its defensive posture leaves it behind the faster rebound capture of 60/40 and inverse-vol.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{../results/figures/crisis_drawdowns.png}
+\caption{Crisis-window maximum drawdowns.}
+\label{fig:crisis}
+\end{figure}
+
+\subsection{Subperiod and Cost Robustness}
+
+The strategy remains competitive across two broad subperiods. From 2007--2015 it compounds at 6.06\% with a 17.8\% maximum drawdown, substantially improving on 60/40's 29.8\% drawdown. From 2016--2026 it compounds at 9.19\% with an 18.5\% maximum drawdown, again lower than all benchmark portfolios shown in Table~\ref{tab:main}.
+
+Implementation costs matter, but the result is not purely an artifact of zero-cost trading. Under a cost sensitivity test, the redesigned strategy still delivers a 6.87\% CAGR and a 0.367 Calmar ratio even at 20 bps per unit turnover, versus 8.35\% CAGR and 0.454 Calmar at zero cost.
+
+\section{Discussion}
+
+The paper's strongest claim is not that the redesigned strategy is the best absolute-return portfolio. It clearly is not: SPY remains the top CAGR strategy in the sample. The stronger and more defensible claim is that the redesign achieves a materially better \emph{drawdown-adjusted} profile on broad ETF baskets.
+
+This distinction matters. The legacy Snapshot 2 was difficult to defend because it combined complexity with weak broad-market behavior. The redesigned variant is much easier to interpret. It loses some upside in fast rebounds, but it avoids severe capital impairment in the regimes where investors most care about protection. That trade-off is visible in both the full sample and the crisis windows.
+
+The result is also economically plausible. Absolute momentum gating, breadth-based de-risking, shrinkage covariance, and a defensive sleeve all act in the same direction: they reduce exposure when the cross-asset environment deteriorates. The strategy therefore behaves more like a robust allocator than a pure alpha engine.
+
+\section{Limitations}
+
+Several limitations should temper the interpretation.
+
+\begin{itemize}
+    \item The strategy still trails SPY on raw CAGR, so it is not an unconditional outperformance story.
+    \item The design was iterated on this same historical sample, so some degree of specification search is unavoidable.
+    \item The backtest uses adjusted daily prices and a simplified transaction cost model; it is not an execution-quality simulation.
+    \item Only a small number of crisis windows are examined, and different crises reward different defensive designs.
+\end{itemize}
+
+The most important next step is therefore not to add more complexity, but to strengthen credibility through walk-forward testing, parameter stability checks, and a higher-fidelity execution stack.
+
+\section{Conclusion}
+
+This study revisited Snapshot 2 with a narrower and more credible objective: improving robustness on broad ETF baskets. The resulting redesign does not maximize raw return, but it materially improves the path of returns. Over 2007--2026 it delivers a near-60/40 CAGR with far lower drawdown, the strongest Calmar ratio in the benchmark set, and particularly strong behavior in the 2008 and 2022 stress regimes.
+
+That is enough to justify the redesign as a research contribution. The improved Snapshot 2 is not ``best in all regimes,'' but it is meaningfully better aligned with the stated goal of downside-aware portfolio construction.
+
+\begin{thebibliography}{9}
+
+\bibitem{markowitz1952}
+H. Markowitz.
+\newblock Portfolio Selection.
+\newblock \emph{The Journal of Finance}, 7(1):77--91, 1952.
+
+\bibitem{ledoit2004}
+O. Ledoit and M. Wolf.
+\newblock A Well-Conditioned Estimator for Large-Dimensional Covariance Matrices.
+\newblock \emph{Journal of Multivariate Analysis}, 88(2):365--411, 2004.
+
+\bibitem{antonacci2014}
+G. Antonacci.
+\newblock \emph{Dual Momentum Investing}.
+\newblock McGraw-Hill, 2014.
+
+\bibitem{moreira2017}
+A. Moreira and T. Muir.
+\newblock Volatility-Managed Portfolios.
+\newblock \emph{The Journal of Finance}, 72(4):1611--1644, 2017.
+
+\bibitem{rockafellar2000}
+R. T. Rockafellar and S. Uryasev.
+\newblock Optimization of Conditional Value-at-Risk.
+\newblock \emph{Journal of Risk}, 2(3):21--41, 2000.
+
+\end{thebibliography}
+
+\end{document}

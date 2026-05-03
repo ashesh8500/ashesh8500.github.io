@@ -1,0 +1,482 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage[margin=0.75in]{geometry}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{array}
+
+\hypersetup{colorlinks=true,linkcolor=blue}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.35em}
+\renewcommand{\arraystretch}{1.15}
+
+\newcommand{\problem}[1]{\vspace{0.8em}\noindent\textbf{Problem #1.}\vspace{0.35em}}
+\newenvironment{solution}{\par\noindent\textit{Solution.}\ }{\par\vspace{1.1em}}
+\newcommand{\subproblem}[1]{\par\vspace{0.45em}\noindent\textbf{#1}\quad}
+\newcommand{\assigntext}[1]{\par\vspace{0.25em}\small\textit{#1}\par\vspace{0.35em}}
+
+\title{Computer Systems Architecture\\Homework 6}
+\author{Ashesh Kaji}
+\date{}
+
+\begin{document}
+\maketitle
+
+\problem{1}
+\assigntext{Direct-mapped caches with 12 word references: \texttt{0x02, 0xb3, 0x2a, 0x01, 0xbe, 0x57, 0xbf, 0x0d, 0xb6, 0x2b, 0xbc, 0xfd}.}
+
+\begin{solution}
+\subproblem{1.1} 16 one-word blocks $\Rightarrow$ no offset, 4 index bits, tag is the rest. Starting from an empty cache, every reference goes to a different index (the only collision is the very last one), so the entire trace misses.
+
+\begin{center}
+\small
+\begin{tabular}{@{}llcccc@{}}
+\toprule
+addr & binary & tag & index & hit/miss \\
+\midrule
+0x02 & 00000010 & 0x0 & 2  & miss \\
+0xb3 & 10110011 & 0xb & 3  & miss \\
+0x2a & 00101010 & 0x2 & 10 & miss \\
+0x01 & 00000001 & 0x0 & 1  & miss \\
+0xbe & 10111110 & 0xb & 14 & miss \\
+0x57 & 01010111 & 0x5 & 7  & miss \\
+0xbf & 10111111 & 0xb & 15 & miss \\
+0x0d & 00001101 & 0x0 & 13 & miss \\
+0xb6 & 10110110 & 0xb & 6  & miss \\
+0x2b & 00101011 & 0x2 & 11 & miss \\
+0xbc & 10111100 & 0xb & 12 & miss \\
+0xfd & 11111101 & 0xf & 13 & miss (evicts 0x0d) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Hit rate $= 0/12 = 0\%$.}
+
+\subproblem{1.2} 8 two-word blocks $\Rightarrow$ 1 offset bit, 3 index bits. For word address $W$: block $= W{\gg}1$, $\text{idx}=\text{block}\bmod 8$, $\text{tag}=\text{block}{\gg}3$, offset $= W \bmod 2$.
+
+\begin{center}
+\small
+\begin{tabular}{@{}llccccl@{}}
+\toprule
+addr & binary & tag & idx & off & h/m \\
+\midrule
+0x02 & 00000010 & 0x0 & 1 & 0 & miss \\
+0xb3 & 10110011 & 0xb & 1 & 1 & miss \\
+0x2a & 00101010 & 0x2 & 5 & 0 & miss \\
+0x01 & 00000001 & 0x0 & 0 & 1 & miss \\
+0xbe & 10111110 & 0xb & 7 & 0 & miss \\
+0x57 & 01010111 & 0x5 & 3 & 1 & miss \\
+0xbf & 10111111 & 0xb & 7 & 1 & \textbf{hit} \\
+0x0d & 00001101 & 0x0 & 6 & 1 & miss \\
+0xb6 & 10110110 & 0xb & 3 & 0 & miss \\
+0x2b & 00101011 & 0x2 & 5 & 1 & \textbf{hit} \\
+0xbc & 10111100 & 0xb & 6 & 0 & miss \\
+0xfd & 11111101 & 0xf & 6 & 1 & miss \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Hits $= 2/12 \approx 16.7\%$.} The two hits come from spatial locality: 0xbe and 0xbf are in the same block, and 0x2a and 0x2b are too.
+
+\subproblem{1.3} Three direct-mapped designs, all with 8 words of data:
+
+\begin{center}
+\small
+\begin{tabular}{@{}lccc@{}}
+\toprule
+design & blocks & block size & misses on the trace \\
+\midrule
+C1 (1-word blocks) & 8 & 1 word  & 12 \\
+C2 (2-word blocks) & 4 & 2 words & 11 \\
+C3 (4-word blocks) & 2 & 4 words & 12 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+C2 wins by exactly one hit (the 0x2a/0x2b pair). Every other reference is a cold miss because the working set ($\sim 12$ distinct addresses) is bigger than 8 words and there is essentially no temporal locality. With only 8 words of total storage, block size mostly trades off cold misses against conflict misses, and on this trace the small spatial-locality benefit of 2-word blocks barely shows up. So C2 is the best of the three, but none of them is good for this trace.
+\end{solution}
+
+\problem{2}
+\assigntext{Alternative indexing: instead of \emph{(block address) mod 1024}, use \emph{block\_addr[63:54] XOR block\_addr[53:44]} (10-bit XOR of two 10-bit chunks of the upper address) for a 1024-block direct-mapped cache.}
+
+\begin{solution}
+Yes, you can use this as the index of a direct-mapped cache. Any function $f:\text{addresses}\to\{0,\ldots,1023\}$ works as long as it is deterministic, so a 10-bit XOR of two address slices qualifies.
+
+Two changes are needed compared to the standard modulo scheme:
+\begin{enumerate}
+    \item \textbf{Tag width.} With modulo indexing the index field is a contiguous range of address bits, and the tag is everything above the index. Here the index is computed from bits $[63\!:\!54]$ and $[53\!:\!44]$, so neither group is recoverable from the 10-bit index alone. To uniquely identify a block we have to store enough of the original address bits to disambiguate. The simplest choice is to store all bits except the offset (so 64$-$offset bits) as the tag. A more careful design can save a few bits, but in any case the tag is wider than in the modulo cache, so each tag entry costs more storage.
+    \item \textbf{Indexing logic.} The index is no longer just a wire bundle; it now needs a 10-bit XOR gate. That is cheap in hardware (10 XOR gates, one per index bit), but it adds a small amount of latency to the cache access path.
+\end{enumerate}
+
+The big practical drawback is that this function uses only the \emph{upper} 20 address bits and ignores everything below bit 44. For typical programs that touch a few megabytes of memory, all of bits $[63\!:\!44]$ are constant, so every access maps to the same set and the cache behaves as if it had 1 block. So while the scheme is mechanically valid, it would be a bad design for normal workloads. A useful XOR scheme would XOR a few \emph{middle} bits with a few upper bits, so that nearby addresses still spread across the cache.
+\end{solution}
+
+\problem{3}
+\assigntext{Direct-mapped cache, 64-bit address, with the field layout: tag = bits 63--10, index = bits 9--5, offset = bits 4--0.}
+
+\begin{solution}
+\subproblem{3.1} Offset is 5 bits $\Rightarrow$ block size $= 2^5 = 32$ bytes $= \mathbf{8\text{ words}}$ (4 bytes/word).
+
+\subproblem{3.2} Index is 5 bits $\Rightarrow \mathbf{32\text{ blocks}}$.
+
+\subproblem{3.3} Each block stores: 1 valid bit, 54 tag bits, $32\times 8 = 256$ data bits, total $311$ bits. The whole cache uses $32\times 311 = 9952$ bits, of which $32\times 256 = 8192$ are data.
+\[
+\frac{\text{total bits}}{\text{data bits}} = \frac{9952}{8192} = 1.2148\ldots
+\]
+So overhead is about \textbf{21.5\%}.
+
+\subproblem{3.4} Byte-addressed accesses. With $\text{tag}=A{\gg}10$, $\text{idx}=(A{\gg}5)\bmod 32$, $\text{off}=A\bmod 32$:
+
+\begin{center}
+\small
+\begin{tabular}{@{}rrcccll@{}}
+\toprule
+addr (hex) & dec & tag & idx & off & h/m & replaced \\
+\midrule
+0x000 & 0    & 0x0 & 0 & 0  & miss & --- \\
+0x004 & 4    & 0x0 & 0 & 4  & hit  & --- \\
+0x010 & 16   & 0x0 & 0 & 16 & hit  & --- \\
+0x084 & 132  & 0x0 & 4 & 4  & miss & --- \\
+0x0E8 & 232  & 0x0 & 7 & 8  & miss & --- \\
+0x0A0 & 160  & 0x0 & 5 & 0  & miss & --- \\
+0x400 & 1024 & 0x1 & 0 & 0  & miss & evicts bytes 0--31 (tag 0, idx 0) \\
+0x01E & 30   & 0x0 & 0 & 30 & miss & evicts bytes 1024--1055 (tag 1, idx 0) \\
+0x08C & 140  & 0x0 & 4 & 12 & hit  & --- \\
+0xC1C & 3100 & 0x3 & 0 & 28 & miss & evicts bytes 0--31 (tag 0, idx 0) \\
+0x0B4 & 180  & 0x0 & 5 & 20 & hit  & --- \\
+0x884 & 2180 & 0x2 & 4 & 4  & miss & evicts bytes 128--159 (tag 0, idx 4) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subproblem{3.5} 4 hits out of 12 accesses, so \textbf{hit ratio $= 4/12 = 33.3\%$.}
+\end{solution}
+
+\problem{4}
+\assigntext{L1 = write-through, no-write-allocate. L2 = write-back, write-allocate.}
+
+\begin{solution}
+\subproblem{4.1} Buffers needed:
+\begin{itemize}\itemsep0pt
+    \item Between L1 and L2: a \textbf{write buffer} (every L1 store has to drain to L2 because L1 is write-through), and a \textbf{refill / read-miss buffer} that holds the incoming block on an L1 read miss while the CPU continues.
+    \item Between L2 and main memory: a \textbf{write-back buffer} (when a dirty L2 block is evicted, it sits in the buffer and drains to memory in the background), and a \textbf{refill / read-miss buffer} that holds the block coming back from memory on an L2 miss.
+\end{itemize}
+
+\subproblem{4.2} L1 write-miss procedure (L1 is WT, no-write-allocate):
+\begin{enumerate}\itemsep0pt
+    \item L1 sees a write miss. Because L1 is no-write-allocate, nothing is brought into L1; the block address and store data are pushed into the L1$\to$L2 write buffer.
+    \item The write buffer drains to L2. If L2 hits, L2 just updates the matching block and sets its dirty bit (since L2 is write-back).
+    \item If L2 misses, L2 is write-allocate, so it fetches the block from memory. Before installing the new block, L2 may have to evict a victim. If the victim is dirty, it is sent to the L2$\to$memory write-back buffer and drained. The new block lands in L2; the store data is then written into it and the dirty bit is set.
+\end{enumerate}
+
+\subproblem{4.3} Multilevel \emph{exclusive} cache. A block can be in L1 or L2 but not both.
+
+\textbf{L1 write-miss.} Look up L2.
+\begin{itemize}\itemsep0pt
+    \item If L2 hits: pull the block out of L2 (invalidate the L2 copy) and bring it into L1. L1 then performs the write (mark dirty). If L1's victim block was valid and dirty, it has to be moved into L2 (which itself may evict an L2 block; if that L2 victim is dirty, write it back to memory).
+    \item If L2 misses: fetch the block from memory directly into L1, perform the write, mark dirty. The L1 victim, if any, is moved into L2 (and an L2 victim, if dirty, is written back to memory).
+\end{itemize}
+
+\textbf{L1 read-miss.} Same skeleton, but no write.
+\begin{itemize}\itemsep0pt
+    \item L2 hit: pull the block out of L2 (invalidate L2 copy), install it in L1, return the data. L1's victim moves to L2 (and L2's victim is written back if dirty).
+    \item L2 miss: fetch from memory into L1. L1's victim moves to L2 (and L2's victim is written back if dirty).
+\end{itemize}
+The point is that exclusive caches always \emph{swap} the L1 victim with the L2 incoming block instead of letting two copies live in the hierarchy.
+\end{solution}
+
+\problem{5}
+\assigntext{Per 1000 instructions: 250 data reads, 100 data writes; I-cache miss rate 0.30\%; D-cache miss rate 2\%; block size 64 B; CPI = 2. Each miss fetches one block. Each write writes one word (4 B).}
+
+\begin{solution}
+Per instruction: 1 instruction fetch, 0.25 data reads, 0.10 data writes.
+
+\subproblem{5.1} Write-through, write-allocate. Every cache miss (instruction or data, read or write) brings in one 64-byte block. Every write is also propagated to memory (4 bytes).
+\begin{align*}
+\text{misses/instr} &= 1\cdot 0.003 + (0.25 + 0.10)\cdot 0.02 = 0.003 + 0.007 = 0.010 \\
+\text{read traffic/instr} &= 0.010 \cdot 64 = 0.64\ \text{B} \\
+\text{read BW} &= 0.64 / 2 = \mathbf{0.32\ \text{B/cycle}} \\
+\text{write traffic/instr} &= 0.10 \cdot 4 = 0.40\ \text{B} \\
+\text{write BW} &= 0.40 / 2 = \mathbf{0.20\ \text{B/cycle}}
+\end{align*}
+
+\subproblem{5.2} Write-back, write-allocate, 30\% of evicted D-cache blocks are dirty. Reads still bring in one block per miss; writes only generate memory traffic when a dirty block is evicted (and then the whole block goes back).
+\begin{align*}
+\text{read BW} &= 0.010 \cdot 64 / 2 = \mathbf{0.32\ \text{B/cycle}} \\
+\text{D-misses/instr} &= 0.35 \cdot 0.02 = 0.0070 \\
+\text{dirty evictions/instr} &= 0.30 \cdot 0.0070 = 0.0021 \\
+\text{write traffic/instr} &= 0.0021 \cdot 64 = 0.1344\ \text{B} \\
+\text{write BW} &= 0.1344 / 2 = \mathbf{0.0672\ \text{B/cycle}}
+\end{align*}
+
+So write-back drops the write bandwidth by about $3{\times}$ on this workload, while leaving read bandwidth unchanged.
+\end{solution}
+
+\problem{6}
+\assigntext{Streaming sequential word access $0,1,2,3,\ldots$ to a 512 KiB working set.}
+
+\begin{solution}
+\subproblem{6.1} 64 KiB direct-mapped, 32-byte blocks. A 32-byte block holds $32/4 = 8$ words. Sequential accesses touch each word once, so within a block there is one miss followed by 7 hits.
+\[
+\text{miss rate} = \frac{1}{8} = 12.5\%.
+\]
+The miss rate does \emph{not} depend on the cache size here. The working set (512 KiB) is much larger than any reasonable L1, and we never come back to a block, so changing the cache size or the working-set size makes no difference. By the 3C model these are all \textbf{compulsory misses}.
+
+\subproblem{6.2} Same logic for other block sizes:
+\[
+\text{16 B (4 words)} \to 25\%,\quad \text{64 B (16 words)} \to 6.25\%,\quad \text{128 B (32 words)} \to 3.125\%.
+\]
+Bigger blocks always do better here. The workload is purely \textbf{spatial locality}; there is no temporal locality at all.
+
+\subproblem{6.3} With a two-entry stream buffer plus the assumption that a block can be brought in before the previous block is consumed: when block 0 is touched (cold miss), the stream buffer prefetches block 1 (and block 2). By the time the CPU reaches block 1, it is already in the prefetch buffer, so it counts as a hit, gets moved into the cache, and block 3 starts prefetching. The same holds forever. Effectively, only the very first block is a miss and every subsequent block is satisfied by the stream buffer in time. The asymptotic \textbf{miss rate is essentially $0\%$.}
+\end{solution}
+
+\problem{7}
+\assigntext{Base CPI = 1, 1.35 references per instruction. Miss rates: $B{=}8\to4\%$, $16\to3\%$, $32\to2\%$, $64\to1.5\%$, $128\to1\%$.}
+
+\begin{solution}
+$\text{CPI} = 1 + 1.35 \cdot \text{miss rate} \cdot \text{miss latency}$.
+
+\subproblem{7.1} Miss latency $= 20B$ cycles:
+\begin{center}\small
+\begin{tabular}{@{}cccc@{}}\toprule
+$B$ & miss rate & latency & CPI \\\midrule
+8   & 0.040 & 160  & 9.640 \\
+16  & 0.030 & 320  & 13.96 \\
+32  & 0.020 & 640  & 18.28 \\
+64  & 0.015 & 1280 & 26.92 \\
+128 & 0.010 & 2560 & 35.56 \\
+\bottomrule\end{tabular}\end{center}
+\textbf{Optimal $B = 8$.} The latency grows linearly with $B$ but the miss rate falls more slowly, so larger blocks lose.
+
+\subproblem{7.2} Miss latency $= 24 + B$ cycles:
+\begin{center}\small
+\begin{tabular}{@{}cccc@{}}\toprule
+$B$ & miss rate & latency & CPI \\\midrule
+8   & 0.040 & 32  & 2.728 \\
+16  & 0.030 & 40  & 2.620 \\
+32  & 0.020 & 56  & \textbf{2.512} \\
+64  & 0.015 & 88  & 2.782 \\
+128 & 0.010 & 152 & 3.052 \\
+\bottomrule\end{tabular}\end{center}
+\textbf{Optimal $B = 32$.} The fixed 24-cycle setup makes small blocks expensive per byte, but very large blocks still hurt because latency grows.
+
+\subproblem{7.3} Constant miss latency $\Rightarrow$ total miss CPI $\propto$ miss rate, so the smallest miss rate wins. \textbf{Optimal $B = 128$.}
+\end{solution}
+
+\problem{8}
+\assigntext{Memory $=$ 70 ns, 36\% of instructions access data. P1: 2 KiB, 8\% miss, 0.66 ns hit. P2: 4 KiB, 6\% miss, 0.90 ns hit. The L1 hit time sets the cycle time.}
+
+\begin{solution}
+\subproblem{8.1} Clock rates from $f = 1/T$:
+\[
+\text{P1: } 1/0.66\text{ ns} \approx \mathbf{1.515\text{ GHz}}, \qquad
+\text{P2: } 1/0.90\text{ ns} \approx \mathbf{1.111\text{ GHz}}.
+\]
+
+\subproblem{8.2} $\text{AMAT} = T_{\text{hit}} + \text{miss rate} \cdot T_{\text{mem}}$.
+\begin{align*}
+\text{P1: } &\ 0.66 + 0.08 \cdot 70 = 6.26\text{ ns} = 6.26/0.66 \approx \mathbf{9.485\text{ cyc}}. \\
+\text{P2: } &\ 0.90 + 0.06 \cdot 70 = 5.10\text{ ns} = 5.10/0.90 \approx \mathbf{5.667\text{ cyc}}.
+\end{align*}
+
+\subproblem{8.3} Total CPI = base CPI + memory stalls/instr. Memory accesses per instr = $1 + 0.36 = 1.36$. Miss penalty in cycles = $T_{\text{mem}}/T_{\text{cycle}}$.
+\begin{align*}
+\text{P1: } &\ 1.0 + 1.36 \cdot 0.08 \cdot (70/0.66) = 1.0 + 11.539 = \mathbf{12.539}. \\
+\text{P2: } &\ 1.0 + 1.36 \cdot 0.06 \cdot (70/0.90) = 1.0 + 6.347  = \mathbf{7.347}.
+\end{align*}
+Time per instruction:
+\[
+\text{P1: } 12.539 \cdot 0.66 = 8.276\text{ ns}, \qquad
+\text{P2: } 7.347 \cdot 0.90 = 6.612\text{ ns}.
+\]
+\textbf{P2 is faster.} Its bigger and slower L1 still wins because it misses less often, and 70 ns to memory is brutal.
+
+\subproblem{8.4} Add an L2 to P1: 1 MiB, 5.62 ns hit, 95\% local miss rate.
+\[
+\text{AMAT} = 0.66 + 0.08\cdot(5.62 + 0.95\cdot 70) = 0.66 + 5.7696 = \mathbf{6.430\text{ ns}} \approx 9.74\text{ cyc}.
+\]
+This is \textbf{worse} than P1 without L2 (6.26 ns). With a 95\% local miss rate the L2 is doing almost nothing useful, and the 5.62 ns L2 hit is added on top.
+
+\subproblem{8.5} Total CPI for P1 + L2:
+\[
+\text{CPI} = 1 + 1.36 \cdot 0.08 \cdot \big(5.62/0.66 + 0.95 \cdot 70/0.66\big) = 1 + 11.889 = \mathbf{12.889}.
+\]
+Slightly worse than 12.539 without the L2.
+
+\subproblem{8.6} For P1 + L2 to beat P1 alone in AMAT we need
+\[
+0.66 + 0.08\cdot(5.62 + 70\,r) \le 6.26 \;\Rightarrow\; r \le \frac{6.26-0.66-0.08\cdot 5.62}{0.08\cdot 70} = \frac{6.26-1.1096}{5.6}\approx \mathbf{0.92}.
+\]
+So the L2 local miss rate has to be roughly \textbf{92\%} or lower. Since the given 95\% is just above that line, the L2 actively hurts.
+
+\subproblem{8.7} For P1 + L2 to beat P2 (no L2), compare \emph{time per instruction}, not just AMAT, because the clock rates differ. Solving
+\[
+\big(1 + 1.36\cdot 0.08\cdot(8.515 + r\cdot 106.06)\big)\cdot 0.66 \le 6.612\text{ ns}
+\]
+gives $r \le \mathbf{0.7012}$, i.e.\ the L2 needs a local miss rate of about \textbf{70\%} or lower. (Numbers verified by \texttt{hw6\_calc.py}.)
+\end{solution}
+
+\problem{9}
+\assigntext{14 word references: \texttt{0x03, 0xb4, 0x2b, 0x02, 0xbe, 0x58, 0xbf, 0x0e, 0x1f, 0xb5, 0xbf, 0xba, 0x2e, 0xce}.}
+
+\begin{solution}
+\subproblem{9.1} 3-way set associative, 2-word blocks, 48 words. Number of blocks $= 48/2 = 24$, number of sets $= 24/3 = 8$. So the address split (for word addresses) is offset $= 1$ bit, index $= 3$ bits, and tag $= $ remaining word-address bits. The schematic looks like Fig.\ 5.18 in the text but with three parallel ways per set; each way stores a tag (rest of the word address) and one 2-word data block; the three tags in a set are compared in parallel and the matching way's data block is selected.
+
+\subproblem{9.2} Trace (for word $W$: block $= W{\gg}1$, idx $=$ block $\bmod 8$, tag $=$ block ${\gg}3$):
+
+\begin{center}\small
+\begin{tabular}{@{}llcccll@{}}\toprule
+addr & binary & tag & idx & off & h/m & set after access (LRU $\to$ MRU) \\\midrule
+0x03 & 00000011 & 0x0 & 1 & 1 & miss & set[1]=\{0x0\} \\
+0xb4 & 10110100 & 0xb & 2 & 0 & miss & set[2]=\{0xb\} \\
+0x2b & 00101011 & 0x2 & 5 & 1 & miss & set[5]=\{0x2\} \\
+0x02 & 00000010 & 0x0 & 1 & 0 & \textbf{hit}  & set[1]=\{0x0\} \\
+0xbe & 10111110 & 0xb & 7 & 0 & miss & set[7]=\{0xb\} \\
+0x58 & 01011000 & 0x5 & 4 & 0 & miss & set[4]=\{0x5\} \\
+0xbf & 10111111 & 0xb & 7 & 1 & \textbf{hit}  & set[7]=\{0xb\} \\
+0x0e & 00001110 & 0x0 & 7 & 0 & miss & set[7]=\{0xb,0x0\} \\
+0x1f & 00011111 & 0x1 & 7 & 1 & miss & set[7]=\{0xb,0x0,0x1\} \\
+0xb5 & 10110101 & 0xb & 2 & 1 & \textbf{hit}  & set[2]=\{0xb\} \\
+0xbf & 10111111 & 0xb & 7 & 1 & \textbf{hit}  & set[7]=\{0x0,0x1,0xb\} \\
+0xba & 10111010 & 0xb & 5 & 0 & miss & set[5]=\{0x2,0xb\} \\
+0x2e & 00101110 & 0x2 & 7 & 0 & miss & set[7]=\{0x1,0xb,0x2\} (evicts 0x0) \\
+0xce & 11001110 & 0xc & 7 & 0 & miss & set[7]=\{0xb,0x2,0xc\} (evicts 0x1) \\
+\bottomrule\end{tabular}\end{center}
+4 hits, 10 misses.
+
+\subproblem{9.3} Fully associative, 1-word blocks, 8 entries: no offset and no index, the entire word address is the tag. Eight tag/data lines all compared in parallel against the incoming address.
+
+\subproblem{9.4} Trace (LRU). The cache holds whole word addresses; nothing repeats until 0xbf at step 11.
+
+\begin{center}\small
+\begin{tabular}{@{}llcl@{}}\toprule
+addr & tag & h/m & cache (LRU $\to$ MRU) \\\midrule
+0x03 & 0x03 & miss & 0x03 \\
+0xb4 & 0xb4 & miss & 0x03, 0xb4 \\
+0x2b & 0x2b & miss & 0x03, 0xb4, 0x2b \\
+0x02 & 0x02 & miss & 0x03, 0xb4, 0x2b, 0x02 \\
+0xbe & 0xbe & miss & 0x03, 0xb4, 0x2b, 0x02, 0xbe \\
+0x58 & 0x58 & miss & 0x03, 0xb4, 0x2b, 0x02, 0xbe, 0x58 \\
+0xbf & 0xbf & miss & 0x03, 0xb4, 0x2b, 0x02, 0xbe, 0x58, 0xbf \\
+0x0e & 0x0e & miss & 0x03, 0xb4, 0x2b, 0x02, 0xbe, 0x58, 0xbf, 0x0e \\
+0x1f & 0x1f & miss & 0xb4, 0x2b, 0x02, 0xbe, 0x58, 0xbf, 0x0e, 0x1f (evicts 0x03) \\
+0xb5 & 0xb5 & miss & 0x2b, 0x02, 0xbe, 0x58, 0xbf, 0x0e, 0x1f, 0xb5 \\
+0xbf & 0xbf & \textbf{hit}  & 0x2b, 0x02, 0xbe, 0x58, 0x0e, 0x1f, 0xb5, 0xbf \\
+0xba & 0xba & miss & 0x02, 0xbe, 0x58, 0x0e, 0x1f, 0xb5, 0xbf, 0xba \\
+0x2e & 0x2e & miss & 0xbe, 0x58, 0x0e, 0x1f, 0xb5, 0xbf, 0xba, 0x2e \\
+0xce & 0xce & miss & 0x58, 0x0e, 0x1f, 0xb5, 0xbf, 0xba, 0x2e, 0xce \\
+\bottomrule\end{tabular}\end{center}
+1 hit, 13 misses.
+
+\subproblem{9.5} Fully associative, 2-word blocks, 8 words = 4 blocks. Offset = 1 bit, no index, tag = block address (the rest of the word address). Four tag/data lines compared in parallel.
+
+\subproblem{9.6} Trace (LRU). Block $= W{\gg}1$.
+
+\begin{center}\small
+\begin{tabular}{@{}llccl@{}}\toprule
+addr & block & off & h/m & cache (LRU $\to$ MRU) \\\midrule
+0x03 & 0x01 & 1 & miss & 0x01 \\
+0xb4 & 0x5a & 0 & miss & 0x01, 0x5a \\
+0x2b & 0x15 & 1 & miss & 0x01, 0x5a, 0x15 \\
+0x02 & 0x01 & 0 & \textbf{hit}  & 0x5a, 0x15, 0x01 \\
+0xbe & 0x5f & 0 & miss & 0x5a, 0x15, 0x01, 0x5f \\
+0x58 & 0x2c & 0 & miss & 0x15, 0x01, 0x5f, 0x2c (evicts 0x5a) \\
+0xbf & 0x5f & 1 & \textbf{hit}  & 0x15, 0x01, 0x2c, 0x5f \\
+0x0e & 0x07 & 0 & miss & 0x01, 0x2c, 0x5f, 0x07 (evicts 0x15) \\
+0x1f & 0x0f & 1 & miss & 0x2c, 0x5f, 0x07, 0x0f (evicts 0x01) \\
+0xb5 & 0x5a & 1 & miss & 0x5f, 0x07, 0x0f, 0x5a (evicts 0x2c) \\
+0xbf & 0x5f & 1 & \textbf{hit}  & 0x07, 0x0f, 0x5a, 0x5f \\
+0xba & 0x5d & 0 & miss & 0x0f, 0x5a, 0x5f, 0x5d (evicts 0x07) \\
+0x2e & 0x17 & 0 & miss & 0x5a, 0x5f, 0x5d, 0x17 (evicts 0x0f) \\
+0xce & 0x67 & 0 & miss & 0x5f, 0x5d, 0x17, 0x67 (evicts 0x5a) \\
+\bottomrule\end{tabular}\end{center}
+3 hits, 11 misses.
+
+\subproblem{9.7} Same setup but \textbf{MRU} replacement (on a miss, evict the most recently used line):
+
+\begin{center}\small
+\begin{tabular}{@{}llccl@{}}\toprule
+addr & block & off & h/m & cache (LRU $\to$ MRU) \\\midrule
+0x03 & 0x01 & 1 & miss & 0x01 \\
+0xb4 & 0x5a & 0 & miss & 0x01, 0x5a \\
+0x2b & 0x15 & 1 & miss & 0x01, 0x5a, 0x15 \\
+0x02 & 0x01 & 0 & \textbf{hit}  & 0x5a, 0x15, 0x01 \\
+0xbe & 0x5f & 0 & miss & 0x5a, 0x15, 0x01, 0x5f \\
+0x58 & 0x2c & 0 & miss & 0x5a, 0x15, 0x01, 0x2c (evicts MRU 0x5f) \\
+0xbf & 0x5f & 1 & miss & 0x5a, 0x15, 0x01, 0x5f (evicts MRU 0x2c) \\
+0x0e & 0x07 & 0 & miss & 0x5a, 0x15, 0x01, 0x07 (evicts MRU 0x5f) \\
+0x1f & 0x0f & 1 & miss & 0x5a, 0x15, 0x01, 0x0f (evicts MRU 0x07) \\
+0xb5 & 0x5a & 1 & \textbf{hit}  & 0x15, 0x01, 0x0f, 0x5a \\
+0xbf & 0x5f & 1 & miss & 0x15, 0x01, 0x0f, 0x5f (evicts MRU 0x5a) \\
+0xba & 0x5d & 0 & miss & 0x15, 0x01, 0x0f, 0x5d (evicts MRU 0x5f) \\
+0x2e & 0x17 & 0 & miss & 0x15, 0x01, 0x0f, 0x17 (evicts MRU 0x5d) \\
+0xce & 0x67 & 0 & miss & 0x15, 0x01, 0x0f, 0x67 (evicts MRU 0x17) \\
+\bottomrule\end{tabular}\end{center}
+2 hits, 12 misses. MRU is worse than LRU here, as expected for this kind of trace.
+
+\subproblem{9.8} Optimal (Belady) replacement: when a miss has to evict, throw out whichever block in the cache will be used furthest in the future (or never). Running this on the trace gives 4 hits and 10 misses, beating both LRU and MRU. The trace:
+
+\begin{center}\small
+\begin{tabular}{@{}llcll@{}}\toprule
+addr & block & h/m & cache after access & note \\\midrule
+0x03 & 0x01 & miss & 0x01 & \\
+0xb4 & 0x5a & miss & 0x01, 0x5a & \\
+0x2b & 0x15 & miss & 0x01, 0x5a, 0x15 & \\
+0x02 & 0x01 & \textbf{hit}  & 0x01, 0x5a, 0x15 & \\
+0xbe & 0x5f & miss & 0x01, 0x5a, 0x15, 0x5f & \\
+0x58 & 0x2c & miss & 0x2c, 0x5a, 0x15, 0x5f & evicts 0x01 (no future use) \\
+0xbf & 0x5f & \textbf{hit}  & 0x2c, 0x5a, 0x15, 0x5f & \\
+0x0e & 0x07 & miss & 0x07, 0x5a, 0x15, 0x5f & evicts 0x2c \\
+0x1f & 0x0f & miss & 0x0f, 0x5a, 0x15, 0x5f & evicts 0x07 \\
+0xb5 & 0x5a & \textbf{hit}  & 0x0f, 0x5a, 0x15, 0x5f & \\
+0xbf & 0x5f & \textbf{hit}  & 0x0f, 0x5a, 0x15, 0x5f & \\
+0xba & 0x5d & miss & 0x5d, 0x5a, 0x15, 0x5f & evicts 0x0f \\
+0x2e & 0x17 & miss & 0x17, 0x5a, 0x15, 0x5f & evicts 0x5d \\
+0xce & 0x67 & miss & 0x67, 0x5a, 0x15, 0x5f & evicts 0x17 \\
+\bottomrule\end{tabular}\end{center}
+4 hits, 10 misses.
+\end{solution}
+
+\problem{10}
+\assigntext{Base CPI = 1.5, processor = 2 GHz, main memory = 100 ns. L1 misses combined = 7\% per instruction. L2 direct-mapped = 12 cycles, 3.5\% local miss; L2 8-way = 28 cycles, 1.5\% local miss.}
+
+\begin{solution}
+Memory access in cycles: $100\text{ ns} \cdot 2\text{ GHz} = 200$ cycles.
+
+\subproblem{10.1} CPI:
+\begin{align*}
+\text{only L1: }       & 1.5 + 0.07\cdot 200 = \mathbf{15.50} \\
+\text{L1 + L2 DM: }    & 1.5 + 0.07\cdot 12 + 0.07\cdot 0.035\cdot 200 = \mathbf{2.83} \\
+\text{L1 + L2 8-way: } & 1.5 + 0.07\cdot 28 + 0.07\cdot 0.015\cdot 200 = \mathbf{3.67}
+\end{align*}
+If memory time doubles to 200 ns ($\Rightarrow 400$ cycles):
+\begin{center}\small
+\begin{tabular}{@{}lccc@{}}\toprule
+config & CPI (200 cyc) & CPI (400 cyc) & $\Delta$ (abs / \%) \\\midrule
+only L1       & 15.50 & 29.50 & $+14.00$ / $+90.32\%$ \\
+L1 + L2 DM    & 2.83  & 3.32  & $+0.49$  / $+17.31\%$ \\
+L1 + L2 8-way & 3.67  & 3.88  & $+0.21$  / $+5.72\%$ \\
+\bottomrule\end{tabular}\end{center}
+The lower-miss-rate L2 (8-way) is much less affected by slower memory. That is exactly the point of an L2 cache: it absorbs most of the L1 misses, so memory speed matters less.
+
+\subproblem{10.2} Add an L3 (50 cycles, 13\% miss rate) below the L2 DM:
+\[
+\text{CPI} = 1.5 + 0.07\cdot 12 + 0.07\cdot 0.035\cdot 50 + 0.07\cdot 0.035\cdot 0.13\cdot 200 = \mathbf{2.526}.
+\]
+That is better than $2.83$ without an L3, so the L3 helps. In general, the trade-off is:
+\begin{itemize}\itemsep0pt
+    \item \textbf{Pros:} more requests are caught before they reach memory, so the miss penalty paid on an L2 miss drops dramatically (50 cyc vs 200 cyc). Helpful when the working set just exceeds L2.
+    \item \textbf{Cons:} more die area, more power, and a larger access path (L3 still costs 50 cycles on every L2 miss). If L2 already catches most accesses, L3 is mostly dead weight, and there is also a coherence/inclusion cost.
+\end{itemize}
+
+\subproblem{10.3} Off-chip L2 with 50-cycle hit, 4\% miss at 512 KiB, dropping by 0.7\% per additional 512 KiB. To match the on-chip L2 DM CPI of 2.83 we need
+\[
+1.5 + 0.07\cdot 50 + 0.07\cdot r\cdot 200 = 2.83 \;\Rightarrow\; 5.0 + 14r = 2.83.
+\]
+Even with $r = 0$ the off-chip L2 already gives a CPI of $5.0$, which is much worse than 2.83. So \textbf{no size of off-chip L2 can match the on-chip direct-mapped L2.} The 50-cycle hit time alone (paid on every L1 miss) costs more than the entire memory-stall budget of the on-chip design. The only way to fix this would be to lower the L2 hit time, not the miss rate.
+\end{solution}
+
+\end{document}

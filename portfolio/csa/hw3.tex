@@ -1,0 +1,217 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage[margin=0.75in]{geometry}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage[dvipsnames]{xcolor}
+
+\hypersetup{colorlinks=true,linkcolor=blue}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.35em}
+\renewcommand{\arraystretch}{1.15}
+
+\newcommand{\problem}[1]{\vspace{0.8em}\noindent\textbf{Problem #1.}\vspace{0.35em}}
+\newenvironment{solution}{\par\noindent\textit{Solution.}\ }{\par\vspace{1.1em}}
+\newcommand{\subproblem}[1]{\par\vspace{0.45em}\noindent\textbf{(#1)}\quad}
+\newcommand{\bits}[1]{\texttt{\textcolor{NavyBlue}{#1}}}
+\newcommand{\hexv}[1]{\texttt{\textcolor{BrickRed}{#1}}}
+
+\title{Computer Systems Architecture\\Homework 3}
+\author{Ashesh Kaji}
+\date{Due: Mar 25, 2026}
+
+\begin{document}
+\maketitle
+
+\problem{1}
+\begin{solution}
+
+\subproblem{Overflow tests}
+\textbf{(i) Unsigned.} Interpret both operands in $[0,255]$. After adding, there is overflow exactly when there is a carry out of bit~7 (equivalently, the true sum is $\ge 256$). Another way to say it: if I call the unsigned results $a$ and $b$, overflow happens when $a+b< a$ (or $<b$) using 8-bit wraparound---that only occurs when the sum should have been $256$ or more.
+
+\textbf{(ii) Signed (two's complement).} Overflow happens when adding two numbers with the \emph{same} sign produces a result with the \emph{opposite} sign. In terms of carries: overflow iff the carry \emph{into} the sign bit $\neq$ the carry \emph{out} of the sign bit. If the signs of the operands differ, there is no overflow from addition.
+
+\subproblem{Additions}
+
+\textbf{A.} $01101110 + 10011111$. \\
+Bitwise sum (9 bits): $1\,00001101$; low 8 bits are $00001101$. \\
+\textbf{Unsigned:} $110+159=269$, so there \textbf{is} overflow (carry out of the MSB). The wrapped 8-bit result is $13$. \\
+\textbf{Signed:} $+110$ plus $-97$ gives $+13$, same sign rule $\Rightarrow$ \textbf{no} overflow. The 8-bit pattern $00001101$ is $+13$.
+
+\textbf{B.} $11111111 + 00000001 = 00000000$ with carry out. \\
+\textbf{Unsigned:} $255+1=256$ $\Rightarrow$ \textbf{overflow}. Result reads as $0$. \\
+\textbf{Signed:} $-1+1=0$ $\Rightarrow$ \textbf{no} overflow.
+
+\textbf{C.} $10000000 + 01111111 = 11111111$. \\
+\textbf{Unsigned:} $128+127=255$ $\Rightarrow$ \textbf{no} overflow. \\
+\textbf{Signed:} $-128+127=-1$ $\Rightarrow$ \textbf{no} overflow.
+
+\textbf{D.} $01110001 + 00001111 = 10000000$. \\
+\textbf{Unsigned:} $113+15=128$, which still fits in 8-bit unsigned $\Rightarrow$ \textbf{no} overflow (the pattern is $128_{10}$). \\
+\textbf{Signed:} $+113$ and $+15$ are both positive, but the sum encodes as $10000000$, i.e.\ $-128$. Same-sign add flipped the sign $\Rightarrow$ \textbf{overflow}.
+\end{solution}
+
+\problem{2}
+\begin{solution}
+Here $0\text{xAB}=171_{10}$ and $0\text{xEF}=239_{10}$. Since subtracts are allowed, write
+\[
+0\text{xEF}=239=256-16-1=2^8-2^4-2^0.
+\]
+Then
+\[
+0\text{xAB}\cdot 0\text{xEF}
+=0\text{xAB}\cdot(2^8-2^4-1)
+=(0\text{xAB}\ll 8)-(0\text{xAB}\ll 4)-0\text{xAB}.
+\]
+So the shift/add-subtract implementation is
+\[
+\boxed{(0\text{xAB}\ll 8)-(0\text{xAB}\ll 4)-0\text{xAB}}
+\]
+which uses two shifts and two subtractions.
+\end{solution}
+
+\problem{3}
+\begin{solution}
+I read the pattern in the usual MSB-first order: $\hexv{0xDEADBEEF}$ maps to the 32-bit word
+\bits{11011110\,10101101\,10111110\,11101111}.
+
+IEEE single precision splits as: sign $=1$, next 8 bits exponent $=10111101_2 = 189$, remaining 23 bits fraction $=01011011011111011101111_2$.
+
+Biased exponent $189$ gives an unbiased exponent $189-127=62$. With the hidden leading one, the significand is
+\[
+1.01011011011111011101111_2.
+\]
+So the value is
+\[
+(-1)\cdot 2^{62}\cdot\bigl(1 + 0.01011011011111011101111_2\bigr).
+\]
+Multiplying out the significand gives
+\[
+-6.26\times 10^{18},
+\]
+more precisely about $-6.25985\times 10^{18}$.
+\end{solution}
+
+\problem{4}
+\begin{solution}
+$78.75 = 64 + 8 + 4 + 2 + \tfrac12 + \tfrac14 = 1001110.11_2 = 1.00111011_2\times 2^{6}$.
+
+\textbf{Single precision.} Biased exponent $6+127=133=10000101_2$. Fraction (drop the hidden one): $00111011000000000000000$. Sign positive. \\
+\textbf{Bit pattern:} \bits{0 10000101 00111011000000000000000} \\
+(i.e.\ \bits{01000010100111011000000000000000}).
+
+\textbf{Double precision.} Biased exponent $6+1023=1029=10000000101_2$. Fraction pads to 52 bits: $001110110000\ldots000$. \\
+\textbf{Bit pattern:} \bits{0 10000000101 0011101100000000\ldots000} \\
+(i.e.\ \bits{0100000001010011101100000000000000000000000000000000000000000000}).
+\end{solution}
+
+\problem{5}
+\begin{solution}
+IBM single-format style from lecture/text: base~16, 1 sign bit, 7-bit exponent with bias~64, 24-bit fraction interpreted as a \emph{hex} mantissa $0.h_1h_2\ldots h_6$, and
+\[
+\text{value} = (-1)^s \cdot 16^{(E-64)}\cdot (0.h_1h_2\ldots h_6)_{16}.
+\]
+
+Now $78.75 = 256 \times 0.3076171875_{10}$, and $0.3076171875 = (\hexv{0.4EC})_{16}$ when you expand the hex fraction digit by digit. So we want $E-64=2$, hence $E=66=1000010_2$. The fraction field is the hex digits \hexv{4EC} followed by zeros: \bits{010011101100000000000000}.
+
+Putting it together (sign $0$):
+\[
+\textbf{\bits{0\ 1000010\ 010011101100000000000000}}
+\]
+(hex \hexv{0x424EC000}).
+\end{solution}
+
+\problem{6}
+\begin{solution}
+\subproblem{a}
+Target: $-1.3625\times 10^{-1} = -0.13625$.
+
+Absolute value: normalize by pulling out powers of two until the significand sits in $[1,2)$. I get $1.0001011100_2 \times 2^{-3}$, which is the representable value closest to $0.13625$. Unbiased exponent $-3$ gives stored exponent $-3+15=12=01100_2$. The fraction rounds to the nearest 10-bit field; I get $0001011100_2$ (decimal $92$). Sign bit~1.
+
+\textbf{Half pattern (16 bits):}
+\[
+\textbf{\bits{1\ 01100\ 0001011100}}
+\quad\text{or}\quad
+\bits{1011000001011100}_2 = \hexv{0xB05C}.
+\]
+The stored value is not exactly $-0.13625$; it is about $-0.13623$, which is the nearest half.
+
+Compared to IEEE single, half precision has a much smaller exponent range and only 10 fraction bits instead of 23, so both the range and the precision are worse.
+
+\subproblem{b}
+Operands (as given): $A=16.125=1.0000001_2\times 2^4$, $B=0.3150390625$.
+
+\textbf{Encode $A$.} Unbiased exponent $4$ $\Rightarrow$ stored $4+15=19=10011_2$. Fraction $0000001000$ (the bits after the hidden one). Pattern \bits{0\,10011\,0000001000}.
+
+\textbf{Encode $B$.} $B\approx 1.0100001010_2\times 2^{-2}$, unbiased $-2$ $\Rightarrow$ stored $13=01101_2$, fraction rounds to $0100001010$ (decimal $266$). Pattern \bits{0\,01101\,0100001010}.
+
+\textbf{Add (align to the larger exponent $4$).} Effective significands with hidden bit: $1032/1024$ and $1290/1024$ at exponent $-2$. Align $B$ by shifting its significand right by $6$ (difference of exponents). In a widened add with guard/round/sticky: the aligned add of the significands comes out to about $1052.15625$ in the ``$1024$'' scaling, i.e.\ still $1.xxx$ at exponent~$4$.
+
+\textbf{Round (nearest even, G/R/S).} The fractional part lands near $28.15625$ in the $10$-bit fraction space, so the rounded fraction is $28$ (even tie-breaking does not flip it here). Final stored exponent remains $19$.
+
+\textbf{Result pattern:} \bits{0\,10011\,0000011100} (\bits{0100110000011100}), which decodes to $16.4375$. That is the correctly rounded half-precision sum of the \emph{stored} operands; it is a hair below the real-number sum $16.4400390625$ because $B$ was already rounded when we encoded it.
+\end{solution}
+
+\problem{7}
+\begin{solution}
+I am using the usual IEEE layouts: single has $(1,8,23)$ fields with bias~127; half (Problem~6) has $(1,5,10)$ with bias~15; \textbf{bfloat16} matches the figure from class: $(1,8,7)$ with bias~127 (same exponent layout as float32, shorter fraction).
+
+For \emph{positive normalized} numbers:
+
+\medskip
+\noindent\textbf{(i) IEEE single.} Smallest normalized magnitude $\approx 2^{-126}$. Largest is $(2-2^{-23})\,2^{127}\approx 3.4\times 10^{38}$. Relative accuracy is about $2^{-24}$ (equivalently, machine epsilon is $2^{-23}$).
+
+\medskip
+\noindent\textbf{(ii) IEEE half (Problem~6).} Smallest normalized $\approx 2^{-14}$. Largest $(2-2^{-10})2^{15}=65504$. Relative accuracy is about $2^{-11}$.
+
+\medskip
+\noindent\textbf{(iii) bfloat16.} Exponent matches float32, so the positive normal range is essentially the same as single ($\sim 2^{-126}$ up to $\sim 3.4\times 10^{38}$). The fraction is only 7 bits, so the relative accuracy is about $2^{-8}$.
+
+So bfloat16 keeps the large exponent range of single precision but gives up precision, while half precision keeps a little more precision but has a much smaller range.
+\end{solution}
+
+\problem{8}
+\begin{solution}
+\subproblem{(a)}
+Bias $=3$. Denormals use exponent bits \texttt{000} and
+\[
+\text{value}=(-1)^s\cdot 2^{1-3}\cdot (0.f_2f_1f_0)_2 = (-1)^s\cdot \frac{f}{32},
+\]
+where $f$ is the 3-bit integer. Normals ($e\neq 0$) use
+\[
+\text{value}=(-1)^s\cdot 2^{e-3}\cdot\Bigl(1+\frac{f}{8}\Bigr).
+\]
+
+\begin{center}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+Number & Binary (s\,exp\,frac) & Decimal \\
+\midrule
+$0$ & \bits{0\,000\,000} & $0.0$ \\
+$-0.125$ & \bits{1\,000\,100} & $-1/8$ \\
+Smallest pos.\ normal & \bits{0\,001\,000} & $0.25$ \\
+Largest pos.\ normal & \bits{0\,110\,111} & $15$ \\
+Smallest pos.\ denorm $>0$ & \bits{0\,000\,001} & $1/32$ \\
+Largest pos.\ denorm $>0$ & \bits{0\,000\,111} & $7/32$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Brief checks: $-0.125$ has to be denormal here ($2^{-3}$ is smaller than the smallest normal $2^{-2}$), and $4/32=1/8$ gives fraction \bits{100}. The biggest normal is $(1+7/8)\cdot 2^{3}=15$.
+
+\subproblem{(b)}
+Floating-point addition is rounded after each step, so grouping can change things. Take these three \emph{representable} positives:
+\[
+a=b=\bits{0\,000\,001}=\frac{1}{32},\qquad
+c=\bits{0\,010\,000}=\frac12.
+\]
+\textbf{Left grouping:} $a\oplus b$ is exact ($1/16$), then $(a\oplus b)\oplus c = 1/16+1/2 = 9/16 = 0.5625$, which is exactly \bits{0\,010\,001} in this system.
+
+\textbf{Right grouping:} $b\oplus c = 17/32 = 0.53125$. The two closest representable numbers are $0.5$ and $0.5625$, both at distance $1/32$; assuming round-to-nearest-even, this ties to $0.5$ (\bits{0\,010\,000}). Then $a\oplus (b\oplus c)=1/32+1/2=17/32$ again, which rounds to $0.5$.
+
+So one parenthesization gives $0.5625$ and the other gives $0.5$. Same three operands, different rounded outcomes---that is enough to break associativity.
+\end{solution}
+
+\end{document}

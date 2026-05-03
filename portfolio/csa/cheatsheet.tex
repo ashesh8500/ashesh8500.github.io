@@ -1,0 +1,286 @@
+\documentclass[10pt]{article}
+\usepackage[letterpaper,margin=0.35in]{geometry}
+\usepackage{multicol}
+\usepackage{amsmath,amssymb,array,booktabs}
+\usepackage{enumitem}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{1pt}
+\setlist[itemize]{leftmargin=*,topsep=1pt,itemsep=0pt,parsep=0pt}
+\setlength{\columnsep}{0.2in}
+\pagestyle{empty}
+
+\newcommand{\hdr}[1]{\vspace{2pt}\textbf{#1}\vspace{1pt}\\}
+
+\begin{document}
+\footnotesize
+\begin{center}
+{\Large ECE 6913 Midterm 1 Cheat Sheet (Spring 2026)}\\[-2pt]
+\small Compact lookup: performance + RV32I instruction choice + encode/decode
+\end{center}
+
+\begin{multicols}{2}
+\hdr{Core Performance}
+\begin{itemize}
+\item CPU time: $T_{CPU}=IC\cdot CPI\cdot T_{clk}=\dfrac{IC\cdot CPI}{f}$
+\item Clock cycles: $CC=IC\cdot CPI$, \, $T_{CPU}=\dfrac{CC}{f}$
+\item Average CPI (mix): $CPI_{avg}=\sum_i f_i\,CPI_i$
+\item Speedup: $S=\dfrac{T_{old}}{T_{new}}=\dfrac{Perf_{new}}{Perf_{old}}$
+\item SPEC ratio: $SPECratio=\dfrac{T_{ref}}{T_{sys}}$
+\item If only one class improves: use weighted cycles before/after
+\end{itemize}
+
+\hdr{Amdahl's Law}
+\begin{itemize}
+\item $S_{overall}=\dfrac{1}{(1-p)+\dfrac{p}{s}}$
+\item Diminishing returns: non-improved fraction $(1-p)$ is lower bound
+\item If target speedup $S_t$: solve $(1-p)+p/s=1/S_t$
+\end{itemize}
+
+\hdr{Power / Energy}
+\begin{itemize}
+\item Dynamic power (course convention): $P_{dyn}\approx \tfrac12 C V^2 f$ (often $\alpha C V^2 f$)
+\item Static power: $P_{static}=V\,I_{leak}$
+\item Total power: $P_{tot}=P_{dyn}+P_{static}$
+\item Energy: $E=P\,t$
+\item Capacitive load from data: $C\approx \dfrac{2P_{dyn}}{V^2 f}$
+\end{itemize}
+
+\hdr{Dennard and Moore (high-yield)}
+\begin{itemize}
+\item \textbf{Dennard scaling (ideal):} scale dimensions by $1/k$ $\Rightarrow$ $V\downarrow 1/k$, $I\downarrow 1/k$, delay $\downarrow 1/k$, $f\uparrow k$, energy/op $\downarrow 1/k^2$, power density roughly constant.
+\item \textbf{Post-Dennard era:} voltage scaling slowed; frequency scaling flattened due to thermal/leakage limits; multicore/specialization dominates.
+\item \textbf{Moore's law:} transistor count on affordable chips grows exponentially (roughly doubles every 18--24 months); not the same as performance doubling.
+\end{itemize}
+
+\hdr{RISC-V Quick Facts (RV32I)}
+\begin{itemize}
+\item 32 integer regs: $x0..x31$; $x0=0$ hardwired.
+\item Byte-addressed memory; word=4 bytes.
+\item Array word address: $base + 4\cdot index$ (use \texttt{slli idx,idx,2}).
+\item Endianness: little-endian stores LSB at lowest address.
+\item Return: \texttt{jalr x0, 0(x1)}.
+\end{itemize}
+
+\hdr{Instruction Formats (bit slices)}
+\begin{itemize}
+\item \textbf{R:} funct7[31:25] rs2[24:20] rs1[19:15] funct3[14:12] rd[11:7] opcode[6:0]
+\item \textbf{I:} imm[31:20] rs1 funct3 rd opcode
+\item \textbf{S:} imm[31:25] rs2 rs1 funct3 imm[11:7] opcode
+\item \textbf{B:} imm[12|10:5] rs2 rs1 funct3 imm[4:1|11] opcode, target = PC + sext(imm$\ll$1)
+\item \textbf{U:} imm[31:12] rd opcode, value = imm$\ll$12
+\item \textbf{J:} imm[20|10:1|11|19:12] rd opcode, target = PC + sext(imm$\ll$1)
+\end{itemize}
+
+\hdr{Immediate Ranges / Reach}
+\begin{itemize}
+\item I-type immediate (\texttt{addi/lw/jalr}): 12-bit signed $[-2048, 2047]$
+\item S/B immediates: 12-bit signed; B low bit is implicit 0
+\item Branch reach (B-type): $[-4096,4094]$ bytes (step 2)
+\item JAL reach (J-type): $[-1048576,1048574]$ bytes (step 2)
+\item LUI/AUIPC: place upper 20 bits (lower 12 bits become 0)
+\end{itemize}
+
+\hdr{Common Opcodes / Decode Clues}
+\begin{itemize}
+\item OP (R): \texttt{0x33}, OP-IMM: \texttt{0x13}, LOAD: \texttt{0x03}, STORE: \texttt{0x23}
+\item BRANCH: \texttt{0x63}, JAL: \texttt{0x6F}, JALR: \texttt{0x67}, LUI: \texttt{0x37}, AUIPC: \texttt{0x17}
+\item Decode workflow: opcode $\to$ format, then funct3/funct7, then regs/imm.
+\end{itemize}
+
+\hdr{RISC-V Card: Register Alias Lookup}
+\scriptsize
+\begin{tabular}{@{}ll|ll@{}}
+\toprule
+\textbf{Reg} & \textbf{Name/Use} & \textbf{Reg} & \textbf{Name/Use} \\
+\midrule
+x0 & zero constant 0 & x16--x17 & a6--a7 args \\
+x1 & ra return addr & x18--x27 & s2--s11 saved \\
+x2 & sp stack ptr & x28--x31 & t3--t6 temporaries \\
+x3 & gp global ptr & x5--x7 & t0--t2 temporaries \\
+x4 & tp thread ptr & x8--x9 & s0/fp,s1 saved \\
+x10--x11 & a0--a1 arg/ret & x12--x15 & a2--a5 args \\
+\bottomrule
+\end{tabular}
+\footnotesize
+
+\hdr{RISC-V Card: funct3/funct7 Lookup}
+\scriptsize
+\textbf{R-type OP (\texttt{opcode 0x33})}\\
+\begin{tabular}{@{}lllll@{}}
+\toprule
+Instr & f3 & f7 & Instr & f3/f7 \\
+\midrule
+add & 000 & 0000000 & sub & 000/0100000 \\
+sll & 001 & 0000000 & slt & 010/0000000 \\
+sltu & 011 & 0000000 & xor & 100/0000000 \\
+srl & 101 & 0000000 & sra & 101/0100000 \\
+or & 110 & 0000000 & and & 111/0000000 \\
+\bottomrule
+\end{tabular}
+
+\textbf{OP-IMM (\texttt{opcode 0x13})}\\
+\begin{tabular}{@{}lllll@{}}
+\toprule
+addi & andi & ori & xori & slti/sltiu \\
+000 & 111 & 110 & 100 & 010/011 \\
+\bottomrule
+\end{tabular}\\
+\texttt{slli}: f3=001, imm[11:5]=0000000; \texttt{srli}: f3=101, imm[11:5]=0000000; \texttt{srai}: f3=101, imm[11:5]=0100000.
+\footnotesize
+
+\hdr{RISC-V Card: Load/Store/Branch funct3}
+\scriptsize
+\begin{tabular}{@{}llll@{}}
+\toprule
+\textbf{LOAD (0x03)} & \textbf{f3} & \textbf{STORE (0x23)} & \textbf{f3} \\
+\midrule
+lb & 000 & sb & 000 \\
+lh & 001 & sh & 001 \\
+lw & 010 & sw & 010 \\
+lbu & 100 & & \\
+lhu & 101 & & \\
+\bottomrule
+\end{tabular}
+
+\begin{tabular}{@{}llll@{}}
+\toprule
+\textbf{BRANCH (0x63)} & \textbf{f3} & \textbf{Jump/System} & \textbf{Code} \\
+\midrule
+beq & 000 & jal & 0x6F \\
+bne & 001 & jalr (f3=000) & 0x67 \\
+blt & 100 & ecall imm=0 & 0x73 \\
+bge & 101 & ebreak imm=1 & 0x73 \\
+bltu & 110 & & \\
+bgeu & 111 & & \\
+\bottomrule
+\end{tabular}
+\footnotesize
+
+\hdr{Pseudo Instructions (card)}
+\scriptsize
+\begin{tabular}{@{}ll@{}}
+\toprule
+Pseudo & Expansion \\
+\midrule
+\texttt{nop} & \texttt{addi x0,x0,0} \\
+\texttt{mv rd,rs} & \texttt{addi rd,rs,0} \\
+\texttt{li rd,imm} & \texttt{addi rd,x0,imm} or \texttt{lui+addi} \\
+\texttt{not rd,rs} & \texttt{xori rd,rs,-1} \\
+\texttt{neg rd,rs} & \texttt{sub rd,x0,rs} \\
+\texttt{j L} & \texttt{jal x0,L} \\
+\texttt{jr rs} & \texttt{jalr x0,0(rs)} \\
+\texttt{ret} & \texttt{jalr x0,0(ra)} \\
+\texttt{beqz rs,L} & \texttt{beq rs,x0,L} \\
+\texttt{bnez rs,L} & \texttt{bne rs,x0,L} \\
+\texttt{seqz rd,rs} & \texttt{sltiu rd,rs,1} \\
+\texttt{snez rd,rs} & \texttt{sltu rd,x0,rs} \\
+\bottomrule
+\end{tabular}
+\footnotesize
+
+\hdr{Encode to Hex/Binary (fast procedure)}
+\begin{itemize}
+\item 1) pick format (R/I/S/B/U/J) from mnemonic
+\item 2) fill opcode, funct3/funct7, rd/rs1/rs2, imm
+\item 3) sign-extend imm to required width before slicing fields
+\item 4) pack bits then convert to 8-hex-digit word
+\end{itemize}
+\scriptsize
+\textbf{Packing formulas}\\
+R: \texttt{(f7<<25)|(rs2<<20)|(rs1<<15)|(f3<<12)|(rd<<7)|op}\\
+I: \texttt{(imm<<20)|(rs1<<15)|(f3<<12)|(rd<<7)|op}\\
+S: \texttt{((imm11\_5)<<25)|(rs2<<20)|(rs1<<15)|(f3<<12)|((imm4\_0)<<7)|op}
+\footnotesize
+
+\hdr{B/J Immediate Packing (common mistakes)}
+\scriptsize
+\begin{itemize}
+\item B-type: $\Delta=target-PC$, must be even. Let $imm=\Delta>>1$.
+\item Place: inst[31]=imm[12], inst[30:25]=imm[10:5], inst[11:8]=imm[4:1], inst[7]=imm[11].
+\item J-type (\texttt{jal}): $\Delta=target-PC$, $imm=\Delta>>1$.
+\item Place: inst[31]=imm[20], inst[30:21]=imm[10:1], inst[20]=imm[11], inst[19:12]=imm[19:12].
+\item Always sign-extend after reassembling on decode.
+\end{itemize}
+\footnotesize
+
+\hdr{Decode Hex/Binary to Assembly (fast procedure)}
+\begin{itemize}
+\item 1) opcode = inst[6:0] $\to$ format/class
+\item 2) extract rd/rs1/rs2/funct3/funct7/imm
+\item 3) choose mnemonic from opcode + funct fields
+\item 4) for B/J/S immediates, reassemble split fields then sign-extend
+\item 5) render assembly with x-registers or ABI aliases
+\end{itemize}
+
+\hdr{Minimal Assembly Templates (from review)}
+\begin{itemize}
+\item \textbf{Copy indexed words:} \texttt{B[g] = A[i+j-3]}
+\end{itemize}
+\scriptsize
+\begin{verbatim}
+add  t0, i, j
+addi t0, t0, -3
+slli t0, t0, 2
+add  t0, baseA, t0
+slli t1, g, 2
+add  t1, baseB, t1
+lw   t2, 0(t0)
+sw   t2, 0(t1)
+\end{verbatim}
+\footnotesize
+
+\begin{itemize}
+\item \textbf{Reference bit-replacement problem (COD RISC-V 2e, Ex 2.18):}\\
+Extract x5[16:11] and replace x6[31:26] (do not alter other bits).
+\end{itemize}
+\scriptsize
+\begin{verbatim}
+# 1) isolate source field x5[16:11]
+li   t0, 0x3f          # 6 bits set
+slli t0, t0, 11        # mask = 0x0001f800
+and  t1, x5, t0        # t1 has x5[16:11] in place
+
+# 2) move that field to destination position [31:26]
+slli t1, t1, 15        # now aligned to bits [31:26]
+
+# 3) clear destination field in x6
+li   t2, 0xfc000000    # ones in [31:26]
+xori t2, t2, -1        # t2 = 0x03ffffff
+and  x6, x6, t2        # clear x6[31:26]
+
+# 4) insert new field
+or   x6, x6, t1
+\end{verbatim}
+\footnotesize
+
+\textbf{General template (copy src[hi:lo] $\rightarrow$ dst[HI:LO], same width):}
+\begin{itemize}
+\item mask src field, shift by $(HI-hi)$, clear dst mask, OR insert.
+\item Width $w=hi-lo+1$, source mask: \texttt{((1<<w)-1)<<lo}.
+\end{itemize}
+
+\hdr{Quick encode/decode examples}
+\scriptsize
+\texttt{sub x6,x7,x5}\\
+\texttt{opcode=0x33, f3=000, f7=0100000, rs1=7, rs2=5, rd=6}\\
+\texttt{binary: 0100000 00101 00111 000 00110 0110011}\\
+\texttt{hex: 0x40538333}
+
+\texttt{0x0053A023} decode\\
+\texttt{opcode=0x23 (S/store), f3=010 -> sw, rs1=x7, rs2=x5, imm=0}\\
+\texttt{assembly: sw x5, 0(x7)}
+\footnotesize
+
+\hdr{Fast Exam Checks}
+\begin{itemize}
+\item New CPU-time ratio after independent changes:
+$\dfrac{T_{new}}{T_{old}}=\dfrac{IC_{new}}{IC_{old}}\cdot\dfrac{CPI_{new}}{CPI_{old}}\cdot\dfrac{T_{clk,new}}{T_{clk,old}}$
+\item For fixed IC: performance $\propto f/CPI$.
+\item If IC drops but cycle time rises, compute full CPU-time product before claiming speedup.
+\item Instruction word is always 32-bit hex; memory byte order for that word is little-endian.
+\end{itemize}
+
+\end{multicols}
+\end{document}

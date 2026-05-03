@@ -1,0 +1,133 @@
+
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,booktabs,longtable,array,graphicx,hyperref,float,xcolor,enumitem,geometry}
+\geometry{margin=2.2cm}
+\hypersetup{colorlinks=true,linkcolor=cyan,urlcolor=cyan,citecolor=cyan}
+\definecolor{cyanhex}{HTML}{00D4FF}
+\definecolor{coralhex}{HTML}{FF6B6B}
+\definecolor{greenhex}{HTML}{A8FF78}
+\title{\textbf{Grand Compiled Study}\\[0.3em]\large Portfolio Optimization as System Optimization: What the Repository Now Supports}
+\author{Ashesh Kaji\\Automated synthesis pass}
+\date{April 22, 2026}
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This report finishes the grand compiled study for the final project by integrating all major documented research tracks in the repository: the toy game-theoretic IBR-vs-softmax experiment, the legacy Snapshot 2 convex allocator, the long-sample Improved Snapshot 2 ETF study, the reflexive crowding-aware stress portfolio, the regime-adaptive attractiveness study, and the comprehensive Fractal strategy comparison. The evidence now supports a clear hierarchy. First, convex optimization is the strongest empirical backbone of the project, especially when evaluated on drawdown-adjusted rather than pure return criteria. Second, crowding-aware terms matter structurally in the toy game and empirically in the reflexive stress run, but not yet in the small recent-sample Fractal universe. Third, regime adaptation and meta-learning remain interpretable but have not yet shown robust alpha improvement over simple baselines. The strongest near-final empirical result is the Fractal Paper Convex (Aggressive) strategy on the 2020--2025 ETF universe, while the strongest long-sample risk-managed result is Improved Snapshot 2 on 2007--2026. The best proposal-aligned strategic evidence remains the toy best-response sweep.
+\end{abstract}
+
+\section{Why this compiled study exists}
+The proposal framed the project as a bridge between convex portfolio optimization and non-cooperative game dynamics. Over time, the repository accumulated multiple serious attempts, but they lived in different folders, on different samples, and with different emphases. This synthesis makes the current state legible: which results are strongest, which ideas were only partially validated, and what still remains for a final course narrative.
+
+\section{Repository-wide evidence map}
+Table~\ref{tab:tracks} summarizes the major tracks.
+
+\begin{longtable}{@{}p{3.2cm}p{4.0cm}p{3.7cm}p{4.1cm}@{}}
+\caption{Major documented research tracks in the repository.}\label{tab:tracks}\\
+\toprule
+Track & Question answered & Sample / scope & Headline result \\
+\midrule
+\endfirsthead
+\toprule
+Track & Question answered & Sample / scope & Headline result \\
+\midrule
+\endhead
+Toy IBR vs softmax & Does strategy matter more when persistence and crowding rise? & Synthetic toy game; 48 seeds per cell & Utility gap increases monotonically from 2.74 to 7.40 as AR and crowding rise. \\
+Legacy Snapshot 2 & Can the original convex framework beat a naive benchmark? & Legacy 2020--2023 sample & Moderate preset reaches Sharpe 1.03 on its own sample. \\
+Improved Snapshot 2 & Can drawdown-adjusted ETF allocation be improved over long history? & Broad ETF sample, 2007--2026 & 8.05\% CAGR, 0.705 Sharpe, -18.48\% max drawdown. \\
+Reflexive stress & Does penalizing crowd exposure improve robustness? & Broad ETF sample, 2007--2026 & 0.971 Sharpe and -13.44\% max drawdown with lower crowd exposure than momentum QP. \\
+Regime adaptive attractiveness & Do regime/meta-learning layers improve static attractiveness? & 10 ETFs, 2020--2025 & Turnover falls sharply, but equal weight still wins the sample. \\
+Comprehensive Fractal study & Which Fractal-native strategy is best after adding meta-extensions? & 10 ETFs, 2020--2025 & Paper Convex (Aggressive) leads with 15.24\% annual return and 0.876 Sharpe. \\
+\bottomrule
+\end{longtable}
+
+\section{Empirical scoreboard}
+Figure~\ref{fig:score} plots the best strategy from each major empirical track. Because the studies use different universes and time spans, this is not an apples-to-apples leaderboard; it is a compact map of where the strongest evidence currently sits.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.88\textwidth]{../figures/01_empirical_scoreboard.png}
+\caption{Best strategy from each major empirical track, shown by Sharpe versus absolute max drawdown. Bubble size scales with the reported return metric.}
+\label{fig:score}
+\end{figure}
+
+The scoreboard suggests three distinct winners depending on what the final write-up wants to emphasize:
+\begin{itemize}[noitemsep]
+    \item \textbf{Legacy proof of concept:} Snapshot 2 Moderate shows that the original convex idea worked before the repo was standardized.
+    \item \textbf{Best long-sample downside-controlled allocator:} Improved Snapshot 2 keeps drawdown materially lower than SPY and 60/40 across 2007--2026.
+    \item \textbf{Best recent-sample Fractal-native engine:} Paper Convex (Aggressive) dominates the current Fractal comparison set.
+\end{itemize}
+
+\section{How well the repository now covers the proposal}
+Figure~\ref{fig:coverage} maps each track to the proposal components. The strongest gap is explicit historical multi-agent equilibrium backtesting: the toy game supports the idea qualitatively, but the historical runs still rely on single-agent optimizers with heuristic crowding terms.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{../figures/02_proposal_coverage_heatmap.png}
+\caption{Proposal-component coverage across the documented tracks. A value of 1 means that the track meaningfully addresses the component.}
+\label{fig:coverage}
+\end{figure}
+
+\section{Crowding and game-theoretic evidence}
+The project proposal is most distinctive where it departs from plain Markowitz-style optimization and introduces interaction effects. The repository now has a coherent three-part story:
+
+\subsection*{1. Structural support from the toy game}
+Figure~\ref{fig:toy} shows the mean cumulative utility gap between the best-response player and a fixed softmax player. The monotone pattern is clear: as latent signal persistence and crowding both rise, strategic adaptation becomes more valuable.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.72\textwidth]{../figures/03_toy_crowding_heatmap.png}
+\caption{Toy-game evidence: the IBR-minus-softmax utility gap increases with both AR persistence and crowding.}
+\label{fig:toy}
+\end{figure}
+
+\subsection*{2. Empirical support from the reflexive stress run}
+The reflexive backtest is the strongest real-data evidence for crowding-aware optimization. Relative to the unpenalized momentum-QP baseline, the reflexive portfolio sacrifices some CAGR but improves Sharpe, reduces average crowd exposure, and keeps drawdown essentially unchanged.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{../figures/04_reflexive_vs_momentum.png}
+\caption{Reflexive stress portfolio versus the unpenalized momentum-QP baseline.}
+\label{fig:refl}
+\end{figure}
+
+\subsection*{3. Null result in the small Fractal ETF universe}
+The comprehensive Fractal study found that Regime+Meta and Regime+Meta+Crowding produced numerically identical performance on the 10-ETF 2020--2025 universe. This is important rather than disappointing: it says the project has already learned where crowding heuristics likely \emph{do not} bind.
+
+\section{Regime adaptation: useful, but not yet a winning alpha source}
+The regime-adaptive attractiveness run improved interpretability, reduced turnover dramatically relative to the static attractiveness signal, and lowered volatility, but it did not beat equal weight on the recent ETF sample. Figure~\ref{fig:recent} shows that in the shared 2020--2025 environment, the Fractal convex engine was stronger than the adaptive extensions.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.76\textwidth]{../figures/05_recent_sample_tradeoff.png}
+\caption{Recent-sample winners. The Fractal Paper Convex (Aggressive) strategy dominates the adaptive variants on return versus drawdown in the 2020--2025 ETF sample.}
+\label{fig:recent}
+\end{figure}
+
+This narrows the thesis in a healthy way. Regime adaptation should be presented as an interpretable research extension that improves turnover behavior and makes the strategy story richer, not as the repository's strongest alpha result.
+
+\section{What the final project can now claim}
+A defensible final narrative is:
+\begin{enumerate}
+    \item The project successfully formulated portfolio allocation as a constrained optimization problem with turnover and risk control.
+    \item The strongest mature empirical results come from convex optimization on ETF universes, especially when judged by drawdown-adjusted criteria.
+    \item Strategic interaction is not merely decorative: the toy game shows when it should matter, and the reflexive backtest shows one practical way to incorporate it empirically.
+    \item A fully historical multi-agent equilibrium engine is still unfinished, so the final write-up should frame that component as an informed extension rather than an already-complete production result.
+\end{enumerate}
+
+\section{Recommended next move before submission}
+If there is time for exactly one more serious experiment, the highest-value next step is a single unified benchmark on one common universe and time span that compares:
+\begin{itemize}[noitemsep]
+    \item Improved Snapshot 2,
+    \item Reflexive stress,
+    \item Fractal Paper Convex presets,
+    \item and one minimal crowding-aware best-response overlay.
+\end{itemize}
+That experiment would convert the current synthesis from a strong repository narrative into a single definitive course-report table.
+
+\section*{Artifact paths}
+The synthesis folder lives at \texttt{findings/2026-04-22-grand-compiled-study/}. The underlying source folders remain the canonical origin of their own empirical claims.
+
+\end{document}

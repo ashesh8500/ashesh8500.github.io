@@ -1,0 +1,485 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
+% Define colors for code listings
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.95}
+
+% Code listing style
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+\lstset{style=mystyle}
+
+\title{Technical Report: Reinforcement Learning for Autonomous Driving in CARLA Simulator}
+\author{LAV Autonomous Vehicle Project}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+This technical report presents a comprehensive analysis of developing a reinforcement learning agent for autonomous driving using the CARLA simulator. We describe our approach using Proximal Policy Optimization (PPO), detailing both the initial implementation that faced convergence challenges and the enhanced version that addressed these issues. The report covers neural network architecture, reward function design, training methodology, and empirical results. Key improvements include rebalanced reward components, enhanced exploration strategies, and advanced optimization techniques like Generalized Advantage Estimation (GAE) and learning rate scheduling. Results demonstrate how these modifications led to improved training stability and performance in navigating urban environments.
+\end{abstract}
+
+\tableofcontents
+
+\section{Introduction}
+\subsection{Project Overview}
+This project explores the application of reinforcement learning (RL) to autonomous vehicle control in simulated urban environments. Using the CARLA (Car Learning to Act) simulator, we develop an agent capable of safely navigating roads while avoiding collisions and maintaining proper lane positioning. The project focuses on LiDAR-based perception integrated with a PPO reinforcement learning algorithm.
+
+\subsection{Problem Statement}
+Autonomous driving presents significant challenges in perception, decision-making, and control. Traditional rule-based approaches often struggle to generalize across diverse and dynamic environments. Reinforcement learning offers a promising alternative by learning optimal policies through environmental interaction, but faces challenges including:
+
+\begin{itemize}
+    \item Sample inefficiency requiring extensive interaction
+    \item Sparse and delayed rewards in driving scenarios
+    \item High-dimensional continuous action and state spaces
+    \item Safety constraints and exploration-exploitation balance
+\end{itemize}
+
+\subsection{Goals and Objectives}
+The primary goal is to develop a robust autonomous driving agent that can:
+\begin{itemize}
+    \item Safely navigate urban environments with minimal collisions
+    \item Maintain proper lane position and heading
+    \item Drive at appropriate speeds for different road conditions
+    \item Generalize to various driving scenarios
+\end{itemize}
+
+\section{Background and Methods}
+
+\subsection{CARLA Simulation Environment}
+CARLA is an open-source simulator for autonomous driving research, providing realistic urban environments with various sensors including cameras, LiDAR, and GPS. Our implementation uses a custom \texttt{CarlaEnvWrapper} class that conforms to the OpenAI Gym interface, facilitating standardized interaction between the agent and environment.
+
+\subsection{Environment Representation}
+We process raw LiDAR point clouds into a simplified state representation consisting of 16 values representing the minimum and maximum distances to obstacles across 8 angular sectors around the vehicle. This representation provides information about the vehicle's surroundings while keeping the state space manageable.
+
+\subsection{Proximal Policy Optimization (PPO)}
+PPO is an on-policy reinforcement learning algorithm that optimizes policies through alternating data collection and optimization phases. It uses a clipped objective function to prevent excessively large policy updates:
+
+\begin{equation}
+L^{CLIP}(\theta) = \hat{\mathbb{E}}_t \left[ \min(r_t(\theta) \hat{A}_t, \text{clip}(r_t(\theta), 1 - \epsilon, 1 + \epsilon) \hat{A}_t) \right]
+\end{equation}
+
+where $r_t(\theta)$ is the probability ratio between the new and old policies, $\hat{A}_t$ is the estimated advantage, and $\epsilon$ is the clipping parameter (typically 0.2).
+
+\subsection{Neural Network Architecture}
+Our agent employs an actor-critic architecture with separate networks for policy (actor) and value function (critic):
+
+\begin{itemize}
+    \item \textbf{Initial Architecture}: Two-layer networks with 128 units per hidden layer
+    \item \textbf{Enhanced Architecture}: Three-layer networks with 256-256-128 units in hidden layers
+\end{itemize}
+
+\section{Initial Approach and Limitations}
+
+\subsection{Initial Network Architecture}
+Our initial implementation used a simpler network architecture:
+
+\begin{lstlisting}[language=Python,caption=Initial Actor-Critic Network Structure]
+self.actor = nn.Sequential(
+    nn.Linear(state_dim, 128),
+    nn.ReLU(),
+    nn.Linear(128, 128),
+    nn.ReLU(),
+    nn.Linear(128, action_dim * 2)  # Mean and log_std
+)
+
+self.critic = nn.Sequential(
+    nn.Linear(state_dim, 128),
+    nn.ReLU(),
+    nn.Linear(128, 128),
+    nn.ReLU(),
+    nn.Linear(128, 1)
+)
+\end{lstlisting}
+
+\subsection{Initial Reward Function}
+The initial reward function included components for:
+
+\begin{itemize}
+    \item Progress (distance traveled): 0.1 per meter
+    \item Collision penalty: -10.0
+    \item Lane invasion penalty: -0.2 (regular) to -1.0 (solid line crossing)
+    \item Lane centering reward: up to 0.1
+    \item Heading alignment reward: up to 0.1
+    \item Speed management reward: up to 0.05
+    \item Longevity reward: 0.01 per step
+    \item Steering smoothness penalty: -0.05 × |steering|
+\end{itemize}
+
+\subsection{Training Procedure}
+The initial training procedure used vanilla PPO with limited optimization techniques. Episodes typically terminated after collisions, leading to highly variable episode lengths.
+
+\subsection{Observed Limitations}
+The logs revealed significant limitations with our initial approach:
+
+\begin{lstlisting}
+{"epoch": 18, "episode_reward": -24.42488726813381, "episode_length": 95, "distance_traveled": 3.0883739539422095, "reward_components": {...}}
+{"epoch": 45, "episode_reward": -24.454980751063722, "episode_length": 95, "distance_traveled": 3.0983043452724814, "reward_components": {...}}
+\end{lstlisting}
+
+Key issues included:
+\begin{itemize}
+    \item Lack of convergence: Similar negative rewards after many epochs
+    \item Consistent early termination: Episodes consistently ending around 95 steps
+    \item Limited distance traveled: Only ~3 meters before collisions
+    \item Reward imbalance: Steering penalties dominated other reward components
+    \item Exploration limitations: Agent stuck in local minimum behaviors
+\end{itemize}
+
+\section{Enhanced Approach}
+
+\subsection{Improved Network Architecture}
+We significantly enhanced the neural network architecture to increase capacity and representational power:
+
+\begin{lstlisting}[language=Python,caption=Enhanced Actor-Critic Network Structure]
+# Actor network with more layers and units
+self.actor = nn.Sequential(
+    nn.Linear(state_dim, 256),
+    nn.ReLU(),
+    nn.Linear(256, 256),
+    nn.ReLU(),
+    nn.Linear(256, 128),
+    nn.ReLU(),
+    nn.Linear(128, action_dim * 2)  # Mean and log_std
+)
+
+# Separate critic network with more layers
+self.critic = nn.Sequential(
+    nn.Linear(state_dim, 256),
+    nn.ReLU(),
+    nn.Linear(256, 256),
+    nn.ReLU(),
+    nn.Linear(256, 128),
+    nn.ReLU(),
+    nn.Linear(128, 1)
+)
+\end{lstlisting}
+
+\subsection{Rebalanced Reward Function}
+We substantially rebalanced the reward function to provide clearer learning signals:
+
+\begin{lstlisting}[language=Python,caption=Enhanced Reward Function]
+# 1. Base distance reward (increased to emphasize progress)
+progress_reward = 0.5 * distance_traveled  # Increased from 0.1
+
+# 2. Collision penalty (increased significantly)
+collision_penalty = -50.0 * int(self.collision_flag)  # Increased from -10.0
+
+# 3. Lane invasion penalty (increased)
+lane_invasion_penalty = -1.0 * int(self.lane_invasion_flag)  # Increased from -0.2
+if self.invaded_opposite_lane:
+    lane_invasion_penalty -= 5.0  # Stronger penalty for crossing solid lines
+
+# 4. Lane centering reward (doubled)
+lane_centering_reward = 0.2 * (1.0 - min(1.0, lane_deviation))
+
+# 5. Heading alignment reward (doubled)
+heading_reward = 0.2 * (1.0 - min(1.0, heading_error / np.pi))
+
+# 6. Speed management reward (doubled)
+speed_reward = 0.1 * (1.0 - min(1.0, speed_diff / self.target_speed))
+
+# 7. Longevity reward (increased to encourage survival)
+longevity_reward = 0.05 * self.steps_in_episode  # Now scales with episode length
+
+# 8. Reduced steering penalty (was too dominant before)
+steering_smoothness_reward = -0.01 * abs(steering)  # Reduced from -0.05
+\end{lstlisting}
+
+Key changes to the reward structure:
+\begin{itemize}
+    \item Increased collision penalty to prioritize safety
+    \item Boosted progress rewards to encourage forward movement
+    \item Reduced steering penalty to prevent dominating other components
+    \item Made longevity reward scale with episode length
+    \item Strengthened lane centering and heading rewards
+\end{itemize}
+
+\subsection{Advanced Training Techniques}
+
+\subsubsection{Generalized Advantage Estimation (GAE)}
+We implemented GAE for better credit assignment across timesteps:
+
+\begin{lstlisting}[language=Python, caption=GAE Implementation]
+# GAE calculation
+advantages = torch.zeros_like(rewards)
+lastgaelam = 0
+for t in reversed(range(len(rewards))):
+    if t == len(rewards) - 1:
+        nextnonterminal = 1.0 - dones[t]
+        nextvalues = last_value
+    else:
+        nextnonterminal = 1.0 - dones[t]
+        nextvalues = values[t + 1]
+    
+    delta = rewards[t] + gamma * nextvalues * nextnonterminal - values[t]
+    advantages[t] = lastgaelam = delta + gamma * gae_lambda * nextnonterminal * lastgaelam
+\end{lstlisting}
+
+\subsubsection{Enhanced Exploration Strategy}
+We implemented a dynamic entropy coefficient to encourage early exploration that gradually decreases over time:
+
+\begin{lstlisting}[language=Python, caption=Dynamic Exploration]
+# Improved exploration through higher initial entropy and decay
+entropy_coef = 0.05  # Start with higher entropy
+min_entropy_coef = 0.001  # Minimum entropy value
+entropy_decay = 0.9995  # Decay rate
+
+# During training
+entropy_coef = max(min_entropy_coef, entropy_coef * entropy_decay)
+
+# Additional noise for very early exploration
+if self.global_step < 5000:  # Early in training
+    action += np.random.normal(0, 0.2, size=action.shape)
+    action = np.clip(action, -1.0, 1.0)  # Clip to valid range
+\end{lstlisting}
+
+\subsubsection{Mini-batch Training and Optimization}
+We implemented mini-batch training for better sample efficiency and more stable updates:
+
+\begin{lstlisting}[language=Python, caption=Mini-batch Training]
+# Mini-batch training
+indices = np.arange(len(states))
+np.random.shuffle(indices)
+for start_idx in range(0, num_samples, batch_size):
+    end_idx = min(start_idx + batch_size, num_samples)
+    mb_indices = indices[start_idx:end_idx]
+    
+    mb_states = states[mb_indices]
+    mb_actions = actions[mb_indices]
+    mb_advantages = advantages[mb_indices]
+    mb_returns = returns[mb_indices]
+    
+    # Policy and value updates...
+\end{lstlisting}
+
+\subsubsection{Learning Rate Scheduling}
+We added a learning rate scheduler to improve convergence:
+
+\begin{lstlisting}[language=Python, caption=Learning Rate Scheduling]
+# Learning rate scheduler to improve convergence
+initial_lr = agent.learning_rate
+lr_scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
+    agent.optimizer, 
+    T_max=num_epochs * steps_per_epoch, 
+    eta_min=initial_lr * 0.1
+)
+
+# Update during training
+lr_scheduler.step()
+\end{lstlisting}
+
+\subsubsection{Gradient Clipping}
+We implemented gradient clipping to prevent extreme updates:
+
+\begin{lstlisting}[language=Python, caption=Gradient Clipping]
+# Gradient clipping to prevent extreme updates
+torch.nn.utils.clip_grad_norm_(agent.parameters(), max_norm=0.5)
+\end{lstlisting}
+
+\subsection{Training Workflow Improvements}
+
+\subsubsection{Checkpoint Management and Resumability}
+We implemented a robust auto-resume feature that enables training to be interrupted and resumed without data loss:
+
+\begin{lstlisting}[language=Python, caption=Auto-resume Functionality]
+def find_latest_checkpoint(log_dir):
+    """Find the latest checkpoint file and training state."""
+    # Find the latest epoch checkpoint
+    checkpoint_files = glob.glob(os.path.join(log_dir, "agent_epoch_*.pt"))
+    best_model_path = os.path.join(log_dir, "best_model.pt")
+    
+    latest_checkpoint = None
+    latest_epoch = -1
+    
+    # ...checkpoint detection logic...
+    
+    return latest_checkpoint, latest_epoch, training_state
+\end{lstlisting}
+
+\subsubsection{Enhanced Visualization}
+We developed comprehensive visualization tools to analyze training progress:
+\begin{itemize}
+    \item Reward plots over time
+    \item Distance traveled plots
+    \item Episode length tracking
+    \item Reward component analysis
+\end{itemize}
+
+\section{Experimental Setup}
+
+\subsection{Environment Configuration}
+Our experiments used the CARLA simulator with the following configuration:
+\begin{itemize}
+    \item LiDAR sensor with 16-sector state representation
+    \item Tesla Model 3 vehicle model
+    \item Standard urban environment
+    \item Max episode length: 2000 steps
+\end{itemize}
+
+\subsection{Training Parameters}
+\begin{itemize}
+    \item PPO clip parameter: 0.2
+    \item Discount factor (gamma): 0.99
+    \item GAE lambda: 0.95
+    \item Initial learning rate: 3e-4
+    \item Initial entropy coefficient: 0.05
+    \item Starting batch size: 64
+\end{itemize}
+
+\subsection{Hardware and Software}
+The experiments were conducted using:
+\begin{itemize}
+    \item CARLA simulator version 0.9.13
+    \item PyTorch 1.10.0
+    \item CUDA-enabled GPU
+    \item Python 3.10
+\end{itemize}
+
+\section{Results and Discussion}
+
+\subsection{Training Performance Comparison}
+The initial approach showed consistent failure patterns with episodes terminating around the same point repeatedly, indicated by similar negative rewards and collision locations across many epochs. After implementing our enhanced approach, we observed:
+\begin{itemize}
+    \item Increasing episode lengths
+    \item Improved total rewards
+    \item Greater distances traveled
+    \item More diverse driving behaviors
+\end{itemize}
+
+\subsection{Reward Component Analysis}
+Analysis of reward components revealed that in the initial approach, the steering smoothness penalty dominated other components, leading to excessively cautious steering. The rebalanced reward structure provided more balanced incentives across different aspects of driving.
+
+\subsection{Key Insights}
+Our experimentation revealed several important insights:
+\begin{enumerate}
+    \item Collision penalty magnitude significantly impacts learning - it must be large enough to discourage collisions without overwhelming progress rewards
+    \item Exploration strategy is critical in early training to escape local minima
+    \item Network capacity affects the agent's ability to model complex driving policies
+    \item Gradient clipping and proper advantage normalization improve stability
+    \item Learning rate scheduling helps navigate the exploration-exploitation tradeoff
+\end{enumerate}
+
+\subsection{Limitations and Challenges}
+Despite improvements, several challenges remain:
+\begin{itemize}
+    \item Sample inefficiency - training requires many environment interactions
+    \item Robustness to novel scenarios
+    \item Balancing safety vs. progress in the reward function
+    \item Training instability due to the complex environment
+\end{itemize}
+
+\section{Conclusion and Future Work}
+
+\subsection{Conclusion}
+This report presented a detailed analysis of developing and improving a reinforcement learning agent for autonomous driving in simulated environments. We identified key limitations in our initial approach and systematically addressed them through enhanced network architecture, rebalanced rewards, and advanced training techniques. The improved agent showed greater learning capacity, better navigation capabilities, and more stable training.
+
+\subsection{Future Work}
+Future research directions include:
+\begin{itemize}
+    \item Implementing curriculum learning to gradually increase task difficulty
+    \item Exploring hierarchical reinforcement learning for handling both high-level navigation and low-level control
+    \item Incorporating auxiliary tasks to improve representation learning
+    \item Investigating model-based RL approaches to improve sample efficiency
+    \item Developing better safety constraints and failsafe mechanisms
+    \item Transferring learned policies to more complex and diverse environments
+\end{itemize}
+
+\section{Acknowledgments}
+We thank the CARLA team for developing and maintaining the simulation platform that made this research possible.
+
+\bibliography{references}
+\bibliographystyle{plain}
+
+\appendix
+\section{Code Repository Structure}
+\begin{verbatim}
+/teamspace/studios/this_studio/
+|- LAV_n.py               # Core environment and agent implementation
+|- run_training_safe.py   # Training script with auto-resume feature
+|- visualize_agent.py     # Visualization utility
+|- test_camera_angles.py  # Camera position testing utility
+|- launch_visualization.sh # Script to launch visualization
+|- technical_report.tex   # This report
+\end{verbatim}
+
+\section{Complete Reward Function}
+\begin{lstlisting}[language=Python,caption=Complete Enhanced Reward Function]
+# Calculate rewards - REBALANCED for better learning
+
+# 1. Base distance reward (increased to emphasize progress)
+progress_reward = 0.5 * distance_traveled
+
+# 2. Collision penalty (increased significantly)
+collision_penalty = -50.0 * int(self.collision_flag)
+
+# 3. Lane invasion penalty (increased)
+lane_invasion_penalty = -1.0 * int(self.lane_invasion_flag)
+if self.invaded_opposite_lane:
+    lane_invasion_penalty -= 5.0  # Stronger penalty for solid lines
+
+# 4. Lane centering reward
+lane_deviation = self._calculate_lane_deviation()
+lane_centering_reward = 0.2 * (1.0 - min(1.0, lane_deviation))
+
+# 5. Heading alignment reward
+heading_error = self._calculate_heading_error()
+heading_reward = 0.2 * (1.0 - min(1.0, heading_error / np.pi))
+
+# 6. Speed management reward
+speed_diff = abs(speed_kmh - self.target_speed)
+speed_reward = 0.1 * (1.0 - min(1.0, speed_diff / self.target_speed))
+
+# 7. Longevity reward (increased to encourage survival)
+longevity_reward = 0.05 * self.steps_in_episode
+
+# 8. Reduced steering penalty (was too dominant before)
+steering_smoothness_reward = -0.01 * abs(steering)
+
+# Combine rewards
+reward_components = {
+    "progress": progress_reward,
+    "collision": collision_penalty,
+    "lane_invasion": lane_invasion_penalty,
+    "lane_centering": lane_centering_reward,
+    "heading": heading_reward,
+    "speed": speed_reward,
+    "longevity": longevity_reward, 
+    "steering_smoothness": steering_smoothness_reward
+}
+
+total_reward = sum(reward_components.values())
+\end{lstlisting}
+
+\end{document}

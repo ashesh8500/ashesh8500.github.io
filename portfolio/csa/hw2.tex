@@ -1,0 +1,390 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage[margin=0.75in]{geometry}
+\usepackage{hyperref}
+\usepackage{minted}
+\usepackage{graphicx}
+
+\hypersetup{colorlinks=true,linkcolor=blue}
+
+\newcommand{\problem}[1]{\vspace{0.5em}\noindent\textbf{Problem #1.}\vspace{0.3em}}
+\newenvironment{solution}{\par\noindent\textit{Solution.}}{\par\vspace{1em}}
+\newcommand{\subproblem}[1]{\par\noindent\textbf{(#1)}\quad}
+\title{Computer Systems Architecture\\Homework 2}
+\author{Ashesh Kaji}
+\date{Due: February 22}
+
+\begin{document}
+\maketitle
+
+
+\problem{1}
+\begin{solution}
+    \begin{subproblem}{a}
+        Since the machine uses 4-byte words, \texttt{A[10]} is at $4 \times 10 = 40$ bytes from the base address of A (\texttt{x27}).
+        \begin{minted}{gas}
+            lw x5, 40(x27)
+        \end{minted}  
+    \end{subproblem}
+    \begin{subproblem}{b}
+        Similar to the previous load, storing into \texttt{A[17]} dictates a byte offset of $17 \times 4 = 68$ from base \texttt{x27}.
+        \begin{minted}{gas}
+            sw x5, 68(x27)
+        \end{minted}
+    \end{subproblem}
+    \begin{subproblem}{c}
+        \mintinline{gas}|add x7, x5, x6|
+    \end{subproblem}
+    \begin{subproblem}{d}
+        This operation breaks down into computing the source address, loading the value, computing the destination address, and storing the value:
+        \begin{minted}{gas}
+            add  x8, x28, x29 # calculating i + j
+            addi x8, x8, 31 # calculating i + j + 31
+            slli x8, x8, 2 # byte offset for A[i + j + 31]
+            add  x8, x27, x8 # full address of A[i + j + 31]
+            lw   x8, 0(x8) # loading A[i + j + 31] into x8
+            slli x9, x6, 2 # byte offset for C[g] (g * 4)
+            add  x9, x31, x9 # full address of C[g]
+            sw   x8, 0(x9) # storing the loaded value into C[g]
+        \end{minted}
+    \end{subproblem}
+    \begin{subproblem}{e}
+        \begin{subproblem}{i}
+            \begin{minted}{gas}
+                lw   x8, 36(x30) # loading B[9] (9 * 4 = 36)
+                slli x8, x8, 2 # byte offset for A[B[9]]
+                add  x8, x27, x8 # full address of A[B[9]]
+                lw   x8, 0(x8) # loading A[B[9]]
+                sub  x5, x6, x8 # f = g - A[B[9]]
+            \end{minted}
+        \end{subproblem}
+        \begin{subproblem}{ii}
+            \begin{minted}{gas}
+                lw   x8, 32(x31) # loading C[8] (8 * 4 = 32)
+                lw   x9, 16(x30) # loading B[4] (4 * 4 = 16)
+                add  x8, x8, x9 # C[8] + B[4]
+                slli x8, x8, 2 # byte offset for A index
+                add  x8, x27, x8 # full address of A[C[8] + B[4]]
+                lw   x8, 0(x8) # loading A[C[8] + B[4]]
+                sub  x5, x6, x8 # f = g - A[C[8] + B[4]]
+            \end{minted}
+        \end{subproblem}
+        \begin{subproblem}{iii}
+            \begin{minted}{gas}
+                slli x8, x28, 3 # byte offset for B[2i] (2i * 4 = 8i)
+                add  x9, x30, x8 # full address of B[2i]
+                lw   x10, 0(x9) # loading B[2i]
+                slli x11, x28, 2 # byte offset for C[i] and A[i]
+                add  x12, x31, x11 # full address of C[i]
+                sw   x10, 0(x12) # C[i] = B[2i]
+                addi x9, x9, 4 # full address of B[2i + 1] (B[2i] + 4)
+                lw   x10, 0(x9) # loading B[2i + 1]
+                add  x12, x27, x11 # full address of A[i]
+                sw   x10, 0(x12) # A[i] = B[2i + 1]
+            \end{minted}
+        \end{subproblem}
+        \begin{subproblem}{iv}
+            \texttt{A[i] = 4*B[i-1] + 4*C[i+1]}
+            \begin{minted}{gas}
+                slli x8, x28, 2 # byte offset for i
+                addi x9, x8, -4 # byte offset for i-1
+                add  x9, x30, x9 # address of B[i-1]
+                lw   x9, 0(x9) # loading B[i-1]
+                addi x10, x8, 4 # byte offset for i+1
+                add  x10, x31, x10 # address of C[i+1]
+                lw   x10, 0(x10) # loading C[i+1]
+                slli x9, x9, 2 # multiplying B[i-1] by 4
+                slli x10, x10, 2 # multiplying C[i+1] by 4
+                add  x9, x9, x10 # adding 4*B[i-1] + 4*C[i+1]
+                add  x8, x27, x8 # address of A[i]
+                sw   x9, 0(x8) # storing result into A[i]
+            \end{minted}
+        \end{subproblem}
+        \begin{subproblem}{v}
+            \texttt{f = g - A[C[4] + B[12]]}
+            \begin{minted}{gas}
+                lw   x8, 16(x31) # loading C[4]
+                lw   x9, 48(x30) # loading B[12]
+                add  x8, x8, x9 # calculating C[4] + B[12]
+                slli x8, x8, 2 # multiplying by 4 for byte offset
+                add  x8, x27, x8 # address of A[C[4]+B[12]]
+                lw   x8, 0(x8) # loading A[C[4]+B[12]]
+                sub  x5, x6, x8 # subtracting from g
+            \end{minted}
+        \end{subproblem}
+
+    \end{subproblem}
+\end{solution}
+
+\problem{2}
+
+Given: \texttt{x5 = 0x00000000AAAAAAAA}, \texttt{x6 = 0x1234567812345678}
+
+\begin{solution}
+    \begin{subproblem}{a}
+        Tracing each instruction step by step:
+        \begin{itemize}
+            \item \texttt{srli x7, x5, 16} --- logical right shift x5 by 16 bits (zero-fill):
+            \[ \texttt{x7 = 0x000000000000AAAA} \]
+            \item \texttt{addi x7, x7, -128} --- add $-128$ (0xFFFFFFFFFFFFFF80) to x7:
+            \[ \texttt{0x000000000000AAAA} + \texttt{(-128)} = \texttt{0x000000000000AA2A} \]
+            \item \texttt{srai x7, x7, 2} --- arithmetic right shift by 2 (sign bit is 0, so same as logical):
+            \[ \texttt{0x000000000000AA2A} \gg 2 = \texttt{0x0000000000002A8A} \]
+            \item \texttt{and x7, x7, x6} --- bitwise AND with x6:
+            \[ \texttt{0x0000000000002A8A} \mathbin{\&} \texttt{0x1234567812345678} = \texttt{0x0000000000000208} \]
+        \end{itemize}
+        \textbf{Result: x7 = \texttt{0x0000000000000208}}
+    \end{subproblem}
+    \begin{subproblem}{b}
+        Tracing the instruction:
+        \begin{itemize}
+            \item \texttt{slli x7, x6, 4} --- logical left shift x6 by 4 bits. The top nibble \texttt{0x1} is shifted out:
+            \[ \texttt{0x1234567812345678} \ll 4 = \texttt{0x2345678123456780} \]
+        \end{itemize}
+        \textbf{Result: x7 = \texttt{0x2345678123456780}}
+    \end{subproblem}
+    \begin{subproblem}{c}
+        Tracing each instruction step by step:
+        \begin{itemize}
+            \item \texttt{srli x7, x5, 3} --- logical right shift x5 by 3 bits:
+            \[ \texttt{0x00000000AAAAAAAA} \gg 3 = \texttt{0x0000000015555555} \]
+            \item \texttt{andi x7, x7, 0xFEF} --- \texttt{andi} takes a 12-bit signed immediate. \texttt{0xFEF} has its sign bit (bit 11) set, so it sign-extends to \texttt{0xFFFFFFFFFFFFFFEF}:
+            \[ \texttt{0x0000000015555555} \mathbin{\&} \texttt{0xFFFFFFFFFFFFFFEF} = \texttt{0x0000000015555545} \]
+        \end{itemize}
+        \textbf{Result: x7 = \texttt{0x0000000015555545}}
+    \end{subproblem}
+\end{solution}
+
+\problem{3}
+\begin{solution}
+
+\noindent Notes on RISC-V formats used:
+\begin{itemize}
+    \item \textbf{R-type}: \texttt{funct7 | rs2 | rs1 | funct3 | rd | opcode}
+    \item \textbf{I-type}: \texttt{imm[11:0] | rs1 | funct3 | rd | opcode}
+    \item \textbf{S-type}: \texttt{imm[11:5] | rs2 | rs1 | funct3 | imm[4:0] | opcode}
+    \item \textbf{B-type}: \texttt{imm[12|10:5] | rs2 | rs1 | funct3 | imm[4:1|11] | opcode}
+    \item \textbf{U-type}: \texttt{imm[31:12] | rd | opcode}
+    \item \textbf{J-type}: \texttt{imm[20|10:1|11|19:12] | rd | opcode}
+\end{itemize}
+
+\vspace{0.5em}
+\noindent\resizebox{\textwidth}{!}{%
+\begin{tabular}{|l|c|c|c|c|c|c|c|c|c|}
+\hline
+\textbf{Instruction} & \textbf{Format} & \textbf{opcode} & \textbf{rs1} & \textbf{rs2} & \textbf{rd} & \textbf{imm} & \textbf{funct3} & \textbf{funct7} & \textbf{32-bit hex} \\
+\hline
+\texttt{add x5, x6, x7}    & R & \texttt{0110011} & x6 (6)   & x7 (7)  & x5 (5)  & ---         & \texttt{000} & \texttt{0000000} & \texttt{0x007302B3} \\
+\hline
+\texttt{addi x8, x5, 512}  & I & \texttt{0010011} & x5 (5)   & ---     & x8 (8)  & 512 (0x200) & \texttt{000} & ---              & \texttt{0x20028413} \\
+\hline
+\texttt{ld x3, 128(x27)}   & I & \texttt{0000011} & x27 (27) & ---     & x3 (3)  & 128 (0x080) & \texttt{011} & ---              & \texttt{0x080DB183} \\
+\hline
+\texttt{sd x3, 256(x28)}   & S & \texttt{0100011} & x28 (28) & x3 (3)  & ---     & 256 (0x100) & \texttt{011} & ---              & \texttt{0x103E3023} \\
+\hline
+\texttt{beq x5, x6, ELSE}  & B & \texttt{1100011} & x5 (5)   & x6 (6)  & ---     & +16         & \texttt{000} & ---              & \texttt{0x00628863} \\
+\hline
+\texttt{add x3, x0, x0}    & R & \texttt{0110011} & x0 (0)   & x0 (0)  & x3 (3)  & ---         & \texttt{000} & \texttt{0000000} & \texttt{0x000001B3} \\
+\hline
+\texttt{auipc x3, 0xFFEFA} & U & \texttt{0010111} & ---      & ---     & x3 (3)  & 0xFFEFA     & ---          & ---              & \texttt{0xFFEFA197} \\
+\hline
+\texttt{jal x3, ELSE}      & J & \texttt{1101111} & ---      & ---     & x3 (3)  & +16         & ---          & ---              & \texttt{0x010001EF} \\
+\hline
+\end{tabular}%
+}
+
+\vspace{0.5em}
+\noindent\textbf{Notes:}
+\begin{itemize}
+    \item \texttt{beq} and \texttt{jal}: ELSE is 16 bytes ahead of the current PC, so the branch/jump offset is $+16$.
+    \item \texttt{sd x3, 256(x28)}: the 12-bit immediate 256 is split as \texttt{imm[11:5] = 0001000} and \texttt{imm[4:0] = 00000}.
+    \item \texttt{auipc x3, 0xFFEFA}: places \texttt{0xFFEFA000 + PC} into x3; the 20-bit immediate occupies bits [31:12].
+    \item \texttt{add x3, x0, x0}: effectively zeroes x3 (a common RISC-V idiom).
+\end{itemize}
+
+\end{solution}
+
+\problem{4}
+\begin{solution}
+    \begin{subproblem}{a}
+        Assuming \texttt{x5} holds variable A and \texttt{x11} holds the base address of C:
+        \begin{minted}{gas}
+            lw   x5, 0(x11) # loading C[0] into x5
+            slli x5, x5, 16 # A = C[0] << 16
+        \end{minted}
+    \end{subproblem}
+
+    \begin{subproblem}{b}
+        Using a 5-instruction XOR swap trick to replace the bits without needing multiple shift-and-mask operations:
+        \begin{minted}{gas}
+            slli x6, x3, 16 # shift bits 12:7 of x3 to position 28:23
+            xor  x6, x4, x6 # x6 = difference between x4 and new masked bits
+            lui  x7, 0x1F800 # x7 = 0x1F800000 (mask for bits 28:23)
+            and  x6, x6, x7 # keep only the difference inside the mask
+            xor  x4, x4, x6 # apply changes to x4, leaving other bits untouched
+        \end{minted}
+        Testing output: If \texttt{x3 = 0} and \texttt{x4 = 0xffffffffffffffff}, then \texttt{x6} becomes \texttt{0\textasciicircum x4 = 0xff...ff}, masked to \texttt{0x1F800000}, and explicitly flipping these bits via XOR makes bits 28:23 in \texttt{x4} equal to 0 exactly where configured, yielding \texttt{0xffffffffe07fffff}.
+    \end{subproblem}
+
+    \begin{subproblem}{c}
+        Since there is no direct \texttt{not} instruction in base RISC-V, we use XOR with the all-ones constant ($-1$ fits implicitly in the 12-bit signed immediate):
+        \begin{minted}{gas}
+            xori x5, x6, -1 # bit-wise invert of x6, stored into x5
+        \end{minted}
+    \end{subproblem}
+\end{solution}
+
+\problem{5}
+\begin{solution}
+    \begin{subproblem}{a}
+        The \texttt{jal} instruction utilizes the J-type format, encoding a 20-bit immediate. This immediate is left-shifted by 1 bit, resulting in a 21-bit signed byte offset relative to the PC.
+        The reachable offset range is $[-2^{20}, 2^{20}-2]$ bytes, or $[-0\text{x}100000, +0\text{x}0\text{FFFFE}]$.
+        Given $\text{PC} = \texttt{0x60000000}$, the range of addresses that can be reached is:
+        \[ [\texttt{0x5FF00000}, \texttt{0x600FFFFE}] \]
+    \end{subproblem}
+
+    \begin{subproblem}{b}
+        The \texttt{beq} instruction utilizes the B-type format, encoding a 12-bit immediate. This immediate is left-shifted by 1 bit, resulting in a 13-bit signed byte offset relative to the PC.
+        The reachable offset range is $[-2^{12}, 2^{12}-2]$ bytes, or $[-0\text{x}1000, +0\text{x}0\text{FFE}]$.
+        Given $\text{PC} = \texttt{0x60000000}$, the range of addresses that can be reached is:
+        \[ [\texttt{0x5FFFF000}, \texttt{0x60000FFE}] \]
+    \end{subproblem}
+\end{solution}  
+
+\problem{6}
+Based on the provided assembly, the initialization state is \texttt{x6 = 10} and \texttt{x5 = 0}. The loop decrements \texttt{x6} by 1 and increments \texttt{x5} by 2 per iteration, terminating when \texttt{x6 == 0}. Thus, the loop executes 10 times, leaving the final value of \texttt{x5} as 20.
+
+\begin{solution}
+    \begin{subproblem}{a}
+        Assigning \texttt{acc} to \texttt{x5} and \texttt{i} to \texttt{x6}, the equivalent C code is a conditional loop that subtracts from \texttt{i} and adds to \texttt{acc} until \texttt{i} reaches zero:
+        \begin{minted}{c}
+while (i != 0) {
+    i--;
+    acc += 2;
+}
+        \end{minted}
+    \end{subproblem}
+
+    \begin{subproblem}{b}
+        Assuming $N \ge 0$, the structure executes 4 instructions per iteration (`\texttt{beq}', `\texttt{addi}', `\texttt{addi}', `\texttt{jal}'). Upon the final evaluation when \texttt{x6 == 0}, only the `\texttt{beq}' instruction executes before the loop terminates.
+        Thus, the total number of executed instructions is mathematically modeled as:
+        \[ 4N + 1 \]
+    \end{subproblem}
+
+    \begin{subproblem}{c}
+        Replacing the branch instruction with \texttt{blt x6, x0, DONE} modifies the exit condition to break only when \texttt{x6 < 0}. The equivalent C logic translates to checking if \texttt{i >= 0}:
+        \begin{minted}{c}
+while (i >= 0) {
+    i--;
+    acc += 2;
+}
+        \end{minted}
+    \end{subproblem}
+\end{solution}
+
+\problem{7}
+\begin{solution}
+    \begin{subproblem}{a}
+        Utilizing a standard top-tested \texttt{for} loop structure to structurally match the C code. In memory, each sequence element in \texttt{D} is a 4-byte architectural integer, making the logical index expression \texttt{4*j} evaluate to a byte offset of $4 \times 4 \times j = 16j$. We formulate this scaled offset via a logical left shift by 4 (\texttt{slli}):
+        \begin{minted}{gas}
+    add  x7, x0, x0 # i = 0
+OUTER_LOOP:
+    bge  x7, x5, DONE # exit outer loop if (i >= a)
+    add  x29, x0, x0 # j = 0
+INNER_LOOP:
+    bge  x29, x6, INNER_DONE # exit inner loop if (j >= b)
+    add  x11, x7, x29 # x11 = i + j
+    slli x12, x29, 4 # x12 = 16 * j (byte offset for index 4j)
+    add  x12, x10, x12 # x12 = array base address + offset
+    sw   x11, 0(x12) # D[4*j] = i + j
+    addi x29, x29, 1 # j++
+    jal  x0, INNER_LOOP # loop iteration vector
+INNER_DONE:
+    addi x7, x7, 1 # i++
+    jal  x0, OUTER_LOOP # loop iteration vector
+DONE:
+        \end{minted}
+    \end{subproblem}
+
+    \begin{subproblem}{b}
+        The complete implementation translates into \textbf{12 assembly instructions}. Assuming initialization inputs bounded at logical extrema $a=10$ and $b=1$, the total program execution spans:
+        \begin{itemize}
+            \item \textbf{Outer initialization}: The structural \texttt{add} loop initializer executes 1 time.
+            \item \textbf{Outer conditional}: The testing bounds limit evaluates 11 times.
+            \item \textbf{Inner initialization}: The inner assignment logic sets up exactly 10 times.
+            \item \textbf{Inner conditional}: Testing inner limits bounds evaluates 2 times ($j=0$ and $j=1$) during every $i$ cycle, totaling 20.
+            \item \textbf{Inner logic payload}: The 6 sequence instructions loop execute logically for iteration index space ($10 \times 1 = 10$). Hence, 60 execution increments.
+            \item \textbf{Outer step function}: The exit bounds index modifier runs dynamically following each inner loop termination exactly 10 times. Total bounds: 20 sequential instructions executed.
+        \end{itemize}
+        The sum compiles analytically as mathematically complete sequences: 
+        \[ 1 + 11 + 10 + 20 + 60 + 20 = 122 \text{ executed instructions.} \]
+    \end{subproblem}
+\end{solution}
+
+\problem{8}
+The sequence utilizes \texttt{lb} to load an 8-bit byte symmetrically mapped from \texttt{0x10000000} alongside \texttt{sd} which overwrites the memory frame extending boundaries \texttt{0x10000008}--\texttt{0x1000000F}. Thus, the memory value precisely at address \texttt{0x10000007} remains unmutated from its initial mapping. 
+\begin{solution}
+    \begin{subproblem}{a}
+        In a \textbf{big-endian} mapping model, the most significant byte of the 64-bit construct \texttt{0x1122334455667788} aligns dynamically to the lowest address \texttt{0x10000000}. Consequently, the least significant byte maps symmetrically to \texttt{0x10000007}.
+        \[ \textbf{Value at 0x10000007: \texttt{0x88}} \]
+    \end{subproblem}
+
+    \begin{subproblem}{b}
+        In a \textbf{little-endian} mapping model, the lowest address stores the least significant memory slice, dictating the ascending array order. Resulting symmetrically, the most significant byte establishes itself at exactly the highest address \texttt{0x10000007}.
+        \[ \textbf{Value at 0x10000007: \texttt{0x11}} \]
+    \end{subproblem}
+\end{solution}
+
+\problem{9}
+\begin{solution}
+    Formulating strictly the 64-bit exact identical symmetric sequence \texttt{0x1234567812345678} analytically utilizes modular shifts to construct 32-bit components, replicating via logical add structures inside registers:
+    \begin{minted}{gas}
+    lui  x10, 0x12345 # load upper immediate: x10 = 0x12345000
+    addi x10, x10, 0x678 # sign-ext 0x678 adds perfectly: x10 = 0x12345678
+    slli x11, x10, 32 # shift entire sequence to high order bounds
+    add  x10, x10, x11 # compose duplicated pattern into x10 structurally
+    \end{minted}
+\end{solution}
+
+\problem{10}
+Given \texttt{x5 = 128} functionally initialized, we map limits across the 32-bit bound domains algebraically: $MAX = 2147483647$, $MIN = -2147483648$.
+\begin{solution}
+    \begin{subproblem}{a}
+        For \texttt{add x30, x5, x6}, overflow occurs identically when $128 + x6 > 2147483647$. Solving logically: $x6 > 2147483519$. No negative overflow bounds limit this.
+        \[ \textbf{Range:} \quad [2147483520,\ 2147483647] \]
+    \end{subproblem}
+    \begin{subproblem}{b}
+        For \texttt{sub x30, x5, x6}, overflow models $128 - x6 > 2147483647 \implies x6 < -2147483519$. Only the minimum signed limit functionally maps an exit bounds domain.
+        \[ \textbf{Range:} \quad [-2147483648,\ -2147483520] \]
+    \end{subproblem}
+    \begin{subproblem}{c}
+        For \texttt{sub x30, x6, x5}, overflow structures mathematically across $x6 - 128 < -2147483648$, resolving into a precise sub-bound exit limit. 
+        \[ \textbf{Range:} \quad [-2147483648,\ -2147483521] \]
+    \end{subproblem}
+\end{solution}
+
+\problem{10 (Reading Analysis)}
+\begin{solution}
+    \begin{itemize}
+        \item \textbf{1.1}: Technology scaling decreases active transistor die area, lowering manufacturing costs per transistor. According to Mark Horowitz (ISSCC 2014 keynote), this exponential reduction in the cost of computing enables the widespread global computation and proliferation of computing devices.
+        \item \textbf{1.2}: Power density functionally throttled clock frequencies since thermal power heat limits (power dissipation) maximized viable cooling architectures. Since wire resistance scales poorly, pushing higher frequencies causes unacceptable power consumption making systems heavily energy-limited (Horowitz, 2014).
+        \item \textbf{1.3}: Moore's Law slows due to lithography costs and atomic-scale physics limits. Concurrently, Dennard Scaling ended since threshold voltages and leakage currents could no longer scale proportionally with physical dimensions (Horowitz, 2014).
+        \item \textbf{1.4}: Moving data, particularly off-chip memory access, dominates system energy. Horowitz highlights that external memory bound reads map immense proportional energy loads---scaling orders of magnitude higher than on-die logic ALUs computations.
+        \item \textbf{1.5}: Horowitz envisions improvements via hardware-software co-design explicitly targeting heterogeneous computing structures, minimizing off-chip memory calls, and utilizing analytical domain-specific architectures to optimize energy metrics efficiently.
+    \end{itemize}
+\end{solution}
+
+\problem{11}
+\begin{solution}
+    \begin{itemize}
+        \item \textbf{(1) Proprietary vs Open-Source ISA Debate:}
+        Reviewing the 2015 IEEE Micro debate (Hill et al., ``Proprietary versus Open Instruction Sets''), the tension structures between innovation flexibility versus commercial reliability. 
+        Patterson argues an open-source ISA (like RISC-V) unlocks specialized logic dynamically without arbitrary licensing bounds, avoids vendor lock-in, and promotes a unified community ecosystem ensuring stability. Conversely, Christie notes that proprietary ISAs offer a singular, highly tested, compliant ecosystem, mitigating fragmentation and heavy validation testing overheads. Open-source execution responds by crowd-sourcing these validation burdens community-wide.
+        \item \textbf{(2) Technical Merits of Open-Source ISAs:}
+        According to Asanovi\'c et al. (``Instruction Sets Should Be Free: The Case for RISC-V'', UCB EECS-2014-146), RISC-V is unburdened by retroactive compatibility models that weigh down proprietary systems like x86. This pure execution structure yields smaller architectural footprints. Furthermore, customized extension domains organically lower operational constraints, scaling power and geometric area to fit targeted functional domains cleanly.
+    \end{itemize}
+\end{solution}
+
+\end{document}

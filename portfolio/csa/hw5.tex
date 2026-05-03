@@ -1,0 +1,453 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage[margin=0.75in]{geometry}
+\usepackage{hyperref}
+\usepackage{booktabs}
+
+\hypersetup{colorlinks=true,linkcolor=blue}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.35em}
+\renewcommand{\arraystretch}{1.15}
+
+\newcommand{\problem}[1]{\vspace{0.8em}\noindent\textbf{Problem #1.}\vspace{0.35em}}
+\newenvironment{solution}{\par\noindent\textit{Solution.}\ }{\par\vspace{1.1em}}
+\newcommand{\subproblem}[1]{\par\vspace{0.45em}\noindent\textbf{#1}\quad}
+\newcommand{\assigntext}[1]{\par\vspace{0.25em}\small\textit{#1}\par\vspace{0.35em}}
+
+\title{Computer Systems Architecture\\Homework 5}
+\author{Ashesh Kaji}
+\date{}
+
+\begin{document}
+\maketitle
+
+\problem{1}
+\assigntext{Pipelining hazards and forwarding trade-offs. I use the CPU-time relation from the architecture text: time $\propto \text{(instruction count)} \times \text{(CPI)} \times \text{(cycle time)}$.}
+
+\begin{solution}
+Let the original useful program length be $n$ instructions.
+
+\subproblem{1.1}
+Without forwarding:
+\[
+T_{\text{no-fwd}}=(n+0.4n)\cdot 250 = 350n\ \text{ps}.
+\]
+With forwarding:
+\[
+T_{\text{fwd}}=(n+0.05n)\cdot 300 = 315n\ \text{ps}.
+\]
+Speedup of forwarding over no-forwarding:
+\[
+\text{Speedup}=\frac{T_{\text{no-fwd}}}{T_{\text{fwd}}}=\frac{350}{315}\approx 1.11.
+\]
+
+\subproblem{1.2}
+Let $y$ be remaining NOPs (relative to $n$) in the forwarded pipeline for this case (baseline no-forwarding has $0.4n$ NOPs).
+Break-even:
+\[
+(1+y)300 = (1+0.4)250.
+\]
+So
+\[
+y = \frac{350}{300}-1 = \frac{1}{6}\approx 0.1667.
+\]
+If forwarded code has more than $16.67\%$ NOPs, it becomes slower.
+
+\subproblem{1.3}
+Now let $x$ be the no-forwarding NOP ratio (so 1.2 had $x=0.4$). Break-even for remaining forwarded NOP ratio $y$:
+\[
+(1+y)300 = (1+x)250
+\]
+\[
+y_{\max}=\frac{250}{300}(1+x)-1=\frac{5x-1}{6}.
+\]
+Forwarding is faster iff $y<\frac{5x-1}{6}$.
+
+\subproblem{1.4}
+If a program has only $0.075n$ NOPs in the no-forwarding case, then even in the \emph{best} forwarded case ($y=0$),
+\[
+T_{\text{fwd,min}}=n\cdot 300,\quad T_{\text{no-fwd}}=(1.075n)\cdot 250=268.75n.
+\]
+So forwarding cannot win: $300n>268.75n$.
+
+\subproblem{1.5}
+For forwarding to \emph{possibly} win, take best case $y=0$:
+\[
+300n < (1+x)250n \Rightarrow x>0.2.
+\]
+So the program must have strictly more than $20\%$ NOPs in the no-forwarding version.
+\end{solution}
+
+\problem{2}
+\assigntext{Single-memory structural hazard (instruction fetch and data memory share one memory).}
+
+\begin{solution}
+\subproblem{2.1}
+Code:
+\begin{verbatim}
+I1: sd  x29, 12(x16)
+I2: ld  x29, 8(x16)
+I3: sub x17, x15, x14
+I4: beqz x17, label
+I5: add x15, x11, x14
+I6: sub x15, x30, x14
+\end{verbatim}
+
+Pipeline timing (``S'' = fetch stall because memory is busy for data access):
+\begin{verbatim}
+Cycle:  1   2   3   4   5   6   7   8   9  10
+I1(sd): IF  ID  EX MEM  WB
+I2(ld):     IF  ID  EX MEM  WB
+I3(sub):        IF  ID  EX MEM  WB
+IF stage:               S   S  I4  I5  I6
+\end{verbatim}
+Stalls occur in cycles 4 and 5 (when I1 and I2 are in MEM and need data memory).
+
+\subproblem{2.2}
+In general, reordering cannot eliminate this hazard class: each data-memory access (load/store) still occupies the single memory in that cycle, so instruction fetch must be stalled for that cycle.
+
+\subproblem{2.3}
+This hazard is fundamentally a hardware resource conflict. Adding NOPs in software does not remove the fetch-vs-data-memory conflict, because NOPs must still be fetched. The processor must stall (or use separate I/D memories or a multi-ported memory).
+
+\subproblem{2.4}
+From the given mix:
+\[
+\text{ld}=25\%,\ \text{sd}=11\% \Rightarrow \text{data-memory accesses}=36\%.
+\]
+Approximate structural stalls $\approx 0.36$ per instruction (about 36 stalls per 100 instructions), so CPI increases by about 0.36 if this is the only extra hazard source.
+\end{solution}
+
+\problem{3}
+\assigntext{Four-stage pipeline idea from changing load/store addressing (no offset; address already in a register).}
+
+\begin{solution}
+\subproblem{3.1}
+Reducing from 5 to 4 stages does not guarantee a shorter cycle time; cycle time is set by the slowest stage. If EX and MEM are overlapped into one stage, that stage may become the new bottleneck. So cycle time is often similar, or only slightly improved, and can even get worse depending on implementation details.
+
+\subproblem{3.2}
+Potential performance benefits:
+\begin{itemize}
+\item smaller fill/drain overhead (fewer stages),
+\item lower branch/misprediction penalty measured in cycles,
+\item fewer pipeline registers and less pipeline-control overhead.
+\end{itemize}
+
+\subproblem{3.3}
+Potential downsides:
+\begin{itemize}
+\item losing base+offset addressing increases instruction count (extra address arithmetic),
+\item more register pressure / dependence traffic,
+\item possibly longer critical path in the merged stage.
+\end{itemize}
+\end{solution}
+
+\problem{4}
+\assigntext{Hazard-detection behavior for a load-use hazard (as in the RISC-V pipeline with forwarding logic around Figure 4.53 style datapath).}
+
+\begin{solution}
+\textbf{Choice 2} is correct.
+
+Reason: when hazard detection sees the load-use conflict, it freezes PC and IF/ID for one cycle and injects a bubble into ID/EX. Therefore:
+\begin{itemize}
+\item the dependent \texttt{add} remains in ID for the extra cycle,
+\item the following \texttt{or} remains in IF (it does not advance into ID during the stall).
+\end{itemize}
+That matches Choice 2 (\texttt{IF..ID} on \texttt{or}), not Choice 1.
+\end{solution}
+
+\problem{5}
+\assigntext{Loop pipeline execution with full forwarding, perfect branch prediction, no delay slots, branch resolved in EX.}
+
+\begin{solution}
+Loop body:
+\begin{verbatim}
+I1: ld   x10, 0(x13)
+I2: ld   x11, 8(x13)
+I3: add  x12, x10, x11
+I4: subi x13, x13, 16
+I5: bnez x12, LOOP
+\end{verbatim}
+
+\subproblem{5.1}
+There is one load-use stall per iteration (between \texttt{I2} and \texttt{I3}). First two iterations:
+\begin{center}
+\small
+\begin{tabular}{@{}lccccccccccccccc@{}}
+\toprule
+Instr. & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 \\
+\midrule
+\texttt{I1: ld}    & IF & ID & EX & MEM & WB &    &    &    &    &    &    &    &    &    &    \\
+\texttt{I2: ld}    &    & IF & ID & EX  & MEM & WB &    &    &    &    &    &    &    &    &    \\
+\texttt{I3: add}   &    &    & IF & ID  & ID  & EX & MEM & WB &    &    &    &    &    &    &    \\
+\texttt{I4: subi}  &    &    &    & IF  & IF  & ID & EX  & MEM & WB &    &    &    &    &    &    \\
+\texttt{I5: bnez}  &    &    &    &     &     & IF & ID  & EX  & MEM & WB &    &    &    &    &    \\
+\texttt{I1': ld}   &    &    &    &     &     &    & IF  & ID  & EX  & MEM & WB &    &    &    &    \\
+\texttt{I2': ld}   &    &    &    &     &     &    &     & IF  & ID  & EX  & MEM & WB &    &    &    \\
+\texttt{I3': add}  &    &    &    &     &     &    &     &     & IF  & ID  & ID  & EX & MEM & WB &    \\
+\texttt{I4': subi} &    &    &    &     &     &    &     &     &     & IF  & IF  & ID & EX  & MEM & WB \\
+\texttt{I5': bnez} &    &    &    &     &     &    &     &     &     &     &     & IF & ID  & EX  & MEM \\
+\bottomrule
+\end{tabular}
+\normalsize
+\end{center}
+
+\subproblem{5.2}
+Non-useful stage occupancy appears in the bubble cycles (the two repeated ID/IF cycles above), and also whenever an instruction is in a stage it does not semantically use (e.g., ALU op in MEM).
+
+Using the exact interval requested in the prompt:
+\begin{itemize}
+\item \texttt{subi} is in IF in cycle 4,
+\item \texttt{bnez} is in IF in cycle 6.
+\end{itemize}
+So we inspect cycles 4--6. In each of those cycles, only \textbf{four} stages are doing useful work. Therefore the number of cycles in that interval where all five stages do useful work is \textbf{0 out of 3} (never).
+\end{solution}
+
+\problem{6}
+\assigntext{Forwarding trade-off exercise using the given dependency frequencies and stage latencies (from the HW figure/table).}
+
+\begin{solution}
+Given dependency frequencies:
+\[
+\text{EX}\rightarrow \text{1st only}=5\%,\ 
+\text{MEM}\rightarrow \text{1st only}=20\%,\ 
+\text{EX}\rightarrow \text{2nd only}=5\%,
+\]
+\[
+\text{MEM}\rightarrow \text{2nd only}=10\%,\ 
+\text{EX}\rightarrow \text{1st and 2nd}=10\%.
+\]
+Stage latencies (ps):
+\[
+\text{IF}=120,\ \text{ID}=100,\ \text{EX(no fwd)}=110,\ \text{EX(full)}=130,\ \text{EX(partial)}=120,\ \text{MEM}=120,\ \text{WB}=100.
+\]
+
+\subproblem{6.1}
+Example 3-instruction sequences:
+\begin{itemize}
+\item EX$\rightarrow$1st only:
+\begin{verbatim}
+add x5, x1, x2
+sub x6, x5, x3
+or  x7, x8, x9
+\end{verbatim}
+\item MEM$\rightarrow$1st only:
+\begin{verbatim}
+ld  x5, 0(x1)
+add x6, x5, x2
+or  x7, x8, x9
+\end{verbatim}
+\item EX$\rightarrow$2nd only:
+\begin{verbatim}
+add x5, x1, x2
+and x6, x7, x8
+sub x9, x5, x3
+\end{verbatim}
+\item MEM$\rightarrow$2nd only:
+\begin{verbatim}
+ld  x5, 0(x1)
+and x6, x7, x8
+add x9, x5, x3
+\end{verbatim}
+\item EX$\rightarrow$1st and EX$\rightarrow$2nd:
+\begin{verbatim}
+add x5, x1, x2
+sub x6, x5, x3
+or  x7, x5, x4
+\end{verbatim}
+\end{itemize}
+
+\subproblem{6.2}
+Required NOPs on a pipeline with no forwarding and no hazard detection:
+\begin{center}
+\begin{tabular}{@{}lc@{}}
+\toprule
+Dependency type & NOPs needed \\
+\midrule
+EX$\rightarrow$1st only & 2 \\
+MEM$\rightarrow$1st only & 2 \\
+EX$\rightarrow$2nd only & 1 \\
+MEM$\rightarrow$2nd only & 1 \\
+EX$\rightarrow$1st and 2nd & 2 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subproblem{6.3}
+Example where independent counting overestimates:
+\begin{verbatim}
+add x5, x1, x2
+sub x6, x5, x3
+or  x7, x5, x4
+\end{verbatim}
+If counted independently: $2+1=3$ stalls. Actual sequence needs only 2 inserted NOPs, since those same two NOPs also fix the 2nd-consumer hazard.
+
+\subproblem{6.4}
+No forwarding:
+\[
+\text{stall/instr}=0.05(2)+0.20(2)+0.05(1)+0.10(1)+0.10(2)=0.85.
+\]
+\[
+\text{CPI}=1+0.85=1.85.
+\]
+Percent of cycles that are stalls:
+\[
+\frac{0.85}{1.85}\approx 45.9\%.
+\]
+
+\subproblem{6.5}
+Full forwarding leaves only MEM$\rightarrow$1st (load-use next instruction) as a 1-cycle stall:
+\[
+\text{stall/instr}=0.20(1)=0.20,\quad \text{CPI}=1.20.
+\]
+Stall-cycle fraction:
+\[
+\frac{0.20}{1.20}\approx 16.7\%.
+\]
+
+\subproblem{6.6}
+Partial forwarding options:
+\begin{itemize}
+\item EX/MEM-only forwarding: stall/instr
+\[
+0.05(0)+0.20(2)+0.05(1)+0.10(1)+0.10(1)=0.65
+\]
+\[
+\Rightarrow \text{CPI}=1.65.
+\]
+\item MEM/WB-only forwarding: stall/instr
+\[
+0.05(1)+0.20(1)+0.05(0)+0.10(0)+0.10(1)=0.35
+\]
+\[
+\Rightarrow \text{CPI}=1.35.
+\]
+\end{itemize}
+MEM/WB-only is better for this workload.
+
+\subproblem{6.7}
+Cycle times:
+\[
+T_{\text{clk,no-fwd}}=120,\quad T_{\text{clk,EX/MEM}}=120,\quad
+T_{\text{clk,MEM/WB}}=120,\quad T_{\text{clk,full}}=130\ \text{ps}.
+\]
+Execution-time metric per instruction $\propto \text{CPI}\cdot T_{\text{clk}}$:
+\[
+E_{\text{no-fwd}}=1.85\cdot120=222,
+\]
+\[
+E_{\text{EX/MEM}}=1.65\cdot120=198,\ 
+E_{\text{MEM/WB}}=1.35\cdot120=162,\ 
+E_{\text{full}}=1.20\cdot130=156.
+\]
+Speedups over no-forwarding:
+\[
+S_{\text{EX/MEM}}=\frac{222}{198}\approx 1.12,\quad
+S_{\text{MEM/WB}}=\frac{222}{162}\approx 1.37,\quad
+S_{\text{full}}=\frac{222}{156}\approx 1.42.
+\]
+
+\subproblem{6.8}
+Time-travel forwarding removes all data-hazard stalls, so CPI $=1.0$, but EX latency for the full-forwarding design rises by 100 ps:
+\[
+\text{EX}=130+100=230\ \text{ps},\quad T_{\text{clk,time-travel}}=230\ \text{ps}.
+\]
+So
+\[
+E_{\text{time-travel}}=1.0\cdot 230=230.
+\]
+Relative to fastest in 6.7 (full forwarding, $E=156$):
+\[
+\text{additional speedup}=\frac{156}{230}\approx 0.68.
+\]
+So there is no additional speedup; it is actually slower (about 32\% slower).
+\end{solution}
+
+\problem{7}
+\assigntext{Five-stage pipeline sequence with hazard/no-hazard-detection variants, using Figure 4.53 forwarding/hazard-control conventions.}
+
+\begin{solution}
+Original sequence:
+\begin{verbatim}
+add x15, x12, x11
+ld  x13, 4(x15)
+ld  x12, 0(x2)
+or  x13, x15, x13
+sd  x13, 0(x15)
+\end{verbatim}
+
+\subproblem{7.1}
+One valid no-forwarding/no-hazard-detection schedule:
+\begin{verbatim}
+add x15, x12, x11
+nop
+nop
+ld  x13, 4(x15)
+ld  x12, 0(x2)
+nop
+or  x13, x15, x13
+nop
+nop
+sd  x13, 0(x15)
+\end{verbatim}
+
+\subproblem{7.2}
+Reordered version with fewer NOPs (uses x17 as temporary base):
+\begin{verbatim}
+add x17, x12, x11
+ld  x12, 0(x2)
+nop
+ld  x13, 4(x17)
+add x15, x17, x0
+nop
+or  x13, x17, x13
+nop
+nop
+sd  x13, 0(x17)
+\end{verbatim}
+This reduces inserted NOPs while preserving behavior.
+
+\subproblem{7.3}
+With forwarding but no hazard-detection unit, this specific sequence still executes correctly because it has no immediate load-use pair that would require the hardware to insert a stall. That matches the no-stall timing shown in 7.4.
+
+\subproblem{7.4}
+First seven cycles (with forwarding):
+\begin{itemize}
+\item Hazard detection: no stalls asserted in cycles 1--7 (\texttt{PCWrite=1}, \texttt{IF/IDWrite=1}, no control-zero bubble).
+\item Forwarding selects when EX is active:
+\begin{itemize}
+\item Cycle 3 (add in EX): \texttt{ForwardA=00, ForwardB=00}.
+\item Cycle 4 (ld using x15 from prior add): \texttt{ForwardA=10}, \texttt{ForwardB=00/don't-care}.
+\item Cycle 5 (second ld in EX): \texttt{ForwardA=00, ForwardB=00}.
+\item Cycle 6 (or in EX needs x13 from earlier ld): \texttt{ForwardA=00, ForwardB=01}.
+\item Cycle 7 (sd in EX address calculation): \texttt{ForwardA=00}, and the ALU's second input is the store offset/immediate, so \texttt{ForwardB} is don't-care for the address computation.
+\end{itemize}
+\end{itemize}
+
+\subproblem{7.5}
+Without forwarding, the hazard-detection unit must detect RAW hazards against multiple older pipeline stages (not only load-use). Useful signals:
+\begin{itemize}
+\item \textbf{Inputs:} source registers of instruction in ID (\texttt{IF/ID.rs1, IF/ID.rs2}); destination registers and write-enables from older stages (\texttt{ID/EX.rd, EX/MEM.rd, MEM/WB.rd} with corresponding \texttt{RegWrite}); opcode/use bits to know whether rs1/rs2 are actually read.
+\item \textbf{Outputs:} stall controls (\texttt{PCWrite}, \texttt{IF/IDWrite}), and bubble insertion control for ID/EX (control-zero / flush). Since no forwarding exists, the unit may assert these for multiple consecutive cycles.
+\end{itemize}
+
+\subproblem{7.6}
+For the first five cycles of the given timing sketch (no forwarding), outputs are:
+\begin{center}
+\begin{tabular}{@{}cccc@{}}
+\toprule
+Cycle & PCWrite & IF/IDWrite & ID/EX control-zero (bubble) \\
+\midrule
+1 & 1 & 1 & 0 \\
+2 & 1 & 1 & 0 \\
+3 & 0 & 0 & 1 \\
+4 & 0 & 0 & 1 \\
+5 & 1 & 1 & 0 \\
+\bottomrule
+\end{tabular}
+\end{center}
+Cycles 3 and 4 are the two-cycle stall needed for \texttt{add x15,...} $\rightarrow$ \texttt{ld x13,4(x15)} on a no-forwarding pipeline.
+\end{solution}
+
+\end{document}
