@@ -9,7 +9,7 @@
   <title>Silver Linings — Save the Date</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Inter:wght@200;300&family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;1,500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Cinzel:wght@400;500;600;700&family=Inter:wght@200;300&family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after {
       margin: 0;
@@ -138,55 +138,90 @@
       );
     }
 
+    /* ═══════════════════════════════════════════════════════
+       SHARED SILVER METALLIC BASE
+       Inspired by Mandy Michael's silver text technique:
+       hard color transitions create realistic polished-metal banding
+       ═══════════════════════════════════════════════════════ */
+    .metallic-silver {
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-repeat: no-repeat;
+    }
+
     /* ── Title: "Silver Linings" ── */
     .title {
       font-family: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
       font-weight: 700;
+      font-style: italic;
       font-size: clamp(3.2rem, 8.5vw, 8rem);
       line-height: 1.05;
       letter-spacing: 0.005em;
       margin-bottom: 0.08em;
 
-      /* Deep metallic silver gradient — more stops, higher contrast */
-      background: linear-gradient(
-        170deg,
-        #ffffff 0%,
-        #ececf4 6%,
-        #ffffff 14%,
-        #d0d0dc 22%,
-        #f4f4fa 32%,
-        #c0c0ce 42%,
-        #e8e8f2 52%,
-        #b8b8c8 60%,
-        #f0f0f6 70%,
-        #c8c8d6 80%,
-        #a8a8b8 90%,
-        #9494a4 100%
-      );
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
+      /* Dual-layer background:
+         Layer 1 — shimmer sweep (narrow bright band)
+         Layer 2 — rich multi-stop silver metallic gradient
+         Hard transitions at 18→20%, 22→27% create polished-metal banding
+         like Mandy Michael's technique */
+      background-image:
+        /* Shimmer highlight — narrow white sweep band */
+        linear-gradient(
+          105deg,
+          transparent 38%,
+          rgba(255,255,255,0.0) 42%,
+          rgba(255,255,255,0.55) 47%,
+          rgba(255,255,255,0.95) 50%,
+          rgba(255,255,255,0.55) 53%,
+          rgba(255,255,255,0.0) 58%,
+          transparent 62%
+        ),
+        /* Metallic silver base — polished with reflection bands */
+        linear-gradient(
+          180deg,
+          #fefefe 0%,
+          #e4e4e4 16%,
+          #909090 18%,
+          #757575 19%,
+          #c8c8c8 22%,
+          #f0f0f0 24%,
+          #ffffff 27%,
+          #e0e0e0 29%,
+          #b0b0b0 32%,
+          #eaeaea 40%,
+          #9e9e9e 45%,
+          #6a6a6a 50%,
+          #aaaaaa 55%,
+          #c8c8c8 60%,
+          #5a5a5a 76%,
+          #444444 78%,
+          #888888 85%,
+          #cccccc 100%
+        );
+      background-size: 120% 100%, 100% 100%;
+      background-position: -150% 0, 0 0;
 
-      /* Metallic depth via layered drop-shadows */
+      /* Metallic depth — layered drop-shadows for engraved feel */
       filter:
-        drop-shadow(0 0 30px rgba(210,210,230,0.12))
-        drop-shadow(0 2px 6px rgba(0,0,0,0.35));
+        drop-shadow(0 0 20px rgba(210,210,230,0.18))
+        drop-shadow(0 0 40px rgba(180,180,200,0.10))
+        drop-shadow(0 2px 4px rgba(0,0,0,0.50))
+        drop-shadow(0 4px 8px rgba(0,0,0,0.25));
 
-      /* Shimmer — light sweeping across polished silver */
-      animation: silverShimmer 6s ease-in-out infinite;
-      background-size: 100% 250%;
+      /* Shimmer animation — smooth sweep across polished silver */
+      animation: titleShimmer 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
     }
 
-    @keyframes silverShimmer {
-      0%, 100% { background-position: 0% 0%; }
-      40%      { background-position: 0% 70%; }
-      60%      { background-position: 0% 100%; }
+    @keyframes titleShimmer {
+      0%   { background-position: -150% 0, 0 0; }
+      100% { background-position: 250% 0, 0 0; }
     }
 
     /* ── Subtitle ── */
     .subtitle {
-      font-family: 'Inter', system-ui, sans-serif;
-      font-weight: 200;
+      font-family: 'Cinzel', 'Inter', system-ui, sans-serif;
+      font-weight: 400;
       font-size: clamp(0.7rem, 1.4vw, 0.95rem);
       letter-spacing: 0.34em;
       text-transform: uppercase;
@@ -232,16 +267,58 @@
     .hosts-ornament-diamond {
       color: var(--silver-mid);
       font-size: 0.45rem;
-      opacity: 0.5;
+      opacity: 0.6;
     }
 
     .hosts-names {
       font-family: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
-      font-weight: 500;
+      font-weight: 600;
       font-style: italic;
       font-size: clamp(1.05rem, 2vw, 1.45rem);
       letter-spacing: 0.06em;
-      color: var(--silver-mid);
+
+      /* Silver metallic — hosts get the polished treatment too */
+      background-image:
+        linear-gradient(
+          105deg,
+          transparent 38%,
+          rgba(255,255,255,0) 42%,
+          rgba(255,255,255,0.40) 47%,
+          rgba(255,255,255,0.85) 50%,
+          rgba(255,255,255,0.40) 53%,
+          rgba(255,255,255,0) 58%,
+          transparent 62%
+        ),
+        linear-gradient(
+          180deg,
+          #e8e8ec 0%,
+          #c8c8d2 18%,
+          #888894 20%,
+          #c0c0cc 24%,
+          #dcdce6 30%,
+          #b0b0ba 45%,
+          #90909a 55%,
+          #c4c4ce 65%,
+          #70707a 78%,
+          #9a9aa4 100%
+        );
+      background-size: 120% 100%, 100% 100%;
+      background-position: -150% 0, 0 0;
+      background-repeat: no-repeat;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+
+      filter:
+        drop-shadow(0 0 12px rgba(200,200,216,0.12))
+        drop-shadow(0 1px 3px rgba(0,0,0,0.40));
+
+      animation: hostsShimmer 5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+
+    @keyframes hostsShimmer {
+      0%   { background-position: -150% 0, 0 0; }
+      100% { background-position: 250% 0, 0 0; }
     }
 
     .hosts-ampersand {
@@ -249,11 +326,18 @@
       font-family: 'Playfair Display', Georgia, serif;
       color: var(--champagne);
       margin: 0 0.15em;
+      /* Override metallic for ampersand — keep it champagne */
+      background: none;
+      -webkit-background-clip: unset;
+      background-clip: unset;
+      -webkit-text-fill-color: var(--champagne);
+      filter: none;
+      animation: none;
     }
 
     .hosts-invite {
-      font-family: 'Inter', system-ui, sans-serif;
-      font-weight: 200;
+      font-family: 'Cinzel', 'Inter', system-ui, sans-serif;
+      font-weight: 400;
       font-size: clamp(0.58rem, 1vw, 0.7rem);
       letter-spacing: 0.22em;
       text-transform: uppercase;
@@ -264,13 +348,29 @@
     /* ── Quote ── */
     .quote {
       font-family: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
-      font-weight: 400;
+      font-weight: 500;
       font-style: italic;
       font-size: clamp(1.1rem, 2.2vw, 1.7rem);
       line-height: 1.6;
-      color: var(--silver-mid);
       max-width: 28em;
       margin-bottom: 2.8rem;
+
+      /* Subtle silver metallic for the quote */
+      background: linear-gradient(
+        180deg,
+        #c8c8d6 0%,
+        #b0b0be 35%,
+        #a0a0ae 50%,
+        #b8b8c6 65%,
+        #9898a6 100%
+      );
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter:
+        drop-shadow(0 0 8px rgba(180,180,196,0.10))
+        drop-shadow(0 1px 2px rgba(0,0,0,0.35));
+
       animation-name: fadeRise;
       animation-duration: 1.5s;
       animation-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
@@ -280,8 +380,14 @@
 
     .quote .highlight {
       color: var(--champagne-light);
-      font-weight: 500;
+      font-weight: 600;
       font-style: normal;
+      /* Override metallic for highlight — keep champagne */
+      background: none;
+      -webkit-background-clip: unset;
+      background-clip: unset;
+      -webkit-text-fill-color: var(--champagne-light);
+      filter: none;
     }
 
     /* ── Date ── */
@@ -295,8 +401,8 @@
     }
 
     .date-label {
-      font-family: 'Inter', system-ui, sans-serif;
-      font-weight: 200;
+      font-family: 'Cinzel', 'Inter', system-ui, sans-serif;
+      font-weight: 400;
       font-size: clamp(0.6rem, 1.1vw, 0.78rem);
       letter-spacing: 0.28em;
       text-transform: uppercase;
@@ -307,10 +413,53 @@
     .date-main {
       font-family: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
       font-weight: 600;
+      font-style: italic;
       font-size: clamp(2.2rem, 5vw, 4rem);
       line-height: 1.12;
       letter-spacing: 0.03em;
-      color: var(--silver-mid);
+
+      /* Silver metallic for the date */
+      background-image:
+        linear-gradient(
+          105deg,
+          transparent 38%,
+          rgba(255,255,255,0) 42%,
+          rgba(255,255,255,0.35) 47%,
+          rgba(255,255,255,0.75) 50%,
+          rgba(255,255,255,0.35) 53%,
+          rgba(255,255,255,0) 58%,
+          transparent 62%
+        ),
+        linear-gradient(
+          180deg,
+          #dcdce6 0%,
+          #c0c0cc 18%,
+          #80808c 20%,
+          #b8b8c4 24%,
+          #d0d0da 30%,
+          #a8a8b4 45%,
+          #888892 55%,
+          #bcbcc6 65%,
+          #6a6a74 78%,
+          #94949e 100%
+        );
+      background-size: 120% 100%, 100% 100%;
+      background-position: -150% 0, 0 0;
+      background-repeat: no-repeat;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+
+      filter:
+        drop-shadow(0 0 14px rgba(190,190,208,0.14))
+        drop-shadow(0 1px 3px rgba(0,0,0,0.38));
+
+      animation: dateShimmer 5.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+
+    @keyframes dateShimmer {
+      0%   { background-position: -150% 0, 0 0; }
+      100% { background-position: 250% 0, 0 0; }
     }
 
     .date-divider {
@@ -320,6 +469,12 @@
       background: rgba(190,190,200,0.55);
       vertical-align: middle;
       margin: 0 0.18em;
+      /* Dividers stay as lines — no metallic fill */
+      -webkit-background-clip: unset;
+      background-clip: unset;
+      -webkit-text-fill-color: unset;
+      filter: none;
+      animation: none;
     }
 
     /* ── Bottom Rule ── */
@@ -343,8 +498,8 @@
 
     /* ── Footer ── */
     .footer-text {
-      font-family: 'Inter', system-ui, sans-serif;
-      font-weight: 200;
+      font-family: 'Cinzel', 'Inter', system-ui, sans-serif;
+      font-weight: 400;
       font-size: clamp(0.65rem, 1.2vw, 0.8rem);
       letter-spacing: 0.22em;
       text-transform: uppercase;
@@ -388,11 +543,13 @@
     }
 
     @media (prefers-reduced-motion: reduce) {
-      .title, .top-rules, .subtitle, .hosts-section, .quote, .date-block, .bottom-rule, .footer-text {
+      .title, .hosts-names, .date-main,
+      .top-rules, .subtitle, .hosts-section,
+      .quote, .date-block, .bottom-rule, .footer-text {
         animation: none;
         opacity: 1;
       }
-      .title {
+      .title, .hosts-names, .date-main, .quote {
         -webkit-text-fill-color: var(--silver-mid);
         background: none;
         filter: none;
@@ -462,7 +619,7 @@
       let W, H;
       const bursts = [];
       const sparkles = [];
-      const trails = [];      // lingering light trails
+      const trails = [];
       const MAX_BURSTS = 5;
       const PARTICLE_LIFE = 3.5;
 
@@ -598,7 +755,6 @@
       function draw() {
         ctx.clearRect(0, 0, W, H);
 
-        // Trails (diamond flash rays)
         for (const t of trails) {
           const alpha = Math.max(0, t.life / t.maxLife) * 0.5;
           ctx.strokeStyle = `rgba(${t.color.r},${t.color.g},${t.color.b},${alpha})`;
@@ -609,14 +765,12 @@
           ctx.stroke();
         }
 
-        // Burst particles
         for (const burst of bursts) {
           for (const pt of burst.particles) {
             const alpha = Math.max(0, pt.life / pt.maxLife);
             const size = pt.size * (0.35 + alpha * 0.65);
             const fade = alpha * 0.85;
 
-            // Glow
             const glow = ctx.createRadialGradient(pt.x, pt.y, 0, pt.x, pt.y, size * 3.5);
             glow.addColorStop(0, `rgba(${pt.color.r},${pt.color.g},${pt.color.b},${fade * 0.45})`);
             glow.addColorStop(0.4, `rgba(${pt.color.r},${pt.color.g},${pt.color.b},${fade * 0.12})`);
@@ -626,7 +780,6 @@
             ctx.arc(pt.x, pt.y, size * 3.5, 0, Math.PI * 2);
             ctx.fill();
 
-            // Core
             ctx.fillStyle = `rgba(${pt.color.r},${pt.color.g},${pt.color.b},${fade})`;
             ctx.beginPath();
             ctx.arc(pt.x, pt.y, size, 0, Math.PI * 2);
@@ -634,7 +787,6 @@
           }
         }
 
-        // Ambient sparkles
         for (const s of sparkles) {
           const twinkle = 0.25 + 0.75 * Math.abs(Math.sin(s.twinkleOffset + performance.now() * 0.001 * s.twinkleSpeed));
           const alpha = Math.max(0, s.life / s.maxLife) * twinkle * 0.45;
@@ -654,7 +806,6 @@
       }
       scheduleNextBurst();
 
-      // Initial burst after short delay, then a second one soon after
       setTimeout(() => {
         spawnBurst();
         scheduleNextBurst();
