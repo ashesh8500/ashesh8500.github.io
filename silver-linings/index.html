@@ -165,7 +165,20 @@
          Layer 2 — rich multi-stop silver metallic gradient
          Hard transitions at 18→20%, 22→27% create polished-metal banding
          like Mandy Michael's technique */
+      /* CSS variables for cursor / tilt tracking (set by JS) */
+      --glint-x: 50%;
+      --glint-y: 50%;
+      --tilt-x: 0px;
+      --tilt-y: 0px;
+
       background-image:
+        /* Cursor glint — soft radial highlight that follows the mouse */
+        radial-gradient(
+          ellipse 30% 60% at var(--glint-x) var(--glint-y),
+          rgba(255,255,255,0.22) 0%,
+          rgba(255,255,255,0.06) 40%,
+          transparent 70%
+        ),
         /* Shimmer highlight — narrow white sweep band */
         linear-gradient(
           105deg,
@@ -199,8 +212,8 @@
           #888888 85%,
           #cccccc 100%
         );
-      background-size: 120% 100%, 100% 100%;
-      background-position: -150% 0, 0 0;
+      background-size: auto, 120% 100%, 100% 100%;
+      background-position: 0 0, -150% 0, 0 0;
 
       /* Metallic depth — layered drop-shadows for engraved feel */
       filter:
@@ -209,13 +222,25 @@
         drop-shadow(0 2px 4px rgba(0,0,0,0.50))
         drop-shadow(0 4px 8px rgba(0,0,0,0.25));
 
-      /* Shimmer animation — smooth sweep across polished silver */
-      animation: titleShimmer 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+      /* Shimmer animation — smooth left→right→left cycle across polished silver */
+      animation: titleShimmer 5s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate;
+
+      /* Subtle tilt parallax (set by JS) — shifts the text as you tilt your phone */
+      transform: translate(var(--tilt-x, 0px), var(--tilt-y, 0px));
+      transition: filter 0.6s ease, transform 0.1s ease-out;
+    }
+
+    .title:hover {
+      filter:
+        drop-shadow(0 0 28px rgba(220,220,240,0.28))
+        drop-shadow(0 0 50px rgba(190,190,210,0.16))
+        drop-shadow(0 2px 4px rgba(0,0,0,0.50))
+        drop-shadow(0 4px 8px rgba(0,0,0,0.25));
     }
 
     @keyframes titleShimmer {
-      0%   { background-position: -150% 0, 0 0; }
-      100% { background-position: 250% 0, 0 0; }
+      0%   { background-position: 0 0, -150% 0, 0 0; }
+      100% { background-position: 0 0, 250% 0, 0 0; }
     }
 
     /* ── Subtitle ── */
@@ -313,7 +338,7 @@
         drop-shadow(0 0 12px rgba(200,200,216,0.12))
         drop-shadow(0 1px 3px rgba(0,0,0,0.40));
 
-      animation: hostsShimmer 5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+      animation: hostsShimmer 6s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate;
     }
 
     @keyframes hostsShimmer {
@@ -454,7 +479,7 @@
         drop-shadow(0 0 14px rgba(190,190,208,0.14))
         drop-shadow(0 1px 3px rgba(0,0,0,0.38));
 
-      animation: dateShimmer 5.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+      animation: dateShimmer 7s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate;
     }
 
     @keyframes dateShimmer {
@@ -860,6 +885,57 @@
       }
 
       requestAnimationFrame(loop);
+
+      // ═══════════════════════════════════════════
+      //  CURSOR GLINT + PHONE TILT PARALLAX
+      //  — polished metal catches light as you move
+      // ═══════════════════════════════════════════
+      (function() {
+        var title = document.querySelector('.title');
+        if (!title) return;
+
+        // ── Cursor-following glint ──
+        var targetX = 50, targetY = 50;
+        var currentX = 50, currentY = 50;
+
+        document.addEventListener('mousemove', function(e) {
+          var rect = title.getBoundingClientRect();
+          targetX = ((e.clientX - rect.left) / rect.width) * 100;
+          targetY = ((e.clientY - rect.top) / rect.height) * 100;
+          // Clamp within element bounds for smooth entry/exit
+          targetX = Math.max(-20, Math.min(120, targetX));
+          targetY = Math.max(-20, Math.min(120, targetY));
+        });
+
+        // ── Device orientation (phone tilt) ──
+        var tiltTargetX = 0, tiltTargetY = 0;
+        var tiltCurrentX = 0, tiltCurrentY = 0;
+
+        window.addEventListener('deviceorientation', function(e) {
+          if (e.beta === null) return; // no gyro
+          // beta: front/back tilt (-180 to 180), gamma: left/right (-90 to 90)
+          // Map to subtle offsets — max ~8px shift
+          tiltTargetX = (e.gamma || 0) / 90 * 8;  // -8 to 8
+          tiltTargetY = (e.beta || 0) / 180 * 6;   // -6 to 6
+        });
+
+        // ── Smooth lerp loop ──
+        function lerpGlint() {
+          // Ease toward target (lerp factor: 0.08 = smooth, responsive)
+          currentX += (targetX - currentX) * 0.08;
+          currentY += (targetY - currentY) * 0.08;
+          tiltCurrentX += (tiltTargetX - tiltCurrentX) * 0.06;
+          tiltCurrentY += (tiltTargetY - tiltCurrentY) * 0.06;
+
+          title.style.setProperty('--glint-x', currentX.toFixed(1) + '%');
+          title.style.setProperty('--glint-y', currentY.toFixed(1) + '%');
+          title.style.setProperty('--tilt-x', tiltCurrentX.toFixed(2) + 'px');
+          title.style.setProperty('--tilt-y', tiltCurrentY.toFixed(2) + 'px');
+
+          requestAnimationFrame(lerpGlint);
+        }
+        requestAnimationFrame(lerpGlint);
+      })();
     })();
   </script>
 
