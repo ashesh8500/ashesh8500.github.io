@@ -1,0 +1,1967 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>HW Design Final — Study Q&A (Units 6-10)</title>
+<style>
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 960px; margin: 0 auto; padding: 20px; background: #f8f9fa; color: #1a1a2e; }
+h1 { color: #16213e; border-bottom: 3px solid #0f3460; padding-bottom: 10px; }
+h2 { color: #0f3460; margin-top: 40px; border-bottom: 2px solid #533483; padding-bottom: 5px; }
+h3 { color: #533483; margin-top: 30px; cursor: pointer; }
+h3:hover { color: #e94560; }
+.question { background: white; border-radius: 8px; padding: 20px; margin: 15px 0; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+.qmeta { color: #888; font-size: 0.9em; margin-bottom: 10px; }
+pre, code { background: #1a1a2e; color: #e94560; padding: 2px 6px; border-radius: 4px; font-size: 0.9em; }
+pre { padding: 15px; overflow-x: auto; line-height: 1.4; }
+pre code { background: none; padding: 0; }
+.solution { background: #e8f5e9; border-left: 4px solid #4caf50; padding: 15px; margin-top: 15px; border-radius: 0 8px 8px 0; display: none; }
+.solution.show { display: block; }
+.toggle-btn { background: #533483; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 0.85em; margin-top: 10px; margin-right: 5px; }
+.toggle-btn:hover { background: #e94560; }
+.grading { background: #fff3e0; border-left: 4px solid #ff9800; padding: 10px; margin-top: 10px; border-radius: 0 4px 4px 0; font-size: 0.85em; }
+.toc { background: white; padding: 15px 20px; border-radius: 8px; margin: 20px 0; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+.toc a { color: #533483; text-decoration: none; }
+.toc a:hover { color: #e94560; }
+table { border-collapse: collapse; margin: 10px 0; }
+td, th { border: 1px solid #ddd; padding: 6px 10px; text-align: left; }
+th { background: #f0f0f0; }
+</style>
+<script>
+function toggle(id) { var el = document.getElementById(id); el.classList.toggle('show'); }
+function toggleAll(prefix, show) {
+  document.querySelectorAll('.solution').forEach(function(el) {
+    if (el.id.startsWith(prefix)) { if(show) el.classList.add('show'); else el.classList.remove('show'); }
+  });
+}
+</script>
+</head><body>
+<h1>🎓 HW Design Final Exam — Study Q&A</h1>
+<p><strong>Units 6–10</strong> | 28 questions with solutions | Source: LLM Grader</p>
+<p><em>Click any question title to reveal its solution. Use buttons to show/hide all.</em></p>
+
+<div class="toc"><strong>Jump to:</strong>
+
+  <a href="#u06">Unit 6: Timing & Critical Paths</a> (6 Q) &nbsp;|&nbsp;
+  <a href="#u07">Unit 7: Loop Optimization & Pipelining</a> (8 Q) &nbsp;|&nbsp;
+  <a href="#u09">Unit 9: Shared Memory Architectures</a> (8 Q) &nbsp;|&nbsp;
+  <a href="#u10">Unit 10: Arrays & Matrix Multiplication</a> (6 Q) &nbsp;|&nbsp;
+</div>
+<h2 id="u06">Unit 6: Timing & Critical Paths</h2>
+<button class="toggle-btn" onclick="toggleAll('u06-',true)">Show all solutions</button>
+<button class="toggle-btn" onclick="toggleAll('u06-',false)">Hide all</button>
+<div class="question">
+<h3 onclick="toggle('u06-s1')">Q1: Critical path</h3>
+<div class="qmeta">a) 7.0pt, b) 3.0pt &bull; total: 10.0 pts</div>
+<p> Consider the following SystemVerilog code:</p>
+<pre><code>always_comb begin
+    x1_next = func1(x1); // delay = 2.3 ns
+
+    // mux delay = 0.4 ns
+    if (x1 > 2) begin  // delay = 0.5 ns
+        x2_next = func2(x1);  // delay = 3.7 ns, depends on x1
+    end else begin
+        // delay = 2.1 ns, depends on x1_next, not x1
+        x2_next = func3(x1_next);  
+    end
+end
+always_ff @(posedge clk) begin
+    x1 <= x1_next;
+    x2 <= x2_next;
+end
+</code></pre>
+<p>The if condition is implemented with a multiplexer with the condition and two branches evaluated in parallel.  The multiplexer adds an additional delay of 0.4 ns.</p>
+<ol type="a">
+<li> Determine the critical path delay for the combinational logic that produces <code>x1_next</code> and <code>x2_next</code>.</li>
+<li> What is the maximum clock frequency for this design assuming clock-to-Q delay is 0.2ns and setup time is 0.1ns?</li>
+</ol>
+<div class="solution" id="u06-s1">
+<strong>✅ Solution:</strong>
+<ol type="a">
+<li> The critical path delay is the longest delay through the combinational logic.  After each rising edge, we compute the 
+maximum propagation delay for each signal:
+<ul>
+<li> <code>x1_next</code>: the delay is simply the delay of 
+<code>func1</code>, which is 2.3 ns.</li>
+</ul>
+Now for <code>x2_next</code>, since it is produced by an if statement, it will be realized in hardware via a multiplexer.  The select condition and the two branches are all computed in parallel.
+<ul>
+<li> The select condition is <code>x1 > 2</code>, which has a delay of 0.5 ns from the beginning of the clock cycle (since it depends on <code>x1</code>).</li>
+<li> The first branch through <code>func2</code> has a delay of 3.7 ns from the beginning of the clock cycle (since it also depends on <code>x1</code>).</li>
+<li> The second branch through <code>func3</code> has a delay of 2.1 ns after <code>x1_{next}</code> is stable, so its delay  is 2.3 + 2.1= 4.4 ns.</li>
+<li> Hence, the last of these three signals to become stable is the second branch through func3, which becomes stable at 4.4 ns.  The multiplexer adds an additional delay of 0.4 ns, so the total delay for <code>x2_next</code> is 4.8 ns.</li>
+</ul>
+
+We see the critical path is:
+<pre><code>x1 --> func1 --> x1_next --func3--> mux -> x2_next 
+</code></pre>
+with a total delay of 4.8 ns.</li>
+<li> The clock period must satisfy
+\[
+    \begin{aligned}
+    T_{clk} \geq T_{cp} + T_{clk-Q} + T_{setup} \\
+    & \geq 4.8 \text{ ns} + 0.2 \text{ ns} + 0.1 = 5.1 \text{ ns}
+    \end{aligned}
+\]
+The maximum clock frequency is the reciprocal of the clock period, approximately 196.1 MHz (1 / 5.1 ns).  </li>
+</ol>
+<div class="grading" id="u06-g1"><strong>📋 Grading Notes:</strong><br>- The most common mistake is to ignore the parallelism in the mux implementation and add the delays of func2 and func3 as if both were on the same path.  They are alternative data inputs to the mux, so the mux output depends on the maximum arrival time, not the sum of branch delays.
+- The critical path is through x1 to func1 to x1_next to func3 to the mux to x2_next, for a total delay of 4.8 ns.
+- Student may describe the critical path without explicitly naming every signal, as long as it is clear that they are considering the path through func1 and func3 rather than func2, and they include the mux delay.
+- If the student identifies the correct longest branch delay of 4.4 ns but forgets the 0.4 ns mux delay, award partial credit for the path analysis but not full credit for part (a).
+- Some students may identify the critical path directly without explicitly analyzing every shorter path.  That is acceptable as long as the path and total delay are correct.
+- For part (b), accept equivalent frequency expressions and reasonable rounding.  Units may be omitted if the intent is clear.
+- No explanation is required if the student gives the correct critical path delay and maximum clock frequency.</div>
+</div>
+<button class="toggle-btn" onclick="toggle('u06-s1')">Show/Hide Solution</button>
+</div>
+<div class="question">
+<h3 onclick="toggle('u06-s2')">Q2: Multi-path timing</h3>
+<div class="qmeta">a) 2.0pt, b) 2.0pt, c) 6.0pt &bull; total: 10.0 pts</div>
+<p> Consider the following SystemVerilog combinational code:</p>
+<pre><code>z1 = a*x;
+z2 = x+b;
+y = max(z1, z2);
+</code></pre>
+<p>Suppose that the input \(x\) changes with the following times and values:</p>
+<table border="1" cellpadding="6" cellspacing="0">
+    <tr><th>Time [ns]</th><td>0</td><td>10</td><td>12</td></tr>
+    <tr><th>Value</th><td>0</td><td>?</td><td>4</td></tr>
+</table>
+<p>Specifically, the input \(x\) is stable at 0 for a long period before time 0, then changes to an unknown value (?) at 10 ns, and then becomes stable again at 4 starting at 12 ns. The variables \(a=3\) and \(b=6\) are constants. Assume that the multiplication has a maximum propagation delay of 3 ns, the addition has a maximum propagation delay of 2 ns, and the max operation has a maximum propagation delay of 1 ns. Answer the following:</p>
+<ol type="a">
+<li> What are the stable values for <code>z1</code>, <code>z2</code>, and <code>y</code> before t=10 ns? </li>
+<li> What are the eventual stable values after t=12 ns after all propagation delays? </li>
+<li> What times after t=10 ns do the signals <code>z1</code>, <code>z2</code>, and <code>y</code> first become unknown (?) and then stable again?</li>
+</ol>
+<div class="solution" id="u06-s2">
+<strong>✅ Solution:</strong>
+<ol type="a">
+<li> Before t=10 ns, the stable values are:
+\[
+    x = 0 \implies z1 = 0, ~z2 = 6,~ y = 6
+\]</li>
+<li>
+After t=12 ns and all propagation delays, the stable values with \(x=4\) are:
+\[
+\begin{aligned}
+    &z1 = 3(4)=12\\ 
+    &z2 = 4+6=10\\
+    &y = \max(12, 10)=12
+\end{aligned}
+\]
+</li>
+<li> Since the input changes at t=10 ns, all signals will become unknown (?) immediately at t=10ns.  The times they will become stable again are determined by the propagation delays of the operations that produce them.  Specifically:
+<ol type="i"> 
+<li> The signal <code>z1</code> will become stable again at t=13 ns (10 ns + 3 ns for multiplication) </li>
+<li> The signal <code>z2</code> will become stable again at t=12 ns (10 ns + 2 ns for addition) </li>
+<li> The signal <code>y</code> will become stable again at t=14 ns (the later of the two stable times for z1 and z2 plus 1 ns for the max operation) </li>
+</ol>
+</li>
+</ol>
+<div class="grading" id="u06-g2"><strong>📋 Grading Notes:</strong><br>- Units may be omitted with no loss of points
+- No explanation is required as long as the correct time frequency pairs are given.  If the student provides an explanation, it can be used to award partial credit if the answer is not fully correct.</div>
+</div>
+<button class="toggle-btn" onclick="toggle('u06-s2')">Show/Hide Solution</button>
+</div>
+<div class="question">
+<h3 onclick="toggle('u06-s3')">Q3: Propagation delay</h3>
+<div class="qmeta">all) 5.0pt &bull; total: 5.0 pts</div>
+<p>A signal \(x\) changes according to the following table:</p>
+<table border="1" cellpadding="6" cellspacing="0">
+    <tr><th>Time [ns]</th><td>10</td><td>20</td><td>30</td></tr>
+    <tr><th>Value</th><td>0</td><td>4</td><td>2</td></tr>
+</table>
+<p>So, \(x=0\) starting at 10 ns, \(x=4\) starting at 20 ns, and \(x=2\) starting at 30 ns. The signal is passed through a circuit whose stable value is \(y = 2x + 1\) with a propagation delay of 3 ns.  List the  times at which  \(y\) changes and the corresponding values.  Ensure to mark the period of unknown values (i.e., \(y=?\) appropriately.</p>
+<div class="solution" id="u06-s3">
+<strong>✅ Solution:</strong>
+<p>After each change in \(x\), the output \(y\) will initially be unknown (?) and then, after 3 ns, it will settle to the new value:</p>
+<table border="1" cellpadding="6" cellspacing="0">
+    <tr><th>Time [ns]</th><td>10</td><td>13</td><td>20</td><td>23</td><td>30</td><td>33</td></tr>
+    <tr><th>Value</th><td>?</td><td>1</td><td>?</td><td>9</td><td>?</td><td>5</td></tr>
+</table>
+<p>We have marked the unknown period with "?" to avoid confusion with the variable
+"X". </p>
+<div class="grading" id="u06-g3"><strong>📋 Grading Notes:</strong><br>- Units may be omitted with no loss of points
+- The student may provide the time frequency pairs in any format.  For example, they list the times and then list the values.
+- No explanation is required as long as the correct time frequency pairs are given.  If the student provides an explanation, it can be used to award partial credit if the answer is not fully correct.
+- Students may mark the unknown values with &quot;X&quot; instead of &quot;?&quot; with no loss of points.  Provide feedback that either symbol is acceptable, but they should be consistent in their answer.</div>
+</div>
+<button class="toggle-btn" onclick="toggle('u06-s3')">Show/Hide Solution</button>
+</div>
+<div class="question">
+<h3 onclick="toggle('u06-s4')">Q4: Series timing</h3>
+<div class="qmeta">a) 4.0pt, b) 6.0pt &bull; total: 10.0 pts</div>
+<p> Consider the following SystemVerilog combinational code:</p>
+<pre><code>xsq = x*x;
+y = a*xsq;
+z = y + b;
+</code></pre>
+<p>Assume each multiplication has a maximum propagation delay of 3 ns and the addition has a maximum propagation delay of 2 ns. 
+Suppose that <code>x</code> is stable for a long period before time 0, and then changes immediately to <code>x=4</code> at time 10 ns, remaining stable thereafter. The variables <code>a=3</code> and <code>b=6</code> are constants.  Answer the following:
+</p>
+<ol type="a">
+<li> What are the stable values for <code>xsq</code>, <code>y</code>, and <code>z</code> before and after the change? </li>
+<li> After the switch at \(t=10\) ns, at what point do each of the signals first become stable, and when do they reach their final stable values? </li>
+</ol>
+<div class="solution" id="u06-s4">
+<strong>✅ Solution:</strong>
+<ol type="a">
+<li>Before the change, the stable values are:
+\[
+    x = 0 \implies x^2 = 0, ~y = 0, ~z = 6
+\]
+After the change, the stable values are:
+\[
+    x = 4 \implies x^2 = 16, ~y = 3(16) = 48, ~z = 48 + 6 = 54
+\]
+</li>
+<li>  Since all signals depend on \(x\), they will all become unknown (?) immediately at t=10 ns when \(x\) changes.  The times they will become stable again are determined by the propagation delays of the operations that produce them.  Specifically:
+<ol type="i">
+<li><code>xsq</code>: Since multiplication takes 3 ns, <code>xsq</code> becomes stable at 13 ns.</li>
+<li><code>y</code>: Since <code>xsq</code> is stable at 13 ns and the multiplication takes 3 ns, <code>y</code> becomes stable at 16 ns.</li>
+<li><code>z</code>: Since <code>y</code> is stable at 16 ns and the addition takes 2 ns, <code>z</code> becomes stable at 18 ns.</li>
+</ol>
+</li>
+</ol>
+<div class="grading" id="u06-g4"><strong>📋 Grading Notes:</strong><br>- Units may be omitted with no loss of points
+- No explanation is required as long as the correct time frequency pairs are given.  If the student provides an explanation, it can be used to award partial credit if the answer is not fully correct.
+- Student may use X instead of ? for unknown values with no loss of points.  Provide feedback that either symbol is acceptable, but they should be consistent in their answer.</div>
+</div>
+<button class="toggle-btn" onclick="toggle('u06-s4')">Show/Hide Solution</button>
+</div>
+<div class="question">
+<h3 onclick="toggle('u06-s5')">Q5: Timing with multiplexer</h3>
+<div class="qmeta">a) 4.0pt, b) 2.0pt, c) 4.0pt &bull; total: 10.0 pts</div>
+<p> Consider the following SystemVerilog combinational code
+with two inputs, \(x_1\) and \(x_2\):</p>
+<pre><code>if (x1 > 2) begin  // Delay to evaluate condition = 0.5 ns
+    z1 = func1(x1);  // propagation delay of 4 ns
+end else begin
+    z1 = func2(x1);  // propagation delay of 2 ns
+end
+z2 = func3(x2);   // propagation delay of 3 ns
+y = func4(z1, z2);  // propagation delay of 1.5 ns
+</code></pre>
+<p>The if condition is implemented with a multiplexer, meaning both functions \(f_1\) and \(f_2\) are evaluated in parallel, but only one of their outputs is selected based on the value of \(x_1\).  The multiplexer has a propagation delay of 0.8 ns.  Suppose that before time 0, all signals are stable, and then at time 0, both \(x_1\) and \(x_2\) change value simultaneously.  At what point do the following signals become stable (i.e., no longer unknown):</p>
+<ol type="a">
+<li> \(z_1\)</li>
+<li> \(z_2\)</li>
+<li> \(y\)</li>
+</ol>
+<div class="solution" id="u06-s5">
+<strong>✅ Solution:</strong>
+<ol type="a">
+    <li> The signal \(z_1\) will become stable at time 4.8 ns.  Since func1 and func2 are evaluated in parallel and the mux must wait until the selected input and select signal are valid, the worst-case stable time is the slower function delay of 4 ns plus the mux delay of 0.8 ns.</li>
+    <li> The signal \(z_2\) will become stable at time 3 ns, which is the propagation delay of func3.</li>
+    <li> The signal \(y\) will become stable at time 6.3 ns.  The signal y depends on \(z_1\) and \(z_2\).  Since \(z_1\) becomes stable at time 4.8 ns and \(z_2\) becomes stable at time 3 ns, func4 can produce a stable output 1.5 ns later, at time 6.3 ns.</li>
+</ol>
+<div class="grading" id="u06-g5"><strong>📋 Grading Notes:</strong><br>- For part (a), full credit requires the worst-case propagation delay for z1, which is 4.8 ns.  Do not accept an input-dependent answer such as 2.5 ns or 4.8 ns depending on the branch as fully correct.
+- For part (a), if the student correctly reasons that the slower branch determines the propagation delay but forgets the 0.8 ns mux delay and gives 4 ns, award partial credit.
+- For part (c), y depends on z1 and z2, not on x1.  A common error is to wait for z1 and then add the func4 delay, which leads to the incorrect answer 5.5 ns.
+- Units may be omitted with no loss of points.
+- No explanation is required as long as the correct stable times are given.  If the student provides an explanation, it can be used to award partial credit if the final answer is not fully correct.</div>
+</div>
+<button class="toggle-btn" onclick="toggle('u06-s5')">Show/Hide Solution</button>
+</div>
+<div class="question">
+<h3 onclick="toggle('u06-s6')">Q6: Two cycle datapath</h3>
+<div class="qmeta">a) 3.0pt, b) 4.0pt, c) 4.0pt &bull; total: 11.0 pts</div>
+<p> Consider the following SystemVerilog code with an input <code>x</code>:</p>
+<pre><code>always_comb begin
+    xsq = xreg*xreg;  
+    axsq = a*xsq;  
+    bx = b*xreg;  
+    if (xreg > 10) begin 
+        y = axsq + bx;  
+    end else begin
+        y = bx;  
+    end
+end
+always_ff @(posedge clk) begin
+    xreg <= x;
+end
+</code></pre>
+<p>Assume the following delays:</p>
+<ul>
+    <li>Multiplication: 2 ns</li>
+    <li>Addition: 1 ns</li>
+    <li>Comparison <code>xreg > 10</code>: 0.5 ns</li>
+    <li>Register update: 1 ns</li>
+    <li>Multiplexer (for if statement): 0.4 ns</li>
+</ul>
+<p>Answer the following:</p>
+<ol type="a">
+<li> The current code computes <code>y</code> in a single cylce.  What is the propagation time after the rising edge of the clock for the signal <code>y</code> to become stable (i.e., no longer unknown)?</li>
+<li> Rewrite the code registering <code>xsq</code>, <code>bx</code>, and <code>gt10=xreg&gt;10</code> to create a two cycle datapath for computing <code>y</code>.</li>
+<li> What is the critical path delay for the two cycle datapath?</li>
+</ol>
+<div class="solution" id="u06-s6">
+<strong>✅ Solution:</strong>
+<ol type="a">
+<li> In the original single-cycle datapath, <code>xreg</code> becomes stable 1 ns after the rising edge because of the register update delay.  From there:
+<ul>
+<li> <code>xsq = xreg*xreg</code> is stable at 1 + 2 = 3 ns,</li>
+<li> <code>axsq = a*xsq</code> is stable at 3 + 2 = 5 ns,</li>
+<li> <code>bx = b*xreg</code> is stable at 1 + 2 = 3 ns,</li>
+<li> the condition <code>xreg &gt; 10</code> is stable at 1 + 0.5 = 1.5 ns.</li>
+</ul>
+The slower data branch into the mux is the branch <code>axsq + bx</code>, which becomes stable at 5 + 1 = 6 ns.  The select signal is ready earlier, at 1.5 ns, and the other data input <code>bx</code> is ready at 3 ns.  Therefore the mux output <code>y</code> becomes stable after the latest arriving mux input plus the mux delay:
+\[
+t_y = \max(6, 3, 1.5) + 0.4 = 6.4\ \text{ns}
+\]
+So <code>y</code> becomes stable 6.4 ns after the rising edge.</li>
+<li> One correct two-cycle implementation is to compute and register <code>xsq</code> and <code>bx</code> in the first cycle, and also register the branch decision so that the control stays aligned with those data values:
+<pre><code>logic xsq, bx, gt10;
+logic xsq_reg, bx_reg, gt10_reg;
+logic axsq;
+
+always_comb begin
+    xsq = xreg * xreg;
+    bx = b * xreg;
+    gt10 = (xreg &gt; 10);
+
+    axsq = a * xsq_reg;
+    if (gt10_reg) begin
+        y = axsq + bx_reg;
+    end else begin
+        y = bx_reg;
+    end
+end
+
+always_ff @(posedge clk) begin
+    xreg <= x;
+    xsq_reg <= xsq;
+    bx_reg <= bx;
+    gt10_reg <= gt10;
+end
+</code></pre>
+Any functionally equivalent answer that delays the control path so it matches the registered data path is acceptable.</li>
+<li> For the two-cycle datapath, the two stages have delays:
+<ul>
+<li> Stage 1: from <code>xreg</code> to <code>xsq_reg</code> or <code>bx_reg</code>, the longest path is 1 + 2 = 3 ns.</li>
+<li> Stage 2: after the next rising edge, <code>xsq_reg</code>, <code>bx_reg</code>, and <code>gt10_reg</code> are available after 1 ns.  Then <code>axsq = a*xsq_reg</code> takes 2 ns more, the addition takes 1 ns more, and the mux adds 0.4 ns.  So the longest stage-2 delay is
+\[
+1 + 2 + 1 + 0.4 = 4.4\ \text{ns}
+\]
+</li>
+</ul>
+Therefore the critical path delay for the two-cycle datapath is 4.4 ns.</li>
+</ol>
+</div>
+<button class="toggle-btn" onclick="toggle('u06-s6')">Show/Hide Solution</button>
+</div>
+<h2 id="u07">Unit 7: Loop Optimization & Pipelining</h2>
+<button class="toggle-btn" onclick="toggleAll('u07-',true)">Show all solutions</button>
+<button class="toggle-btn" onclick="toggleAll('u07-',false)">Hide all</button>
+<div class="question">
+<h3 onclick="toggle('u07-s1')">Q1: Loop carry dependency</h3>
+<div class="qmeta">a) 4.0pt, b) 6.0pt &bull; total: 10.0 pts</div>
+<p>Consider the following two loops. Each loop contains a loop-carried dependency that affects the minimum possible initiation interval (II) when pipelined in Vitis HLS.</p>
+
+<h3>Loop A</h3>
+<pre><code>sum = 0;
+ind = 0;
+for (int i = 0; i < 100; i++) {
+    sum += x[ind];
+    ind = ind_next[ind];
+}
+</code></pre>
+
+<h3>Loop B</h3>
+<pre><code>sum = 0;
+ind = 0;
+for (int i = 0; i < 100; i++) {
+    sum += x[ind];
+    if (sum > 0)
+        ind = ind_next_pos[ind];
+    else
+        ind = ind_next_neg[ind];
+}
+</code></pre>
+
+<p>
+Assume the following operation latencies:
+</p>
+<ul>
+<li>A memory read takes <strong>1 cycle</strong>.</li>
+<li>An addition takes <strong>1 cycle</strong>.</li>
+<li>A comparison and mux (the <code>if</code> selection) take <strong>1 cycle</strong>.</li>
+</ul>
+
+<p>For each loop, one way to compute the minimum initiation interval (II) is to follow these steps:</p>
+
+<ol>
+<li><strong>List the operations</strong> performed in one iteration of the loop.  For example, a step could be <code> xi = x[ind]</code> corresponding to loading the values from the array or <code> sum += xi</code> corresponding to the addition operation.</li>
+<li><strong>Assign the operations to pipeline stages</strong>, assuming each operation takes one cycle.  
+    Write your answer in the form:<br/>
+    <code>Stage 0: ...<br/>Stage 1: ...<br/>Stage 2: ...</code>.  For example, in Loop A, one possible assignment is:<br/>
+    <code>Stage 0: xi = x[ind];, Stage 1: sum += xi;, ...</code>
+</li>
+<li><strong>Identify any loop-carried dependencies.</strong>.  For example, Stage 0 of iteration \(i\) depends on the value of ind from iteration \(i-1\).</li>
+<li><strong>Compute the minimum II</strong> as the number of cycles required before the next iteration can begin.  For example, if Stage 0 of iteration \(i\) depends on Stage 2 of iteration \(i-1\), the minimum II is 3 cycles.</li>
+</ol>
+
+<p>Using this procedure, determine the minimum II for:</p>
+<ol type="a">
+<li>Loop A</li>
+<li>Loop B</li>
+</ol>
+<div class="solution" id="u07-s1">
+<strong>✅ Solution:</strong>
+<p>The minimum II is determined by how many cycles it takes to produce the values needed by the <em>next</em> iteration. The key loop-carried values here are <code>sum</code> and <code>ind</code>.</p>
+
+<h3>(a) Loop A</h3>
+<p>One valid way to break the work into one-cycle stages is:</p>
+<ul>
+<li><strong>Stage 0:</strong> <code>xi = x[ind]</code> and <code>ind_new = ind_next[ind]</code></li>
+<li><strong>Stage 1:</strong> <code>sum = sum + xi</code> and <code>ind = ind_new</code></li>
+</ul>
+
+<p>The relevant loop-carried dependencies are:</p>
+<ul>
+<li>The next iteration needs the updated <code>ind</code> in order to read <code>x[ind]</code>.</li>
+<li>The next iteration also needs the updated <code>sum</code> for the running accumulation.</li>
+</ul>
+
+<p>Both of these values are available after <strong>1 cycle</strong> of pipeline progress, so iteration <code>i+1</code> can start one cycle after iteration <code>i</code>.</p>
+
+<p>Therefore, the minimum initiation interval for Loop A is</p>
+<p><strong>II = 1.</strong></p>
+
+<h3>(b) Loop B</h3>
+<p>For Loop B, the branch decision depends on the <em>updated</em> value of <code>sum</code>, so the dependency chain is longer. A valid stage assignment is:</p>
+<ul>
+<li><strong>Stage 0:</strong> <code>xi = x[ind]</code>, <code>ind_pos = ind_next_pos[ind]</code>, and <code>ind_neg = ind_next_neg[ind]</code></li>
+<li><strong>Stage 1:</strong> <code>sum = sum + xi</code></li>
+<li><strong>Stage 2:</strong> compare the new <code>sum</code> to 0 and select <code>ind = (sum &gt; 0) ? ind_pos : ind_neg</code></li>
+</ul>
+
+<p>The important loop-carried dependency is the one for <code>ind</code>:</p>
+<ul>
+<li>Iteration <code>i+1</code> cannot begin its memory reads <code>xi = x[ind]</code> until iteration <code>i</code> has finished selecting the next <code>ind</code>.</li>
+<li>That selection is not available until after Stage 2 of iteration <code>i</code>.</li>
+</ul>
+
+<p>So Stage 0 of iteration <code>i+1</code> depends on Stage 2 of iteration <code>i</code>, which requires a separation of <strong>3 cycles</strong>.</p>
+
+<p>Therefore, the minimum initiation interval for Loop B is</p>
+<p><strong>II = 3.</strong></p>
+
+<p><strong>Final answers:</strong></p>
+<ul>
+<li>(a) Loop A: <strong>II = 1</strong></li>
+<li>(b) Loop B: <strong>II = 3</strong></li>
+</ul>
+<div class="grading" id="u07-g1"><strong>📋 Grading Notes:</strong><br>- Equivalent stage names and intermediate variable names are acceptable as long as the dependency structure is correct.
+- Students do not need to use the exact same stage partition as the solution if their partition is valid and consistent with the stated one-cycle latencies.
+- For the II items, award credit based on whether the student derives the II from the loop-carried dependency, not just whether they guess the correct number.
+- Minor wording or formatting differences in how stages are presented should not be penalized.</div>
+</div>
+<button class="toggle-btn" onclick="toggle('u07-s1')">Show/Hide Solution</button>
+</div>
+<div class="question">
+<h3 onclick="toggle('u07-s2')">Q2: Memory with unrolling</h3>
+<div class="qmeta">a) 3.0pt, b) 3.0pt, c) 4.0pt &bull; total: 10.0 pts</div>
+<p>A Vitis HLS kernel contains a loop that may be unrolled for performance:</p>
+
+<pre><code>float x[1024], y[1024];
+
+for (int i = 0; i < 1024; i++) {
+#pragma HLS UNROLL factor=UF
+    y[i] = g(x[i]);
+}
+</code></pre>
+
+<p>
+To support unrolling by a factor <code>UF</code>, the arrays must be partitioned into
+<code>UF</code> independent memory banks. Assume Vitis maps each bank into separate BRAM
+blocks with the following constraints:
+</p>
+
+<ul>
+<li>Each BRAM block is <strong>18 kbits</strong>.</li>
+<li>Each array element is <strong>32 bits</strong> (4 bytes).</li>
+<li>Different banks must use <strong>different BRAM blocks</strong>, and arrays
+    <code>x</code> and <code>y</code> must not share BRAM blocks.</li>
+</ul>
+
+<p>
+How many BRAM18 blocks are required to store the arrays <code>x</code> and <code>y</code>
+for each of the following unroll factors:
+</p>
+
+<ol type="a">
+<li><code>UF = 1</code></li>
+<li><code>UF = 2</code></li>
+<li><code>UF = 4</code></li>
+</ol>
+<div class="solution" id="u07-s2">
+<strong>✅ Solution:</strong>
+<p><strong>Step 1 – Size of each array</strong></p>
+<p>
+Each array has 1024 elements, each 32 bits:
+</p>
+<p>
+1024 × 32 bits = 32768 bits = 32 kbits.
+</p>
+
+<p><strong>Step 2 – BRAM capacity</strong></p>
+<p>
+Each BRAM18 block stores 18 kbits. To store 32 kbits:
+</p>
+<p>
+ceil(32 / 18) = 2 BRAM18 blocks per full array (if not partitioned).
+</p>
+
+<p><strong>Step 3 – Effect of partitioning into UF banks</strong></p>
+<p>
+Partitioning into <code>UF</code> banks divides each array into <code>UF</code> chunks:
+</p>
+<p>
+Elements per bank = 1024 / UF.
+</p>
+<p>
+Bits per bank = (1024 / UF) × 32.
+</p>
+<p>
+BRAM18 per bank = ceil( bits per bank / 18 kbits ).
+</p>
+<p>
+Total BRAM18 = (BRAM18 per bank) × (number of banks) × (2 arrays: x and y).
+</p>
+
+<hr />
+
+<p><strong>(a) UF = 1</strong></p>
+<ul>
+<li>Elements per bank: 1024</li>
+<li>Bits per bank: 1024 × 32 = 32 kbits</li>
+<li>BRAM18 per bank: ceil(32 / 18) = 2</li>
+<li>Banks: 1</li>
+<li>Arrays: 2 (x and y)</li>
+</ul>
+<p>
+Total BRAM18 = 2 × 1 × 2 = <strong>4</strong>.
+</p>
+
+<p><strong>(b) UF = 2</strong></p>
+<ul>
+<li>Elements per bank: 1024 / 2 = 512</li>
+<li>Bits per bank: 512 × 32 = 16 kbits</li>
+<li>BRAM18 per bank: ceil(16 / 18) = 1</li>
+<li>Banks: 2</li>
+<li>Arrays: 2 (x and y)</li>
+</ul>
+<p>
+Total BRAM18 = 1 × 2 × 2 = <strong>4</strong>.
+</p>
+
+<p><strong>(c) UF = 4</strong></p>
+<ul>
+<li>Elements per bank: 1024 / 4 = 256</li>
+<li>Bits per bank: 256 × 32 = 8 kbits</li>
+<li>BRAM18 per bank: ceil(8 / 18) = 1</li>
+<li>Banks: 4</li>
+<li>Arrays: 2 (x and y)</li>
+</ul>
+<p>
+Total BRAM18 = 1 × 4 × 2 = <strong>8</strong>.
+</p>
+
+<p><strong>Final answers:</strong></p>
+<ul>
+<li>(a) UF = 1 → 4 BRAM18 blocks</li>
+<li>(b) UF = 2 → 4 BRAM18 blocks</li>
+<li>(c) UF = 4 → 8 BRAM18 blocks</li>
+</ul>
+<div class="grading" id="u07-g2"><strong>📋 Grading Notes:</strong><br>- Accept equivalent reasoning in bits, bytes, or kbits as long as the storage calculation is consistent.
+- Students do not need to write the ceiling expression explicitly if their final per-bank BRAM count is correct.
+- Arrays x and y must be counted separately; do not award full credit if the student computes the BRAM usage for only one array.
+- Minor arithmetic mistakes can still earn partial credit when the partitioning and BRAM-capacity reasoning are otherwise correct.
+- Units may be omitted if the intended BRAM18 block count is clear.</div>
+</div>
+<button class="toggle-btn" onclick="toggle('u07-s2')">Show/Hide Solution</button>
+</div>
+<div class="question">
+<h3 onclick="toggle('u07-s3')">Q3: Moving average</h3>
+<div class="qmeta">a) 2.0pt, b) 2.0pt, c) 6.0pt &bull; total: 10.0 pts</div>
+<p>Consider the following 4-tap moving average computation:</p>
+
+<pre><code>for (i = 0; i < ny; i++) {
+    yi = 0;
+    for (j = 0; j < 4; j++) {
+        yi += x[i+j];
+    }
+    y[i] = (yi >> 2);
+}
+</code></pre>
+
+<p>Assume that <code>x</code> is stored in a <strong>single-port memory</strong>, so only one read from <code>x</code> may occur per cycle.</p>
+
+<p><strong>(a)</strong> What is the minimum possible initiation interval (II) of the <em>outer</em> loop?</p>
+
+<p><strong>(b)</strong> Suppose the inner loop is fully unrolled using <code>#pragma HLS UNROLL</code>.  
+Does this change the minimum II? Explain why or why not.</p>
+
+<p><strong>(c)</strong> Now consider using a delay line to reduce the number of memory reads per iteration:</p>
+
+<pre><code>int xdly[4];
+#pragma HLS ARRAY_PARTITION variable=xdly complete
+</code></pre>
+
+<p>
+Rewrite the loop using the delay line so that the outer loop can achieve  
+<strong>II = 1</strong>.  
+Your rewritten loop should read only <strong>one</strong> new value from <code>x</code> per iteration.
+</p>
+<div class="solution" id="u07-s3">
+<strong>✅ Solution:</strong>
+<p><strong>(a) Minimum II with single-port memory</strong></p>
+
+<p>
+Each iteration of the outer loop requires four reads:
+</p>
+
+<pre><code>x[i+0], x[i+1], x[i+2], x[i+3]
+</code></pre>
+
+<p>
+With only one memory port, these four reads must occur in four separate cycles.  
+Therefore:
+</p>
+
+<p><strong>Minimum II = 4</strong></p>
+
+<hr/>
+
+<p><strong>(b) Fully unrolling the inner loop</strong></p>
+
+<p>
+Unrolling the inner loop attempts to schedule all four additions in the same cycle.  
+However, the memory still has only <strong>one read port</strong>, so the four reads must be serialized:
+</p>
+
+<p>
+Cycle 0: read x[i+0]<br/>
+Cycle 1: read x[i+1]<br/>
+Cycle 2: read x[i+2]<br/>
+Cycle 3: read x[i+3]
+</p>
+
+<p>
+Thus, even with unrolling:
+</p>
+
+<p><strong>Minimum II = 4</strong></p>
+
+<p>
+Unrolling cannot overcome a memory bandwidth limitation.
+</p>
+
+<hr/>
+
+<p><strong>(c) Delay-line rewrite achieving II = 1</strong></p>
+
+<p>
+Using a delay line, we keep the last four samples in registers and read only one new value per iteration.  
+The delay line is fully partitioned so each element becomes an independent register:
+</p>
+
+<pre><code>int xdly[4];
+#pragma HLS ARRAY_PARTITION variable=xdly complete
+</code></pre>
+
+<p>
+A pipelined II=1 implementation is:
+</p>
+
+<pre><code>// Initialize delay line
+for (int k = 0; k < 4; k++) {
+#pragma HLS UNROLL
+    xdly[k] = 0;
+}
+
+for (int i = 0; i < ny; i++) {
+#pragma HLS PIPELINE II=1
+
+    // Shift delay line
+    xdly[3] = xdly[2];
+    xdly[2] = xdly[1];
+    xdly[1] = xdly[0];
+
+    // Read one new sample
+    xdly[0] = x[i];
+
+    // Compute 4-tap sum
+    int yi = xdly[0] + xdly[1] + xdly[2] + xdly[3];
+
+    y[i] = yi >> 2;
+}
+</code></pre>
+
+<p>
+This version performs only <strong>one</strong> memory read per iteration,  
+so the loop can be pipelined with:
+</p>
+
+<p><strong>II = 1</strong></p>
+
+<p><strong>Final answers:</strong></p>
+<ul>
+<li>(a) II = 4</li>
+<li>(b) II = 4</li>
+<li>(c) II = 1 using a delay line</li>
+</ul>
+<div class="grading" id="u07-g3"><strong>📋 Grading Notes:</strong><br>- For parts (a) and (b), no explanation is required if the final answer is correct.
+- For part (c), accept equivalent code structures and variable names if the design clearly uses stored previous samples to reduce memory reads to one per iteration.
+- For part (c), an inner-loop implementation is acceptable only if it is fully unrolled.
+- Minor syntax differences in HLS pragmas or C indexing should not be penalized if the intended architecture and II are clear.</div>
+</div>
+<button class="toggle-btn" onclick="toggle('u07-s3')">Show/Hide Solution</button>
+</div>
+<div class="question">
+<h3 onclick="toggle('u07-s4')">Q4: Pipeline cycle values</h3>
+<div class="qmeta">all) 10.0pt &bull; total: 10.0 pts</div>
+<p>Consider the following SystemVerilog pipeline:</p>
+<pre><code>always_ff @(posedge clk) begin
+    x_s0 <= x;
+    z1_s1 <= 10*x_s0;
+    if (z1_s1 > 100) begin
+        z2_s2 <= 150 - (z1_s1>>>1);
+    end else begin
+        z2_s2 <= z1_s1;;
+    end
+end
+always_comb begin
+    y = (3*z2_s2>>>2);
+end
+</code></pre>
+<p>which has input <code>x</code> and output <code>y</code>.  Suppose the inputs <code>x</code> 
+on cycles 0, 1, and 2 are 
+\[
+3, 6, 12
+\]
+and are unknown (?) on later cycles.
+Write the values of the signals <code>x_s0</code>, <code>z1_s1</code>, <code>z2_s2</code>, and <code>y</code> for cycles 0 through 5. Assume that all registers are initialized to ? at cycle 0 (unknown).
+<div class="solution" id="u07-s4">
+<strong>✅ Solution:</strong>
+<p>At cycle 0, all registers are unknown. Since the assignments are in an <code>always_ff</code> block, each registered signal is delayed by one cycle from the value used to compute it:</p>
+<ul>
+    <li><code>x_s0</code> gets the input <code>x</code> one cycle later.</li>
+    <li><code>z1_s1</code> gets <code>10*x_s0</code> one cycle later.</li>
+    <li><code>z2_s2</code> gets the conditional expression based on the previous value of <code>z1_s1</code>.</li>
+    <li><code>y</code> is combinational, so on each cycle it is computed directly from the current value of <code>z2_s2</code>.</li>
+</ul>
+
+<p>The cycle values are therefore:</p>
+<table border="1" cellpadding="6" cellspacing="0">
+    <tr>
+        <th>Cycle</th>
+        <th>x</th>
+        <th>x_s0</th>
+        <th>z1_s1</th>
+        <th>z2_s2</th>
+        <th>y</th>
+    </tr>
+    <tr>
+        <td>0</td>
+        <td>3</td>
+        <td>?</td>
+        <td>?</td>
+        <td>?</td>
+        <td>?</td>
+    </tr>
+    <tr>
+        <td>1</td>
+        <td>6</td>
+        <td>3</td>
+        <td>?</td>
+        <td>?</td>
+        <td>?</td>
+    </tr>
+    <tr>
+        <td>2</td>
+        <td>12</td>
+        <td>6</td>
+        <td>30</td>
+        <td>?</td>
+        <td>?</td>
+    </tr>
+    <tr>
+        <td>3</td>
+        <td>?</td>
+        <td>12</td>
+        <td>60</td>
+        <td>30</td>
+        <td>22</td>
+    </tr>
+    <tr>
+        <td>4</td>
+        <td>?</td>
+        <td>?</td>
+        <td>120</td>
+        <td>60</td>
+        <td>45</td>
+    </tr>
+    <tr>
+        <td>5</td>
+        <td>?</td>
+        <td>?</td>
+        <td>?</td>
+        <td>90</td>
+        <td>67</td>
+    </tr>
+</table>
+
+<p>For example, at cycle 3 the current value is <code>z2_s2 = 30</code>, so</p>
+<p class="math">
+    \[
+    y = (3 \cdot 30) >>> 2 = 90 >>> 2 = 22.
+    \]
+</p>
+<p>Also, since the values of <code>x</code> after cycle 2 are not specified, the later values of <code>x_s0</code> and any signals that depend on them eventually become unknown again.</p>
+<div class="grading" id="u07-g4"><strong>📋 Grading Notes:</strong><br>- Students may provide the data in any form, including a table, list, or inline text, as long as the values for each signal and cycle are clearly indicated.
+- For unknown values, any clear indication of uncertainty (e.g., &quot;?&quot;, &quot;unknown&quot;, &quot;X&quot;) is acceptable.</div>
+</div>
+<button class="toggle-btn" onclick="toggle('u07-s4')">Show/Hide Solution</button>
+</div>
+<div class="question">
+<h3 onclick="toggle('u07-s5')">Q5: Pipelined maximum</h3>
+<div class="qmeta">all) 10.0pt &bull; total: 10.0 pts</div>
+<p>Given an input <code>x_0</code>, we wish to create a hardware module that computes the maximum</p>
+\[
+    max2 = \text{max}(x_0, f(x_0), f(f(x_0))).
+\]
+<p>We are given a SystemVerilog combinational function that implements <code>f</code></p>
+<pre><code>z = f(x);
+</code></pre>
+Write a pipelined SystemVerilog code for this module with II=1.  On the first stage, only register the input -- do not do any further computation. You will need to then insert registers between stages, but each stage can have at most one instance of the function <code>f</code>.
+The final output should be combinational.
+<div class="solution" id="u07-s5">
+<strong>✅ Solution:</strong>
+<p>One correct pipeline is to compute one application of <code>f</code> per stage, while also carrying forward the partial maximum from earlier stages. The key is to delay signals so that all values being compared come from the same original input sample.  You can omit the reset logic for brevity.  </p>
+
+<p>A valid implementation is:</p>
+<pre><code>always_comb begin
+    x1_s1_next = f(x0_s0);
+    if (x1_s1_next &gt; x0_s0) begin
+        max1_s1_next = x1_s1_next;
+    end else begin
+        max1_s1_next = x0_s0;
+    end
+
+    x2_comb = f(x1_s1);
+    if (x2_comb &gt; max1_s1) begin
+        max2 = x2_comb;
+    end else begin
+        max2 = max1_s1;
+    end
+end
+always_ff @(posedge clk) begin
+    // Stage 0: Register the input
+    x0_s0   &lt;= x0;
+    max0_s0 &lt;= x0;
+
+    // Stage 1: compute f(x0) and the max of x0 and f(x0)
+    x1_s1   &lt;= x1_s1_next;
+    max1_s1 &lt;= max1_s1_next;
+
+end
+</code></pre>
+
+<p>This pipeline has initiation interval II=1 since a new input can be accepted every clock cycle, and each pipeline stage uses at most one instance of <code>f</code>.
+<div class="grading" id="u07-g5"><strong>📋 Grading Notes:</strong><br>- The student may use any valid SystemVerilog syntax and variable naming convention, as long as the pipeline structure and logic are correct.
+- For the first stage, the key requirement is that it only registers the input and does not perform any computation involving f. The student may optionally register an initial max value equal to x0, but this is not required for full credit.
+- For the second stage, the student must compute f(x0) and the partial maximum of x0 and f(x0) combinationally. This stage must not perform any computations involving f(f(x0)).
+- For the final output logic, the student must correctly compute the maximum of x0, f(x0), and f(f(x0)) using combinational logic. The student must ensure that all values being compared are from the same original input sample (i.e., they are properly aligned in the pipeline).
+- If the student adds extra pipeline stages or uses more than one instance of f in a stage, deduct points according to the rubric.
+- Other variable names and minor syntax differences are acceptable as long as the overall logic and pipeline structure are correct.</div>
+</div>
+<button class="toggle-btn" onclick="toggle('u07-s5')">Show/Hide Solution</button>
+</div>
+<div class="question">
+<h3 onclick="toggle('u07-s6')">Q6: Row-column additions</h3>
+<div class="qmeta">a) 4.0pt, b) 6.0pt &bull; total: 10.0 pts</div>
+<p>Consider the following declaration:</p>
+
+<pre><code>float X[512][4];
+#pragma HLS ARRAY_PARTITION variable=X dim=2 factor=4 cyclic
+</code></pre>
+
+<p>
+This pragma partitions the second dimension (<code>dim=2</code>) into 4 separate memory banks.  
+Thus, each <strong>column</strong> of <code>X</code> is stored in a different bank.  
+This means that values <code>X[i0][0]</code>, <code>X[i1][1]</code>, <code>X[i2][2]</code>, and <code>X[i3][3]</code>  
+may all be read in the <strong>same clock cycle</strong>, because they come from different banks.
+</p>
+<ol type="a">
+<li>Write a pipelined loop that computes the sum of each row. Your loop should run in approximately 512 cycles + pipeline latency.</li>
+<li>Write a pipelined loop that computes the sum of each column. Your loop should also run in approximately 512 cycles + pipeline latency. Hint: you will need four independent accumulators.</li>
+</ol>
+<div class="solution" id="u07-s6">
+<strong>✅ Solution:</strong>
+<p><strong>(a) Summing each row</strong></p>
+
+<p>
+Because each column is in a different memory bank, the loop can read  
+<code>X[i][0]</code>, <code>X[i][1]</code>, <code>X[i][2]</code>, and <code>X[i][3]</code>  
+in the same cycle. A pipelined loop with II=1 is therefore possible:
+</p>
+
+<pre><code>RowSum:
+for (int i = 0; i < 512; i++) {
+#pragma HLS PIPELINE II=1
+    row_sum[i] = X[i][0] + X[i][1] + X[i][2] + X[i][3];
+}
+</code></pre>
+
+<p>
+This loop completes in approximately <strong>512 cycles + pipeline latency</strong>.
+</p>
+
+<hr/>
+
+<p><strong>(b) Summing each column</strong></p>
+
+<p>
+To sum columns, we accumulate across rows.  
+Since each column is in a separate bank, we can read all four values in parallel.  
+We maintain four independent accumulators:
+</p>
+
+<pre><code>float s0 = 0, s1 = 0, s2 = 0, s3 = 0;
+
+ColSum:
+for (int i = 0; i < 512; i++) {
+#pragma HLS PIPELINE II=1
+    s0 += X[i][0];
+    s1 += X[i][1];
+    s2 += X[i][2];
+    s3 += X[i][3];
+}
+
+col_sum[0] = s0;
+col_sum[1] = s1;
+col_sum[2] = s2;
+col_sum[3] = s3;
+</code></pre>
+
+<p>
+This loop also completes in approximately <strong>512 cycles + pipeline latency</strong>.  You will receive full marks for the above solution.  But, you can also write the loop with a nested loop.  </p>
+
+<pre><code>float col_sum[4] = {0};
+#pragma HLS ARRAY_PARTITION variable=col_sum complete
+
+ColSum:
+for (int i = 0; i < 512; i++) {
+#pragma HLS PIPELINE II=1
+    for (j=0; j&lt;4; j++) {
+#pragma HLS UNROLL
+        col_sum[j] += X[i][j];
+    }
+
+}
+</code></pre>
+
+<p> Note that in this solution, the <code>col_sum</code> needs to be fully partitioned so that all its elements can be accessed in parallel and the inner loop must be fully unrolled.  </p>
+
+<p><strong>Final answers:</strong></p>
+<ul>
+<li>(a) A pipelined row-sum loop with II=1.</li>
+<li>(b) A pipelined column-sum loop with four accumulators and II=1.</li>
+</ul>
+<div class="grading" id="u07-g6"><strong>📋 Grading Notes:</strong><br>- Accept equivalent variable names and equivalent code structure if the memory-banking argument and loop behavior are correct.
+- For part (a), full credit does not require the student to state the exact words &quot;512 cycles plus pipeline latency&quot; if their loop structure clearly supports that runtime.
+- For part (b), either four explicit scalar accumulators or a correctly unrolled and partitioned accumulator array is acceptable.
+- If a student writes a correct functional column-sum loop but it is not structured to exploit the four memory banks in parallel, award only partial credit.</div>
+</div>
+<button class="toggle-btn" onclick="toggle('u07-s6')">Show/Hide Solution</button>
+</div>
+<div class="question">
+<h3 onclick="toggle('u07-s7')">Q7: Two Cycle Design</h3>
+<div class="qmeta">a) 3.0pt, b) 4.0pt, c) 3.0pt &bull; total: 10.0 pts</div>
+<p>Consider the following SystemVerilog code that computes an output <code>y</code> based on inputs <code>x1</code> and <code>x2</code> in a single cycle:</p>
+<pre><code>always_ff @(posedge clk) begin
+    xreg1 <= x1;
+    xreg2 <= x2;
+end
+always_comb begin
+   z1 = f1(xreg1, xreg2);  // delay = 3.8 ns
+   z2 = f2(xreg1, xreg2);  // delay = 2.1 ns
+   z3 = f3(xreg1, z2);     // delay = 1.5 ns
+   y = f4(z1, z3);         // delay = 1.2 ns
+end
+</code></pre>
+<ol type="a">
+    <li>What is the critical path delay of this single cycle design?</li>
+    <li>Rewrite the code inserting pipeline registers on <code>z1</code>, <code>z2</code>, <code>xreg1</code> to achieve a two-cycle design.</li>
+    <li>What is the critical path delay of the two-cycle design?</li>
+</ol>
+<div class="solution" id="u07-s7">
+<strong>✅ Solution:</strong>
+<ol type="a">
+    <li>
+        <p>Starting with the registered inputs <code>xreg1</code> and <code>xreg2</code>, the delays to the intermediate signals and <code>y</code> are:</p>
+        <ul>
+            <li><code>z1</code>: 3.8 ns</li>
+            <li><code>z2</code>: 2.1 ns</li>
+            <li><code>z3</code>: The maximum delay of the inputs <code>z2</code> and <code>xreg1</code> is 2.1 ns, so <code>z3</code> has a delay of 2.1+1.5=3.6 ns</li>
+            <li><code>y</code>: The maximum delay of the inputs <code>z1</code> and <code>z3</code> is 3.8 ns, so <code>y</code> has a delay of 3.8+1.2=5.0 ns</li>
+        </ul>
+        <p>So the critical path delay of the single-cycle design is <strong>5.0 ns</strong>.</p>
+    </li>
+    <li>
+        <p>One correct two-cycle implementation is shown below. Since <code>z3</code> depends on <code>xreg1</code> and <code>z2</code>, we also delay <code>xreg1</code> by one cycle so that the second stage uses aligned data.</p>
+        <pre><code>        // stage 0 (input regs)
+        always_ff @(posedge clk) begin
+            x1_s0 <= x1;
+            x2_s0 <= x2;
+        end
+
+        // stage 1
+        always_ff @(posedge clk) begin
+            z1_s1  <= f1(x1_s0, x2_s0);
+            z2_s1  <= f2(x1_s0, x2_s0);
+            x1_s1  <= x1_s0;
+        end
+
+        // stage 2 (final comb)
+        always_comb begin
+            z3 = f3(x1_s1, z2_s1);
+            y  = f4(z1_s1, z3);
+        end
+        </code></pre>
+        <p>Equivalent code that computes <code>z1_next</code> and <code>z2_next</code> in an <code>always_comb</code> block and then registers them in <code>always_ff</code> is also acceptable.</p>
+    </li>
+    <li>
+        <p>After pipelining, the register output to register input delays are:</p>
+        <ul>
+            <li><code>z1_pipe</code>: 3.8 ns</li>
+            <li><code>z2_pipe</code>: 2.1 ns</li>
+            <li><code>z3</code>: 1.5 ns</li>
+            <li><code>y</code>: The maximum delay of the inputs <code>z1_pipe</code> and <code>z3</code> is 1.5 ns, so <code>y</code> has a delay of 1.5+1.2=2.7 ns</li>
+        </ul>
+        <p>Therefore, the critical path delay of the two-cycle design is <strong>3.8 ns</strong>.</p>
+    </li>
+</ol>
+<div class="grading" id="u07-g7"><strong>📋 Grading Notes:</strong><br>- Units may be omitted with no loss of points.
+- For part (a), any clear path-by-path reasoning is acceptable. The student does not need to use the exact variable names in the solution as long as the path structure is correct.
+- For part (b), accept equivalent pipelined code if it preserves the original functionality over two cycles.
+- If a student pipelines z1 and z2 but forgets to align xreg1 for the z3 computation, do not award the pipeline alignment item.
+- For part (c), the final answer must be the maximum stage delay, not the sum of both stage delays.
+- If the student gives correct numeric answers with minimal explanation, full credit may still be awarded.</div>
+</div>
+<button class="toggle-btn" onclick="toggle('u07-s7')">Show/Hide Solution</button>
+</div>
+<div class="question">
+<h3 onclick="toggle('u07-s8')">Q8: Wide band memory</h3>
+<div class="qmeta">a) 4.0pt, b) 6.0pt &bull; total: 10.0 pts</div>
+<p>Consider the following loop, where <code>x</code> is stored in a single-port memory (only one read per cycle is allowed):</p>
+
+<pre><code>int x[3*n], d[n];
+for (int i = 0; i < n; i++) {
+    d[i] = x[3*i]   * x[3*i] +
+        x[3*i+1] * x[3*i+1] +
+        x[3*i+2] * x[3*i+2];
+}
+</code></pre>
+
+<p>
+Each loop iteration requires three reads from <code>x</code>: indices <code>3*i</code>, <code>3*i+1</code>, and <code>3*i+2</code>.  
+Assume:
+</p>
+<ul>
+<li>Each memory read takes <strong>1 cycle</strong>.</li>
+<li>The arithmetic operations are fully pipelined and do not limit II.</li>
+<li><strong>Only one read</strong> from <code>x</code> may occur per cycle.</li>
+</ul>
+
+<p><strong>(a)</strong> What is the minimum possible initiation interval (II) for this loop?</p>
+
+<p><strong>(b)</strong> Now suppose the data is stored in a packed format using a 96‑bit word:</p>
+
+<pre><code>ap_uint<96> xpacked[n];
+</code></pre>
+
+<p>
+Each 96‑bit element contains the three 32‑bit values previously stored at <code>x[3*i]</code>, <code>x[3*i+1]</code>, and <code>x[3*i+2]</code>.  
+Rewrite the loop using <code>xpacked</code> and determine the new minimum II, assuming the same single-port memory.  You can use the syntax <code>p.range(31, 0)</code> to extract the lower 32 bits of a 96‑bit variable <code>p</code>, and similar code to extract the other 32-bit variables.
+</p>
+<div class="solution" id="u07-s8">
+<strong>✅ Solution:</strong>
+<p><strong>(a) Minimum II with the original array</strong></p>
+
+<p>
+Each iteration performs three memory reads:
+</p>
+<ul>
+<li><code>x[3*i]</code></li>
+<li><code>x[3*i+1]</code></li>
+<li><code>x[3*i+2]</code></li>
+</ul>
+
+<p>
+Because the memory is single-port, only <strong>one read per cycle</strong> is possible.  
+Thus, the earliest the three reads can complete is:
+</p>
+
+<p>
+Cycle 0: read <code>x[3*i]</code><br/>
+Cycle 1: read <code>x[3*i+1]</code><br/>
+Cycle 2: read <code>x[3*i+2]</code>
+</p>
+
+<p>
+Even though the arithmetic is fully pipelined, the loop cannot start the next iteration until all three reads are complete.  
+Therefore:
+</p>
+
+<p><strong>Minimum II = 3</strong></p>
+
+<hr/>
+
+<p><strong>(b) Packed 96-bit layout</strong></p>
+
+<p>
+Now each iteration performs <strong>one</strong> memory read:
+</p>
+
+<pre><code>ap_uint<96> p = xpacked[i];
+int x0 = p.range(31, 0);
+int x1 = p.range(63, 32);
+int x2 = p.range(95, 64);
+
+d[i] = x0*x0 + x1*x1 + x2*x2;
+</code></pre>
+
+<p>
+All three values are extracted from registers, not memory, so only a single memory access is required per iteration.
+</p>
+
+<p>
+With one read per iteration and pipelined arithmetic, the loop can start a new iteration every cycle.
+</p>
+
+<p><strong>Minimum II = 1</strong></p>
+
+<p><strong>Final answers:</strong></p>
+<ul>
+<li>(a) II = 3</li>
+<li>(b) II = 1</li>
+</ul>
+<div class="grading" id="u07-g8"><strong>📋 Grading Notes:</strong><br>- For part (a), the key idea is the memory-port constraint, not the arithmetic latency.
+- For part (b), accept equivalent packed-word code as long as one memory read supplies all three values used in the computation.
+- Students do not need to use the exact variable names from the solution.
+- Minor syntax errors in the extraction logic should not lose full credit if the intended packed-memory access pattern and II analysis are correct.</div>
+</div>
+<button class="toggle-btn" onclick="toggle('u07-s8')">Show/Hide Solution</button>
+</div>
+<h2 id="u09">Unit 9: Shared Memory Architectures</h2>
+<button class="toggle-btn" onclick="toggleAll('u09-',true)">Show all solutions</button>
+<button class="toggle-btn" onclick="toggleAll('u09-',false)">Hide all</button>
+<div class="question">
+<h3 onclick="toggle('u09-s1')">Q1: AXI4 timing diagram</h3>
+<div class="qmeta">a) 2.0pt, b) 2.0pt, c) 2.0pt, d) 2.0pt, e) 2.0pt &bull; total: 10.0 pts</div>
+<p>Consider the timing diagram below for an AXI4 write burst.</p>
+
+<img src="/pkg_assets/sharedmem_images/axi_timing.png" alt="AXI4 write burst timing diagram" width="400"/>
+
+<ol type="a">
+    <li>On what cycle is the write address 0x10 accepted? </li>
+    <li>On what cycle is the first write data word transferred on the <code>W</code> channel?</li>
+    <li>On what cycle is the last write data word transferred on the <code>W</code> channel?</li>
+    <li>How many words were transferred in the burst?</li>
+    <li>If the data width is 64 bits, and the write address increments with each transfer, what are the range of addresses in hex written to in the burst?  Recall that AXI4 uses byte addressing.</li>
+</ol>
+<div class="solution" id="u09-s1">
+<strong>✅ Solution:</strong>
+<ol type="a">
+    <li>
+        <p>The write address is accepted when <code>AWVALID</code> and <code>AWREADY</code> are both high on the same cycle. From the diagram, this occurs on <strong>cycle 2</strong>.</p>
+    </li>
+    <li>
+        <p>A write data word transfers when <code>WVALID</code> and <code>WREADY</code> are both high. The first such overlap occurs on <strong>cycle 2</strong>, so the first write data word is transferred on cycle 2.</p>
+    </li>
+    <li>
+        <p>The write data transfers occur on cycles <code>2</code>, <code>5</code>, <code>7</code>, and <code>10</code>, where <code>WVALID</code> and <code>WREADY</code> overlap. The <code>WLAST</code> signal is high for the final one of these transfers, so the last write data word is transferred on <strong>cycle 10</strong>.</p>
+    </li>
+    <li>
+        <p>Since there are transfers on cycles <code>2</code>, <code>5</code>, <code>7</code>, and <code>10</code>, the burst contains <strong>4 words</strong>.</p>
+    </li>
+    <li>
+        <p>The burst starts at address <code>0x10</code>. With a 64-bit data width, each transferred word is 8 bytes, so the addresses increment by <code>0x8</code> each transfer.</p>
+        <p>The four word addresses are:</p>
+        <p><code>0x10, 0x18, 0x20, 0x28</code></p>
+        <p>So the burst writes the byte-address range <strong><code>0x10</code> through <code>0x2F</code></strong> inclusive.</p>
+    </li>
+</ol>
+<div class="grading" id="u09-g1"><strong>📋 Grading Notes:</strong><br>- Students may explain their reasoning in words, by listing handshake cycles, or by annotating the diagram.
+- Minor formatting differences are acceptable as long as the cycle numbers and address range are clear.
+- For the address-range part, accept either the list of four word addresses or the inclusive byte range, provided the intent is correct.</div>
+</div>
+<button class="toggle-btn" onclick="toggle('u09-s1')">Show/Hide Solution</button>
+</div>
+<div class="question">
+<h3 onclick="toggle('u09-s2')">Q2: AXI write burst timing</h3>
+<div class="qmeta">all) 10.0pt &bull; total: 10.0 pts</div>
+<p>An AXI master (<code>M</code>) is connected to a slave (<code>S</code>). The interface has a 64-bit data width. The system uses a synchronous clock, and we assume the slave has no internal wait states, so it can accept one 64-bit word every cycle once a transfer starts.</p>
+
+<p>Consider the following sequence:</p>
+<ul>
+    <li><strong>Burst 1:</strong> At <code>T=0</code>, <code>M</code> issues an <code>AW</code> request to write 16 words. The slave accepts the address immediately, so <code>AWREADY</code> is high.</li>
+    <li><strong>Burst 2:</strong> At <code>T=4</code>, <code>M</code> issues a second <code>AW</code> request to write 32 words. The slave accepts this address immediately as well.</li>
+</ul>
+
+<p>Due to internal master latency, the first word of data for any burst is not available until 5 cycles after that burst's <code>AW</code> request is accepted. Once the data for a burst starts, the master can provide one word per cycle until that burst completes.</p>
+
+<p>Assume the write data channel is used by one burst at a time, so Burst 2's write data cannot begin until Burst 1's write data burst has finished.</p>
+
+<ol type="a">
+    <li>On what clock cycle does the <code>WLAST</code> signal for Burst 1 go high?</li>
+    <li>On what clock cycle does the first word of Burst 2 begin transferring?</li>
+    <li>On what clock cycle is the <code>WLAST</code> signal for Burst 2 asserted?</li>
+</ol>
+<div class="solution" id="u09-s2">
+<strong>✅ Solution:</strong>
+<ol type="a">
+    <li>
+        <p>Burst 1's <code>AW</code> request is accepted at cycle <code>0</code>. Because the first data word is available 5 cycles later, Burst 1's data begins at cycle <code>5</code>.</p>
+        <p>Burst 1 contains 16 words, and one word transfers per cycle, so the 16 transfer cycles are:</p>
+        <p><code>5, 6, 7, \ldots, 20</code></p>
+        <p>The last word of the burst transfers on cycle <code>20</code>, so <strong><code>WLAST</code> for Burst 1 goes high on cycle <code>20</code></strong>.</p>
+    </li>
+    <li>
+        <p>Burst 2's <code>AW</code> request is accepted at cycle <code>4</code>, so its first data word is available 5 cycles later, at cycle <code>9</code>.</p>
+        <p>However, the write data channel is occupied by Burst 1 from cycles <code>5</code> through <code>20</code>. Therefore, even though Burst 2's data is available at cycle <code>9</code>, it cannot start transferring until the cycle after Burst 1 completes.</p>
+        <p>So the <strong>first word of Burst 2 transfers on cycle <code>21</code></strong>.</p>
+    </li>
+    <li>
+        <p>Burst 2 contains 32 words and starts transferring at cycle <code>21</code>. With one word per cycle, the transfer cycles are:</p>
+        <p><code>21, 22, 23, \ldots, 52</code></p>
+        <p>So the final word transfers on cycle <code>52</code>, and <strong><code>WLAST</code> for Burst 2 is asserted on cycle <code>52</code></strong>.</p>
+    </li>
+</ol>
+<div class="grading" id="u09-g2"><strong>📋 Grading Notes:</strong><br>- Students may present the answer as a short explanation, a list of cycle numbers, or a cycle-by-cycle timeline.
+- Minor formatting differences are acceptable as long as the relevant cycle numbers are clear.
+- If a student assumes Burst 2 can overlap on the write data channel with Burst 1, do not award full credit for the Burst 2 rubric.</div>
+</div>
+<button class="toggle-btn" onclick="toggle('u09-s2')">Show/Hide Solution</button>
+</div>
+<div class="question">
+<h3 onclick="toggle('u09-s3')">Q3: Addressing</h3>
+<div class="qmeta">a) 3.0pt, b) 4.0pt, c) 3.0pt &bull; total: 10.0 pts</div>
+<p>An IP and small memory share a common address space.  All addresses are byte-addressable.  The IP has four AXI-Lite 32-bit slave registers starting at address 0x00.  The memory slave has 1 kB of storage staring at the first address after the IP registers.  The memory has 32-bit words. </p>
+<ol type="a">
+    <li>What is the base address in hex of the memory?</li>
+    <li>What is the local address in hex of word 10 (with word 0 being the first word in the memory)?</li> 
+    <li>What is the global address in hex of word 10 in the memory?</li>
+</ol>
+<div class="solution" id="u09-s3">
+<strong>✅ Solution:</strong>
+<ol type="a">
+    <li>
+        <p>Each AXI-Lite register is 32 bits = 4 bytes. With four registers starting at address <code>0x00</code>, the registers occupy:</p>
+        <p><code>4 \times 4 = 16 \text{ bytes} = 0x10 \text{ bytes}</code></p>
+        <p>So the memory begins at the first address after those registers:</p>
+        <p><strong>Base address = <code>0x10</code></strong></p>
+    </li>
+    <li>
+        <p>The memory is byte-addressable and each word is 32 bits = 4 bytes. Word 10 is therefore at local byte offset:</p>
+        <p><code>10 \times 4 = 40 = 0x28</code></p>
+        <p><strong>Local address of word 10 = <code>0x28</code></strong></p>
+    </li>
+    <li>
+        <p>The global address is the memory base plus the local byte offset:</p>
+        <p><code>0x10 + 0x28 = 0x38</code></p>
+        <p><strong>Global address of word 10 = <code>0x38</code></strong></p>
+    </li>
+</ol>
+<div class="grading" id="u09-g3"><strong>📋 Grading Notes:</strong><br>- Units such as bytes may be omitted with no loss of points.
+- The key concept is that the address space is byte-addressable, so word numbers must be converted to byte offsets.
+- For part (a), students may reason in decimal or hexadecimal; either is acceptable if the final base address is correct.
+- For part (b), do not award full credit if the student gives word 10 as</div>
+</div>
+<button class="toggle-btn" onclick="toggle('u09-s3')">Show/Hide Solution</button>
+</div>
+<div class="question">
+<h3 onclick="toggle('u09-s4')">Q4: Convolution job descriptor</h3>
+<div class="qmeta">all) 10.0pt &bull; total: 10.0 pts</div>
+<p>Suppose you want to build a 1D convolution accelerator that reads input vectors <code>x</code> and <code>h</code> from shared memory and writes an output vector <code>y</code> back to shared memory. The accelerator computes</p>
+
+\[
+y[n] = \sum_{i=0}^{n_k-1} h[i] x[n-i], \qquad n = 0, \ldots, n_x + n_k - 1
+\]
+
+<p>where we use the convention that <code>x[n]</code> is zero-padded at the beginning. That is, whenever <code>n-i &lt; 0</code>, the value <code>x[n-i]</code> is treated as zero.</p>
+
+<p>Write a Vitis C++ structure <code>ConvCmd</code> that could be used as a job descriptor for this accelerator. Your structure should include all arguments needed to launch the job, including shared-memory addresses and data lengths. You may assume all shared-memory addresses are represented with type <code>ap_uint&lt;64&gt;</code>.</p>
+
+<p>There is no single correct solution, but your structure should be complete enough that software could fill in one <code>ConvCmd</code> instance and the accelerator could use it to locate the input and output vectors and determine the convolution sizes.</p>
+<div class="solution" id="u09-s4">
+<strong>✅ Solution:</strong>
+<p>One reasonable solution is to store the shared-memory addresses for the input vectors <code>x</code> and <code>h</code>, the output vector <code>y</code>, and the relevant lengths:</p>
+
+<pre><code>struct ConvCmd {
+    ap_uint&lt;64&gt; x_addr;
+    ap_uint&lt;64&gt; h_addr;
+    ap_uint&lt;64&gt; y_addr;
+    uint32_t nx;
+    uint32_t nh;
+};
+</code></pre>
+
+<p>Here:</p>
+<ul>
+    <li><code>x_addr</code> is the shared-memory base address of the input vector <code>x</code></li>
+    <li><code>h_addr</code> is the shared-memory base address of the filter taps <code>h</code></li>
+    <li><code>y_addr</code> is the shared-memory base address where the output vector <code>y</code> should be written</li>
+    <li><code>nx</code> is the length of <code>x</code></li>
+    <li><code>nh</code> is the length of <code>h</code></li>
+</ul>
+
+<p>This is sufficient because the accelerator can compute the output length as <code>nx + nh - 1</code> for the zero-padded convolution described in the problem.</p>
+
+<p>Many other answers are also valid. For example, a student might include an explicit output length field, a mode field, or flags for different boundary conditions. Those are acceptable as long as the descriptor still includes the essential shared-memory addresses and convolution sizes.</p>
+<div class="grading" id="u09-g4"><strong>📋 Grading Notes:</strong><br>- They may include a mode like valid or same. That is fine.
+- Length may be written as `int` or</div>
+</div>
+<button class="toggle-btn" onclick="toggle('u09-s4')">Show/Hide Solution</button>
+</div>
+<div class="question">
+<h3 onclick="toggle('u09-s5')">Q5: Crossbar request timing</h3>
+<div class="qmeta">all) 10.0pt &bull; total: 10.0 pts</div>
+<p>An AXI crossbar connects two masters (<code>M0</code>, <code>M1</code>) and two slaves (<code>S0</code>, <code>S1</code>). All ports can operate independently and simultaneously. The following write requests arrive at the crossbar at <code>T=0</code>:</p>
+<table border="1" cellpadding="6" cellspacing="0">
+    <tr>
+        <th>Request</th>
+        <th>Transaction</th>
+        <th>Duration</th>
+    </tr>
+    <tr>
+        <td>A</td>
+        <td><code>M0 -&gt; S0</code></td>
+        <td>100 cycles</td>
+    </tr>
+    <tr>
+        <td>B</td>
+        <td><code>M1 -&gt; S1</code></td>
+        <td>150 cycles</td>
+    </tr>
+    <tr>
+        <td>C</td>
+        <td><code>M1 -&gt; S0</code></td>
+        <td>125 cycles</td>
+    </tr>
+    <tr>
+        <td>D</td>
+        <td><code>M0 -&gt; S1</code></td>
+        <td>80 cycles</td>
+    </tr>
+</table>
+<p>Assume the following constraints:</p>
+<ul>
+    <li>Each master issues requests in its own local order. For example, <code>M1</code> must start request B before it can start request C.</li>
+    <li>A request remains queued at its master until both the master interface and the requested slave interface are free.</li>
+    <li>The crossbar is non-blocking: if one master's top-of-queue request is waiting for a busy slave, that does not prevent the other master from starting a request to a different idle slave.</li>
+</ul>
+<p>On what clock cycle does each request start and end?</p>
+<div class="solution" id="u09-s5">
+<strong>✅ Solution:</strong>
+<p>At <code>T=0</code>, request A can start because <code>M0</code> and <code>S0</code> are free, and request B can start because <code>M1</code> and <code>S1</code> are free. After that, request D must wait for <code>S1</code> to become free, and request C must wait for request B to complete because <code>M1</code> must preserve local order.</p>
+
+<table border="1" cellpadding="6" cellspacing="0">
+    <tr>
+        <th>Time</th>
+        <th>M0 queue</th>
+        <th>M1 queue</th>
+        <th>Ongoing transactions</th>
+    </tr>
+    <tr>
+        <td>0</td>
+        <td>[D]</td>
+        <td>[C]</td>
+        <td>A (<code>M0</code> -&gt; <code>S0</code>), B (<code>M1</code> -&gt; <code>S1</code>)</td>
+    </tr>
+    <tr>
+        <td>100</td>
+        <td>[D]</td>
+        <td>[C]</td>
+        <td>B (<code>M1</code> -&gt; <code>S1</code>)</td>
+    </tr>
+    <tr>
+        <td>150</td>
+        <td>[]</td>
+        <td>[]</td>
+        <td>C (<code>M1</code> -&gt; <code>S0</code>), D (<code>M0</code> -&gt; <code>S1</code>)</td>
+    </tr>
+    <tr>
+        <td>230</td>
+        <td>[]</td>
+        <td>[]</td>
+        <td>C (<code>M1</code> -&gt; <code>S0</code>)</td>
+    </tr>
+    <tr>
+        <td>275</td>
+        <td>[]</td>
+        <td>[]</td>
+        <td>None</td>
+    </tr>
+</table>
+
+<p>Therefore, the request start and end times are:</p>
+<ul>
+    <li>A: start at cycle <code>0</code>, end at cycle <code>100</code></li>
+    <li>B: start at cycle <code>0</code>, end at cycle <code>150</code></li>
+    <li>C: start at cycle <code>150</code>, end at cycle <code>275</code></li>
+    <li>D: start at cycle <code>150</code>, end at cycle <code>230</code></li>
+</ul>
+<div class="grading" id="u09-g5"><strong>📋 Grading Notes:</strong><br>- Students may present the answer as a table, timeline, or list of start and end cycles.
+- Equivalent wording is acceptable as long as the timing for each request is clear.
+- If a student gives only end times or only start times, award credit only for items where the complete timing is clearly correct.</div>
+</div>
+<button class="toggle-btn" onclick="toggle('u09-s5')">Show/Hide Solution</button>
+</div>
+<div class="question">
+<h3 onclick="toggle('u09-s6')">Q6: Half-duplex DDR timing</h3>
+<div class="qmeta">all) 10.0pt &bull; total: 10.0 pts</div>
+<p>An AXI crossbar connects two masters, a Processor (<code>M0</code>) and an IP Core (<code>M1</code>), to a single DDR memory slave (<code>S</code>). Both masters can support simultaneous reads and writes. However, the DDR controller is <strong>half-duplex</strong>, meaning it can perform only one operation, either a read or a write, at a time.</p>
+
+<p>The following requests arrive at the crossbar at <code>T=0</code>:</p>
+
+<table border="1" cellpadding="6" cellspacing="0">
+    <tr>
+        <th>Request</th>
+        <th>Transaction</th>
+        <th>Duration</th>
+    </tr>
+    <tr>
+        <td>A</td>
+        <td><code>M0 -&gt; S</code></td>
+        <td>120 cycles</td>
+    </tr>
+    <tr>
+        <td>B</td>
+        <td><code>M1 &lt;- S</code></td>
+        <td>90 cycles</td>
+    </tr>
+    <tr>
+        <td>C</td>
+        <td><code>M1 -&gt; S</code></td>
+        <td>70 cycles</td>
+    </tr>
+    <tr>
+        <td>D</td>
+        <td><code>M0 &lt;- S</code></td>
+        <td>110 cycles</td>
+    </tr>
+</table>
+
+<p>Assume the following constraints:</p>
+<ul>
+    <li>Each master issues requests in its own local order, so <code>M0</code> must start request A before request D, and <code>M1</code> must start request B before request C.</li>
+    <li>A request remains queued at its master until it reaches the head of that master's queue and the DDR controller is free.</li>
+    <li>Because the DDR controller is half-duplex and there is only one memory slave, only one request can be active at a time.</li>
+    <li>If both masters have an eligible request waiting when the DDR controller becomes free, the crossbar grants access to the request that has been waiting longest. If there is still a tie, <code>M0</code> wins.</li>
+</ul>
+
+<p>On what clock cycle does each request start and end?</p>
+<div class="solution" id="u09-s6">
+<strong>✅ Solution:</strong>
+<p>Because the DDR controller is half-duplex and there is only one slave, only one request can be active at a time.</p>
+
+<p>At <code>T=0</code>, requests A and B are both eligible. They have been waiting for the same amount of time, so the tie-break rule gives priority to <code>M0</code>. Therefore, request A starts first.</p>
+
+<p>After A finishes, request B is the oldest eligible waiting request, so it starts next. Request D is not allowed to start before A because <code>M0</code> must preserve local order, and request C is not allowed to start before B because <code>M1</code> must preserve local order.</p>
+
+<p>After B finishes, both D and C are eligible. Request D has been waiting longer because it became head-of-line for <code>M0</code> when A completed, whereas C only becomes head-of-line for <code>M1</code> when B completes. So D starts next, followed by C.</p>
+
+<table border="1" cellpadding="6" cellspacing="0">
+    <tr>
+        <th>Time</th>
+        <th>M0 queue</th>
+        <th>M1 queue</th>
+        <th>Ongoing transaction</th>
+    </tr>
+    <tr>
+        <td>0</td>
+        <td>[D]</td>
+        <td>[B, C]</td>
+        <td>A (<code>M0 -&gt; S</code>)</td>
+    </tr>
+    <tr>
+        <td>120</td>
+        <td>[D]</td>
+        <td>[C]</td>
+        <td>B (<code>M1 &lt;- S</code>)</td>
+    </tr>
+    <tr>
+        <td>210</td>
+        <td>[]</td>
+        <td>[C]</td>
+        <td>D (<code>M0 &lt;- S</code>)</td>
+    </tr>
+    <tr>
+        <td>320</td>
+        <td>[]</td>
+        <td>[]</td>
+        <td>C (<code>M1 -&gt; S</code>)</td>
+    </tr>
+    <tr>
+        <td>390</td>
+        <td>[]</td>
+        <td>[]</td>
+        <td>None</td>
+    </tr>
+</table>
+
+<p>Therefore, the request timing is:</p>
+<ul>
+    <li>A: start at cycle <code>0</code>, end at cycle <code>120</code></li>
+    <li>B: start at cycle <code>120</code>, end at cycle <code>210</code></li>
+    <li>D: start at cycle <code>210</code>, end at cycle <code>320</code></li>
+    <li>C: start at cycle <code>320</code>, end at cycle <code>390</code></li>
+</ul>
+<div class="grading" id="u09-g6"><strong>📋 Grading Notes:</strong><br>- Students may present the answer as a table, timeline, or list of start and end cycles.
+- Equivalent reasoning is acceptable as long as the half-duplex constraint and per-master request ordering are applied correctly.
+- If a student assumes C and D can start at the same time, do not award credit for those items because the DDR controller permits only one active request at a time.</div>
+</div>
+<button class="toggle-btn" onclick="toggle('u09-s6')">Show/Hide Solution</button>
+</div>
+<div class="question">
+<h3 onclick="toggle('u09-s7')">Q7: Memory data rate</h3>
+<div class="qmeta">a) 5.0pt, b) 5.0pt &bull; total: 10.0 pts</div>
+<p>A memory slave has a 64-bit data width and is connected via an AXI interconnect to a processor and IP.  Suppose that in each job:</p>
+<ul>
+    <li>The processor writes 1024 32-bit floating numbers as input to the shared memory.</li>
+    <li>The IP reads those 1024 input numbers, performs some computation, and writes 512 32-bit floating numbers as output to the shared memory.</li>
+    <li>The processor reads those 512 output numbers from the shared memory.</li>  
+</ul>
+<p> Reads and writes are pipelined so that the memory interface can be fully utilized (for example, the IP is performing computation while the processor is reading or writing data).  Also, assume 100% bus efficiency (no AXI overhead or stalls).  What number of jobs can be completed per second if the memory clock rate is 500 MHz in the following two scenarios:</p>
+<ol type="a">
+    <li>The memory is single-port; while the AXI bus allows simultaneous requests, the memory can only service one transaction (either read or write) per clock cycle.  </li>
+    <li>The memory is dual-port; it can service one read and one write transaction simultaneously in each clock cycle.</li>
+</ol>
+<p> Note:  Most SRAMs connected to AXI interconnects are single-port</p>
+<div class="solution" id="u09-s7">
+<strong>✅ Solution:</strong>
+<ol type="a">
+    <li>
+        <p>Each 64-bit memory transaction transfers two 32-bit floating-point numbers.</p>
+        <p>So the required memory transactions per job are:</p>
+        <ul>
+            <li>Processor writes 1024 inputs: <code>1024/2 = 512</code> write transactions</li>
+            <li>IP reads 1024 inputs: <code>1024/2 = 512</code> read transactions</li>
+            <li>IP writes 512 outputs: <code>512/2 = 256</code> write transactions</li>
+            <li>Processor reads 512 outputs: <code>512/2 = 256</code> read transactions</li>
+        </ul>
+        <p>Total transactions per job:</p>
+        <p><code>512 + 512 + 256 + 256 = 1536</code></p>
+        <p>For a single-port memory, only one transaction can be serviced per cycle, so each job takes 1536 cycles.</p>
+        <p>At 500 MHz, the job rate is: \(500 \cdot 10^6 / 1536 \approx 3.255 \times 10^5\) jobs/s</p>
+        <p><strong>Single-port throughput\( \approx 3.26 \cdot 10^5\) jobs/s</strong></p>
+    </li>
+    <li>
+        <p>For a dual-port memory, one read and one write can occur in the same cycle.</p>
+        <p>Total reads per job:</p>
+        <p><code>512 + 256 = 768</code> read transactions</p>
+        <p>Total writes per job:</p>
+        <p><code>512 + 256 = 768</code> write transactions</p>
+        <p>Since one read and one write can be serviced simultaneously each cycle, the job time is set by the larger of the total reads and total writes:</p>
+        <p><code>\max(768, 768) = 768</code> cycles/job</p>
+        <p>Thus, the job rate is: \(500 \cdot 10^6 / 768 \approx 6.510 \times 10^5\) jobs/s</p>
+        <p><strong>Dual-port throughput\( \approx 6.51 \cdot 10^5\) jobs/s</strong></p>
+    </li>
+</ol>
+<div class="grading" id="u09-g7"><strong>📋 Grading Notes:</strong><br>- Units such as jobs/s or jobs per second may be omitted if the numeric value is clearly identified.
+- Equivalent answers such as 325520.8 jobs/s and 651041.7 jobs/s are acceptable.
+- Students may reason in bytes, 32-bit words, or 64-bit transactions as long as they correctly account for the 64-bit data width.
+- For part (b), the key idea is that dual-port means one read and one write can happen simultaneously, not two arbitrary transactions of any type.</div>
+</div>
+<button class="toggle-btn" onclick="toggle('u09-s7')">Show/Hide Solution</button>
+</div>
+<div class="question">
+<h3 onclick="toggle('u09-s8')">Q8: Packet processor scaling</h3>
+<div class="qmeta">a) 3.0pt, b) 3.0pt, c) 4.0pt &bull; total: 10.0 pts</div>
+<p>A network processor has \(N\) packet processors connected to a common single-port memory. The memory is also connected to an Ethernet receiver. Suppose:</p>
+<ul>
+    <li>The Ethernet receiver writes packets of \(B\) bytes every \(T\) seconds.</li>
+    <li>Each packet is processed by one of the \(N\) processors and the processors can all operate in parallel.</li>
+    <li>Packet processing requires reading the \(B\) bytes.  The processing of the packet including the memory read takes \(4B\) clock cycles.</li>
+    <li>The memory is single-port, meaning that reads and writes must occur on different clock cycles.</li>
+    <li>The memory data width is 64 bits.</li>
+</ul>
+<p>Answer the following:</p>
+<ol type="a">
+    <li>How many clock cycles are used for the memory read / writes per packet?</li>
+    <li>How many processing cycles are required per packet on one processor?</li>
+    <li>For what values of \(N\) is the memory the limiting factor in the total processing rate?</li>
+</ol>
+<div class="solution" id="u09-s8">
+<strong>✅ Solution:</strong>
+<ol type="a">
+    <li>
+        <p>The memory width is 64 bits = 8 bytes per memory cycle.  For each packet, the Ethernet receiver writes \(B\) bytes into memory, which takes  \(B/8\) cycles.  Then a packet processor reads the same \(B\) bytes from memory, which also takes:  \(B/8\) cycles.  Because the memory is single-port, those reads and writes cannot happen in the same cycle, so the total memory time per packet is \(B/8 + B/8 = B/4\) cycles.</p>
+    </li>
+    <li>
+        <p>The problem states that the packet-processing work after the memory read takes \(4B\) clock cycles.  So one processor needs \(4B\) processing cycles per packet, in addition to the memory read time. However, since the question specifically asks for processing cycles, the answer is <strong>\(4B\) processing cycles per packet</strong></p>
+    </li>
+    <li>
+        <p>Memory can sustain one packet every \(B/4\) cycles, so its throughput is:  \(1/(B/4) = 4/B\) packets per cycle.  One processor can sustain one packet every \(4B\) cycles, so \(N\) processors together can sustain:  \(N/(4B)\) packets per cycle.  The memory is the limiting factor when the memory throughput is less than the processor throughput: \(4/B < N/(4B)\).  Multiplying both sides by \(4B\) gives: \(16 < N\).  So the memory is the bottleneck for  <strong>\(N > 16\)</strong>.  If \(N = 16\), the memory and processors are exactly balanced.</p>
+    </li>
+</ol>
+<div class="grading" id="u09-g8"><strong>📋 Grading Notes:</strong><br>- It is acceptable if students omit units such as cycles or packets per cycle, as long as the meaning is clear.
+- For part (a), students may reason in bytes per cycle or in 64-bit words per cycle.
+- For part (c), full credit requires the inequality for the memory-limited region, not just the crossover value.
+- The parameter</div>
+</div>
+<button class="toggle-btn" onclick="toggle('u09-s8')">Show/Hide Solution</button>
+</div>
+<h2 id="u10">Unit 10: Arrays & Matrix Multiplication</h2>
+<button class="toggle-btn" onclick="toggleAll('u10-',true)">Show all solutions</button>
+<button class="toggle-btn" onclick="toggleAll('u10-',false)">Hide all</button>
+<div class="question">
+<h3 onclick="toggle('u10-s1')">Q1: 2x3 Systolic Array</h3>
+<div class="qmeta">a) 3.0pt, b) 4.0pt, c) 3.0pt &bull; total: 10.0 pts</div>
+<p>A 2D systolic array is used to compute the matrix product <code>Y = XW</code> using a <b>stationary-weight</b> configuration. The matrices are defined as:</p>
+\[
+    X = \begin{bmatrix}1 & 2 \\ 3 & 4 \\ 5 & 6 \\ \vdots & \vdots \end{bmatrix}, \quad
+    W = \begin{bmatrix}2 & -3 & 1 \\ 0 & -1 & 2 \end{bmatrix}
+\]
+<p>The array consists of a 2x3 grid of processing elements (PEs) indexed by row <code>k \in \{0, 1\}</code> and column <code>j \in \{0, 1, 2\}</code>. The system operates in iterations <code>t=0, 1, ...</code>.</p>
+
+<ol type="a">
+    <li><b>Input Delay Logic:</b> To align the wavefront, the input <code>X</code> is delayed based on the column index <code>j</code>. Let <code>Xdly[k][j](t)</code> be the value seen by column <code>j</code> at iteration <code>t</code>:
+    <pre><code>    Xdly[k][j](t) = X[t-j][k] for  t &gt= j,  else  0.
+    </code></pre>
+    Find the values of <code>Xdly[k][j](t)</code> for all valid <code>k, j</code> at cycles <code>t=0, 1, 2, 3</code>.
+    </li>
+
+    <li><b>Accumulation Logic:</b> Let <code>S[k][j](t)</code> denote the partial sum in <code>PE[k][j]</code> at time <code>t</code>. The weights <code>W[k][j]</code> are stationary. The update rules are:
+        <pre><code>        // For the first row (k=0)
+        S[0][j](t) = Xdly[0][j](t) * W[0][j]
+
+        // For the second row (k=1), accumulating from the row above
+        S[1][j](t) = Xdly[1][j](t) * W[1][j] + S[0][j](t-1)
+        </code></pre>
+        Find the values of <code>S[1][j](t)</code> for <code>j=0, 1, 2</code> at cycle <code>t=0,1,2,3</code>.
+    </li>
+
+    <li><b>Output Availability:</b> Compute the product <code>Y = XW</code> to find the first two rows of <code>Y</code>. By the end of iteration <code>t=2</code> which elements of <code>Y[i][j]</code>
+    have appeared in the last row of <code>S</code>?  </li>
+</ol>
+<div class="solution" id="u10-s1">
+<strong>✅ Solution:</strong>
+<ol type="a">
+    <li>
+        <p>Each row of <code>X</code> is shifted into the leftmost column of <code>Xdly</code>.  So, the delayed inputs seen by the 2x3 array at cycles <code>t=0,1,2</code> are:</p>
+        \[
+            X_{dly}(0) = \begin{bmatrix}1 & 0 & 0 \\ 0 & 0 & 0\end{bmatrix}, \quad
+            X_{dly}(1) = \begin{bmatrix}3 & 1 & 0 \\ 2 & 0 & 0\end{bmatrix}, \quad
+            X_{dly}(2) = \begin{bmatrix}5 & 3 & 1 \\ 4 & 2 & 0\end{bmatrix}.
+        \]
+    </li>
+
+    <li> 
+        <p>With
+        \[
+            W = \begin{bmatrix}2 & -3 & 1 \\ 0 & -1 & 2 \end{bmatrix}
+        \] 
+        Using the update formulae for <code>S</code>, the values of the matrix at iterations \(t=0,1,2\) are:</p>
+        \[
+            S(0) = \begin{bmatrix}2 & 0 & 0 \\ 0 & 0 & 0\end{bmatrix}, \quad
+            S(1) = \begin{bmatrix}6 & -3 & 0 \\ 2 & 0 & 0\end{bmatrix}, \quad
+            S(2) = \begin{bmatrix}10 & -9 & 1 \\ 6 & -5 & 0\end{bmatrix}.
+        \]
+    </li>
+
+    <li>
+        <p>
+        Computing the product <code>Y = XW</code> gives that the first two rows of <code>Y</code> are:
+        \[
+            Y = \begin{bmatrix} 2 &  -5 &  5 \\
+                                6 &  -13 &  0 \\
+                                \vdots & \vdots & \vdots
+            \end{bmatrix}.
+        \]
+        We see that the outputs:</p>
+        <ul>
+            <li><code>Y[0][0] = 2</code> is available at <code>S[1][0]</code> at <code>t=1</code></li>
+            <li><code>Y[1][0] = 6</code> is available at <code>S[1][0]</code> at <code>t=2</code></li>
+            <li><code>Y[0][1] = -5</code> is available at <code>S[1][1]</code> at <code>t=2</code></li>
+        </ul>
+        <p>All other outputs will be available at later cycles.</p>
+    </li>
+</ol>
+<div class="grading" id="u10-g1"><strong>📋 Grading Notes:</strong><br>- Award partial credit for minor algebraic errors if the student&#x27;s wavefront alignment and accumulation method are otherwise correct.
+- Award partial credit for small timing shifts if the student clearly understands how values propagate through the stationary-weight array.
+- Equivalent tables, annotated diagrams, or organized lists are acceptable in place of the exact formatting shown in the solution.</div>
+</div>
+<button class="toggle-btn" onclick="toggle('u10-s1')">Show/Hide Solution</button>
+</div>
+<div class="question">
+<h3 onclick="toggle('u10-s2')">Q2: Array addressing</h3>
+<div class="qmeta">a) 4.0pt, b) 6.0pt &bull; total: 10.0 pts</div>
+<p>A matrix \(x[i][j]\) is stored in row-major order in memory. The matrix has 8 rows and 4 columns, and each element is a 32-bit word. </p>
+<ol type="a">
+    <li>What is the total number of bytes of the matrix?</li>
+    <li>The memory is byte-addressable and element \(x[0][0]\) is at address <code>0x10</code>.  What is the address in hex \(x[3][2]\)? </li> 
+</ol>
+<div class="solution" id="u10-s2">
+<strong>✅ Solution:</strong>
+<ol type="a">
+    <li>
+        <p>The matrix has 8 rows and 4 columns, and each element is a 32-bit word (4 bytes). The total number of bytes is:</p>
+        \[
+        8 \times 4 \times 4 = 128 \text{ bytes}.
+        \]
+    </li>
+    <li>
+        <p>The memory is byte-addressable and each word is 32 bits = 4 bytes. The local address of \(x[3][2]\) is therefore:</p>
+        \[
+        (3 \times 4 + 2) \times 4 = 56 = \text{0x38}
+        \]
+        <p>Since the first address \(x[0][0]\) is at <code>0x10</code>, the address of \(x[3][2]\) is <code>0x10 + 0x38 = 0x48</code></p>
+    </li>
+</ol>
+<div class="grading" id="u10-g2"><strong>📋 Grading Notes:</strong><br>- For part (a), accept equivalent arithmetic such as computing 32 elements first and then multiplying by 4 bytes per element.
+- For part (b), full credit requires row-major indexing, conversion from element index to byte offset, and addition of the base address.
+- A common mistake in part (b) is to stop at the element index</div>
+</div>
+<button class="toggle-btn" onclick="toggle('u10-s2')">Show/Hide Solution</button>
+</div>
+<div class="question">
+<h3 onclick="toggle('u10-s3')">Q3: Delay Line</h3>
+<div class="qmeta">a) 5.0pt, b) 5.0pt &bull; total: 10.0 pts</div>
+<p>Suppose you want to compute <code>Y[i,j] = B[i] X[i,j]</code>.  To avoid the broadcast of <code>B[i]</code> to all multiplier units, you create a delay line:</p>
+<pre><code>for (int t=0; t&lt;T; t++) {
+#pragma HLS PIPELINE II=1
+    for (j=M-1; j&gt;=0; j--) {
+#pragma HLS unroll
+        Bdly[j] = Bdly[j-1];
+    }
+    Bdly[0] = B[t];
+    ...  
+}
+</code></pre>
+<p>where <code>Bdly</code> is initialized to <code>0</code>.</p>
+
+<ol type="a">
+    <li>Suppose that \(M=3\) and the first \(N=4\) values of <code>B[i]</code> are:
+    \[
+        B = [1, 4, 5, 7, \ldots]
+    \]
+    What are the values of <code>Bdly</code> at the end of the iterations \(t=0,1,2\)?</li>
+    <li>In general, at the end of iteration \(t\), write <code>Bdly[j]</code> in terms of the input sequence <code>B[i]</code>.</li>
+</ol>
+<div class="solution" id="u10-s3">
+<strong>✅ Solution:</strong>
+<ol type="a">
+    <li>
+        <p>The delay line is initialized to all zeros. At each iteration, the old contents shift right by one position and the new input value is loaded into <code>Bdly[0]</code>.</p>
+        <p>Thus:</p>
+        <ul>
+            <li>At the end of iteration \(t=0\): <code>Bdly = [1, 0, 0]</code></li>
+            <li>At the end of iteration \(t=1\): <code>Bdly = [4, 1, 0]</code></li>
+            <li>At the end of iteration \(t=2\): <code>Bdly = [5, 4, 1]</code></li>
+        </ul>
+    </li>
+    <li>
+        <p>At the end of iteration \(t\), the current input sample is in <code>Bdly[0]</code>, the previous sample is in <code>Bdly[1]</code>, and so on. Therefore,</p>
+        \[
+
+        B_{dly}[j] =
+        \begin{cases}
+            B[t-j], & t \geq j, \\
+            0, & t &lt; j.
+        \end{cases}
+        \]
+        <p>Equivalently, <code>Bdly[j]</code> stores the value from \(j\) iterations earlier when that value exists; otherwise it remains zero because of the initialization.</p>
+    </li>
+</ol>
+<div class="grading" id="u10-g3"><strong>📋 Grading Notes:</strong><br>- For part (a), award partial credit if the student clearly understands the shift-register behavior but reports the values at the beginning of each iteration instead of the end.
+- For part (b), award partial credit for a formula with the correct shift direction but an off-by-one indexing error.
+- For part (b), if the student writes</div>
+</div>
+<button class="toggle-btn" onclick="toggle('u10-s3')">Show/Hide Solution</button>
+</div>
+<div class="question">
+<h3 onclick="toggle('u10-s4')">Q4: Fanout</h3>
+<div class="qmeta">a) 2.0pt, b) 2.0pt, c) 3.0pt, d) 3.0pt &bull; total: 10.0 pts</div>
+<p>Consider a simple Vitis loop:</p>
+<pre><code>for (int i = 0; i &lt; N; i++) {
+#pragma HLS PIPELINE II=1
+    for (int j=0; j &lt; M; j++) {
+#pragma HLS UNROLL
+        y[i,j] = f(x[i,j], b);
+    }
+}
+</code></pre>
+<p>Here, the parameter <code>b</code> is shared among all instances of the function <code>f</code>.</p>
+
+<ol type="a">
+    <li>What is the fanout of the input signal <code>b</code> in this design as a function of \(M\)?</li>
+    <li>Suppose that to reduce the fanout, replaces <code>b</code> with a vector of copies of <code>b</code>:
+    <pre><code>    bcopy[0] = b;
+    for (int j = 1; j &lt; M; j++) {
+    #pragma HLS PIPELINE II=1
+        bcopy[j] = bcopy[j-1];
+    }
+    </code></pre>
+    and then replaces <code>b</code> with <code>bcopy[j]</code> in the original loop.
+    How many additional registers are required to implement this copy?
+    </li>
+    <li>What is the fanout of <code>b</code> and each <code>bcopy[j]</code> in this design?</li>
+    <li>Using the copy approach, what is the total number of cycles required to compute all values of <code>y</code> as a function of and \(N\) and \(M\)?</li>
+</ol>
+<div class="solution" id="u10-s4">
+<strong>✅ Solution:</strong>
+<ol type="a">
+    <li>
+        <p>The loop over <code>j</code> is fully unrolled, so for each value of <code>i</code> there are \(M\) parallel instances of <code>f</code>. Since the same signal <code>b</code> is sent to all of them, the fanout of <code>b</code> is \(M\).</p>
+    </li>
+    <li>
+        <p>The vector <code>bcopy</code> has entries <code>bcopy[0], \ldots, bcopy[M-1]</code>. Each entry must be stored in its own register, so the copy structure requires \(M\)
+        <p>additional registers.</p>
+    </li>
+    <li>
+        <p>With the copy structure, the original signal <code>b</code> drives only <code>bcopy[0]</code>, so its fanout is 1. For \(j=0,\ldots,M-2\), each <code>bcopy[j]</code> drives two destinations:</p>
+        <ul>
+            <li>the corresponding instance of <code>f</code>, and</li>
+            <li>the next register <code>bcopy[j+1]</code>.</li>
+        </ul>
+        <p>So for \(j=0,\ldots,M-2\), the fanout of <code>bcopy[j]</code> is 2. The last copy <code>bcopy[M-1]</code> only drives its corresponding instance of <code>f</code>, so its fanout is 1.</p>
+    </li>
+    <li>
+        <p>The copy loop with <code>bcopy</code> has \(M-1\) iterations, and it is pipelined with II=1, so it
+        <p>takes \(M-1\) cycles because it has \(M-1\) pipelined iterations with II=1. After the copies are created, the original computation over <code>i</code> still takes \(N\) cycles because the inner loop is fully unrolled and the outer loop has II=1. Therefore, the total cycle count is \(
+        N + M - 1\). </p>
+    </li>
+</ol>
+<div class="grading" id="u10-g4"><strong>📋 Grading Notes:</strong><br>- For part (b), award full credit for</div>
+</div>
+<button class="toggle-btn" onclick="toggle('u10-s4')">Show/Hide Solution</button>
+</div>
+<div class="question">
+<h3 onclick="toggle('u10-s5')">Q5: Matrix linear sum</h3>
+<div class="qmeta">a) 4.0pt, b) 3.0pt, c) 3.0pt &bull; total: 10.0 pts</div>
+<p>A hardware module must compute the matrix sum \(C = w_0 A + w_1 B\), where \(A\) and \(B\) are \(128 \times 16\) matrices with 32-bit elements and \(w_0, w_1\) are scalar constants.</p>
+
+<p>All three matrices (\(A\), \(B\), and \(C\)) reside in a common external memory that allows <b>only one</b> access (either one read OR one write) per clock cycle. Once the necessary operands are fetched, the scalar operation \(c = w_0 a + w_1 b\) takes one cycle. Ignore pipeline setup/flush overhead.</p>
+
+<ol type="a">
+    <li><b>32-bit Bus:</b> If the memory data width is 32 bits, what is the minimum latency (in clock cycles) to complete the entire linear sum? Explain your breakdown of reads and writes.</li>
+
+    <li><b>64-bit Bus (Row-Major):</b> If the memory data width is increased to 64 bits and matrices are stored in <b>row-major</b> form, what is the minimum latency? Assume the hardware can utilize both 32-bit elements fetched in a single 64-bit read.</li>
+
+    <li><b>64-bit Bus (Column-Major):</b> If the matrices are instead stored in <b>column-major</b> form, does the 64-bit memory width still provide the same performance benefit as in part (b)? Explain why or why not based on the access pattern.</li>
+</ol>
+<div class="solution" id="u10-s5">
+<strong>✅ Solution:</strong>
+<ol type="a">
+    <li>
+        <p>Each matrix has \(128 \times 16 = 2048\) elements. For each output element, the hardware must read one element from <code>A</code>, read one element from <code>B</code>, and write one element to <code>C</code>. With a 32-bit bus, each of those transfers takes one cycle, so the memory traffic is:</p>
+        \[
+            2048 \text{ reads from } A + 2048 \text{ reads from } B + 2048 \text{ writes to } C = 6144 \text{ cycles.}
+        \]
+        <p>The arithmetic itself takes one cycle per element, but this can be overlapped with the memory stream, so the design is memory-bandwidth limited. Therefore the minimum latency is 6144 cycles.</p>
+    </li>
+
+    <li>
+        <p>With a 64-bit bus, each memory access can carry two 32-bit elements. In row-major storage, adjacent elements in the same row are contiguous in memory, so if the hardware loops across the elements within each row first, each 64-bit read of <code>A</code> and <code>B</code> provides the two operands for two output elements, and each 64-bit write stores two output elements of <code>C</code>.  This cuts the memory traffic in half, so the minimum latency is 6144/2 = 3072 cycles.
+    </li>
+
+    <li>
+        <p>Yes, the 64-bit bus can still provide the same <code>2x</code> speed-up in column-major storage, but the loop order must match the layout. In column-major format, adjacent elements in memory lie in the same column across consecutive rows, so the hardware should process the rows within each column first. Then each 64-bit access again carries two useful 32-bit elements from <code>A</code> and <code>B</code>, and each 64-bit write stores two elements of <code>C</code>.  Thus the latency is still 3072 cycles, again giving a <code>2x</code> speed-up. The key point is:</p>
+        <ul>
+            <li>In row-major storage, loop over the elements within each row first.</li>
+            <li>In column-major storage, loop over the rows within each column first.</li>
+        </ul>
+    </li>
+</ol>
+<div class="grading" id="u10-g5"><strong>📋 Grading Notes:</strong><br>- The key idea is that the kernel is memory-bandwidth limited: two input reads and one output write are required per element.
+- For part (b), full credit requires both the 2x speed-up and the row-major traversal idea: loop across the elements within each row first.
+- For part (c), full credit requires recognizing that column-major can achieve the same 2x speed-up if the traversal is changed: loop over the rows in each column first.
+- If a student says column-major loses the benefit without discussing loop reordering, do not award full credit for part (c).</div>
+</div>
+<button class="toggle-btn" onclick="toggle('u10-s5')">Show/Hide Solution</button>
+</div>
+<div class="question">
+<h3 onclick="toggle('u10-s6')">Q6: Multiplication complexity</h3>
+<div class="qmeta">a) 2.0pt, b) 2.0pt, c) 3.0pt, d) 3.0pt &bull; total: 10.0 pts</div>
+<p>A hardware module must compute the matrix product \(C=AB\), where \(A\) is an \(1024 \times 16\) matrix and \(B\) is a \(16 \times 8\) matrix. Each element is a 32-bit word.  Suppose:</p>
+<ul>
+    <li>The matrices are stored in a common shared memory with a 64-bit data bitwidth with one read / write per cycle.</li>
+    <li>The memory is half-duplex meaning reads and writes cannot occur simultaneously.</li>
+    <li>The hardware module has \(N\) parallel multiplers, each can compute one multiplication per cycle.</li>
+</ul>
+Under these assumptions, answer the following questions:
+<ol type="a">
+    <li>How many cycles are required to read all elements of matrix \(A\) and \(B\)?</li>
+    <li>How many cycles are required to write all elements of matrix \(C\)?</li>
+    <li>How many cycles are required to perform all multiplications for the matrix product \(C=AB\) as a function of \(N\)?</li> 
+    <li>For what values of \(N\) is the multiplication step the bottleneck in the computation, meaning it takes more cycles than the memory read and write steps combined?</li>
+</ol>
+<div class="solution" id="u10-s6">
+<strong>✅ Solution:</strong>
+<ol type="a">
+    <li>
+        <p>Matrix \(A\) has \(1024 \times 16 = 16384\) elements and matrix \(B\) has \(16 \times 8 = 128\) elements, for a total of</p>
+        \[
+        16384 + 128 = 16512
+        \]
+        <p>elements to read. Each element is 32 bits and the memory width is 64 bits, so the memory can transfer 2 elements per cycle. Therefore the number of read cycles is</p>
+        \[
+        \frac{16512}{2} = 8256 \text{ cycles.}
+        \]
+    </li>
+    <li>
+        <p>Matrix \(C\) has size \(1024 \times 8\), so it contains</p>
+        \[
+        1024 \times 8 = 8192
+        \]
+        <p>elements. Again, the 64-bit memory writes 2 of the 32-bit elements per cycle, so the number of write cycles is</p>
+        \[
+        \frac{8192}{2} = 4096 \text{ cycles.}
+        \]
+    </li>
+    <li>
+        <p>Each output element \(C[i][j]\) requires 16 multiplications. Since \(C\) has \(1024 \times 8 = 8192\) elements, the total number of multiplications is</p>
+        \[
+        1024 \times 8 \times 16 = 131072.
+        \]
+        <p>With \(N\) parallel multipliers, the multiplication step takes</p>
+        \[
+        \frac{131072}{N}
+        \]
+        <p>cycles if \(N\) divides 131072 exactly. More generally, it is</p>
+        \[
+        \left\lceil \frac{131072}{N} \right\rceil
+        \]
+        <p>cycles.</p>
+    </li>
+    <li>
+        <p>The combined memory read and write time is</p>
+        \[
+        8256 + 4096 = 12352 \text{ cycles.}
+        \]
+        <p>The multiplication step is the bottleneck when</p>
+        \[
+        \frac{131072}{N} > 12352.
+        \]
+        <p>Solving for \(N\):</p>
+        \[
+        N < \frac{131072}{12352} \approx 10.61.
+        \]
+        <p>So, for integer numbers of multipliers, the multiplication step is the bottleneck for</p>
+        \[
+        N \leq 10.
+        \]
+    </li>
+</ol>
+<div class="grading" id="u10-g6"><strong>📋 Grading Notes:</strong><br>- For parts (a) and (b), the key idea is that a 64-bit transfer carries two 32-bit matrix elements per cycle.
+- For part (c), accept either</div>
+</div>
+<button class="toggle-btn" onclick="toggle('u10-s6')">Show/Hide Solution</button>
+</div>
+</body></html>
