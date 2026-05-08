@@ -96,7 +96,7 @@
       ctx.putImageData(imageData, 0, 0);
 
       // Overlay crisp ASCII text
-      ctx.fillStyle = '#00d4aa';
+      ctx.fillStyle = '#00b894';
       ctx.font = '9.5px JetBrains Mono, monospace';
       ctx.textBaseline = 'top';
 
