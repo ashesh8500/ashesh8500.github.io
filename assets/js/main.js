@@ -5,6 +5,7 @@
 
 document.addEventListener('DOMContentLoaded', () => {
   initTypewriter();
+  if (window.initAsciiViz) window.initAsciiViz("ascii-viz-container");
   initScrollSpy();
   initMobileNav();
   initFadeInObserver();
