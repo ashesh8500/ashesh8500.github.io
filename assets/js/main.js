@@ -5,7 +5,7 @@
 
 document.addEventListener('DOMContentLoaded', () => {
   initTypewriter();
-  if (window.initAsciiDitherMotion) window.initAsciiDitherMotion("ascii-viz-container");
+  /* ascii-bg.js self-initializes as full-page background canvas — no init needed */
   initScrollSpy();
   initMobileNav();
   initFadeInObserver();
