@@ -189,31 +189,18 @@ a:hover { color: #00f0c0; }
   overflow: hidden;
 }
 
-.hero::before {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: 
-    radial-gradient(ellipse at 50% 30%, rgba(0, 200, 160, 0.06) 0%, transparent 50%),
-    radial-gradient(ellipse at 30% 20%, rgba(0, 212, 170, 0.05) 0%, transparent 60%),
-    radial-gradient(ellipse at 70% 60%, rgba(0, 180, 148, 0.05) 0%, transparent 60%);
-  pointer-events: none;
-}
-
-/* Subtle name-focused glow */
-.hero::after {
-  content: '';
-  position: absolute;
-  top: 20%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 500px;
-  height: 220px;
-  background: radial-gradient(ellipse at center, rgba(0, 200, 160, 0.15) 0%, rgba(0, 160, 130, 0.06) 30%, transparent 70%);
-  pointer-events: none;
+/* Hero card — solid backing for text readability */
+.hero-card {
+  background: rgba(13, 17, 23, 0.82);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(30, 40, 55, 0.6);
+  border-radius: 12px;
+  padding: 28px 36px 24px;
+  display: inline-block;
+  text-align: center;
+  max-width: 620px;
+  margin: 0 auto 24px;
 }
 
 .hero-inner {
@@ -227,62 +214,23 @@ a:hover { color: #00f0c0; }
 .hero-badge {
   display: inline-block;
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 11px;
   letter-spacing: 1.5px;
   color: var(--accent-teal);
-  border: 1px solid var(--accent-teal);
+  border: 1px solid rgba(0, 180, 148, 0.4);
   border-radius: 100px;
-  padding: 6px 16px;
-  margin-bottom: 28px;
-  text-transform: uppercase;
-}
-
-.hero-name {
-  font-family: var(--font-mono);
-  font-size: clamp(36px, 7vw, 64px);
-  font-weight: 700;
-  letter-spacing: -1px;
-  color: var(--text-primary);
+  padding: 5px 14px;
   margin-bottom: 16px;
-  line-height: 1.15;
-  position: relative;
-  display: inline-block;
-  text-shadow:
-    0 0 40px rgba(0, 220, 170, 0.70),
-    0 0 80px rgba(0, 200, 160, 0.50),
-    0 0 140px rgba(0, 180, 148, 0.35),
-    0 0 250px rgba(0, 160, 130, 0.20),
-    0 0 10px rgba(0, 240, 180, 0.60),
-    0 2px 4px rgba(0,0,0,0.4);
-}
-
-/* Strong glow behind the name */
-.hero-name-glow {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 500px;
-  height: 200px;
-  background: radial-gradient(ellipse at center, rgba(0, 210, 165, 0.50) 0%, rgba(0, 180, 148, 0.20) 25%, rgba(0, 140, 120, 0.08) 50%, transparent 75%);
-  border-radius: 50%;
-  pointer-events: none;
-  filter: blur(25px);
-  -webkit-filter: blur(25px);
-  z-index: 0;
-  mix-blend-mode: screen;
-}
-
-.hero-name .dot {
-  color: var(--accent-teal);
+  text-transform: uppercase;
+  background: rgba(0, 180, 148, 0.06);
 }
 
 .hero-subtitle {
   font-family: var(--font-mono);
-  font-size: clamp(16px, 2.5vw, 20px);
+  font-size: clamp(15px, 2.2vw, 18px);
   color: var(--text-secondary);
-  margin-bottom: 32px;
-  min-height: 28px;
+  min-height: 24px;
+  margin: 0;
 }
 
 .hero-subtitle .cursor {
@@ -302,23 +250,10 @@ a:hover { color: #00f0c0; }
 
 .hero-cta {
   display: flex;
-  gap: 16px;
+  gap: 14px;
   justify-content: center;
   flex-wrap: wrap;
-}
-
-/* ASCII Dither + Motion viz — hero centerpiece */
-#ascii-viz-container {
-  position: relative;
-  z-index: 1;
-}
-
-#ascii-viz-container canvas {
-  transition: box-shadow 0.8s ease;
-}
-
-#ascii-viz-container canvas:hover {
-  box-shadow: 0 0 80px rgba(0, 180, 148, 0.15), 0 0 160px rgba(0, 180, 148, 0.05) !important;
+  margin-top: 8px;
 }
 
 .btn {
