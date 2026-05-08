@@ -197,8 +197,22 @@ a:hover { color: #00f0c0; }
   width: 200%;
   height: 200%;
   background: 
-    radial-gradient(ellipse at 30% 20%, rgba(0, 212, 170, 0.04) 0%, transparent 60%),
-    radial-gradient(ellipse at 70% 60%, rgba(0, 180, 148, 0.04) 0%, transparent 60%);
+    radial-gradient(ellipse at 50% 30%, rgba(0, 200, 160, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 30% 20%, rgba(0, 212, 170, 0.05) 0%, transparent 60%),
+    radial-gradient(ellipse at 70% 60%, rgba(0, 180, 148, 0.05) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+/* Subtle name-focused glow */
+.hero::after {
+  content: '';
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 500px;
+  height: 220px;
+  background: radial-gradient(ellipse at center, rgba(0, 200, 160, 0.15) 0%, rgba(0, 160, 130, 0.06) 30%, transparent 70%);
   pointer-events: none;
 }
 
@@ -231,6 +245,32 @@ a:hover { color: #00f0c0; }
   color: var(--text-primary);
   margin-bottom: 16px;
   line-height: 1.15;
+  position: relative;
+  display: inline-block;
+  text-shadow:
+    0 0 40px rgba(0, 220, 170, 0.70),
+    0 0 80px rgba(0, 200, 160, 0.50),
+    0 0 140px rgba(0, 180, 148, 0.35),
+    0 0 250px rgba(0, 160, 130, 0.20),
+    0 0 10px rgba(0, 240, 180, 0.60),
+    0 2px 4px rgba(0,0,0,0.4);
+}
+
+/* Strong glow behind the name */
+.hero-name-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 500px;
+  height: 200px;
+  background: radial-gradient(ellipse at center, rgba(0, 210, 165, 0.50) 0%, rgba(0, 180, 148, 0.20) 25%, rgba(0, 140, 120, 0.08) 50%, transparent 75%);
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(25px);
+  -webkit-filter: blur(25px);
+  z-index: 0;
+  mix-blend-mode: screen;
 }
 
 .hero-name .dot {
@@ -265,6 +305,20 @@ a:hover { color: #00f0c0; }
   gap: 16px;
   justify-content: center;
   flex-wrap: wrap;
+}
+
+/* ASCII Dither + Motion viz — hero centerpiece */
+#ascii-viz-container {
+  position: relative;
+  z-index: 1;
+}
+
+#ascii-viz-container canvas {
+  transition: box-shadow 0.8s ease;
+}
+
+#ascii-viz-container canvas:hover {
+  box-shadow: 0 0 80px rgba(0, 180, 148, 0.15), 0 0 160px rgba(0, 180, 148, 0.05) !important;
 }
 
 .btn {
