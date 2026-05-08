@@ -33,7 +33,7 @@
       width: 100vw; height: 100vh;
       z-index: 0;
       pointer-events: none;
-      opacity: 0.45;
+      opacity: 0.62;
       background: #08090d;
       image-rendering: pixelated;
     `;

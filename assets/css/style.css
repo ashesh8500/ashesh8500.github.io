@@ -1844,29 +1844,33 @@ body.companion-panel-open .ask-section {
 }
 
 
+
 /* ---------------- ASCII BACKGROUND CANVAS ---------------- */
-/* ascii-bg.js injects a full-page canvas at z-index 0.
-   All page content must sit above it. */
+/* ascii-bg.js injects a full-page fixed canvas behind everything.
+   Body must be TRANSPARENT so the canvas shows through. */
 
 body {
-  position: relative;
-  z-index: 1;
+  background: transparent !important;
 }
 
-.nav { z-index: 1000; } /* already has this, but ensure */
-.hero, .section, footer, .companion, .chat-panel {
-  position: relative;
-  z-index: 1;
+/* All content sections get subtle semi-transparent bg for readability */
+.nav {
+  background: rgba(13, 17, 23, 0.88) !important;
 }
 
-/* Cards and interactive elements need explicit z-index */
-.stat-card, .edu-card, .timeline-item, .project-card,
-.about-grid, .edu-grid, .timeline {
+.hero, .section {
   position: relative;
-  z-index: 1;
+  background: transparent;
 }
 
-/* Subtle semi-transparent bg on cards for readability over canvas */
-.bg-card, .stat-card, .edu-card, .timeline-item {
-  background: rgba(13, 17, 23, 0.92) !important;
+/* Cards with subtle backing for readability over animated bg */
+.stat-card, .edu-card, .timeline-item, .project-card {
+  background: rgba(13, 17, 23, 0.85) !important;
+  backdrop-filter: blur(2px);
+}
+
+/* Ensure companion and panels stay above */
+.companion, .chat-panel {
+  z-index: 9998;
+  position: fixed;
 }
