@@ -16,8 +16,8 @@
     [15, 7, 13, 5]
   ];
 
-  const CELL_W = 9;
-  const CELL_H = 15;
+  const CELL_W = 7;
+  const CELL_H = 13;
 
   let canvas, ctx;
   let cols, rows, width, height;
@@ -33,7 +33,7 @@
       width: 100vw; height: 100vh;
       z-index: 0;
       pointer-events: none;
-      opacity: 0.62;
+      opacity: 0.88;
       background: #08090d;
       image-rendering: pixelated;
     `;
@@ -101,7 +101,7 @@
     ctx.fillStyle = '#08090d';
     ctx.fillRect(0, 0, width, height);
 
-    ctx.font = CELL_H + 'px "JetBrains Mono", "Fira Code", "Cascadia Code", monospace';
+    ctx.font = (CELL_H + 1) + 'px "JetBrains Mono", "Fira Code", "Cascadia Code", monospace';
     ctx.textBaseline = 'top';
 
     for (let y = 0; y < rows; y++) {
@@ -115,7 +115,7 @@
         const idx = Math.floor(dithered * (CHAR_SET.length - 1));
         const char = CHAR_SET[Math.max(0, Math.min(CHAR_SET.length - 1, idx))];
 
-        if (char === ' ') continue;
+        if (char === ' ' && dithered < 0.3) continue;
 
         // Color: Hermes teal gradient based on position and value
         const hue = 168; // teal

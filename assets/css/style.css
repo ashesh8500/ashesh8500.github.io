@@ -8,11 +8,11 @@
 
 /* --- CSS VARIABLES --- */
 :root {
-  --bg-deep: #08090d;
-  --bg-primary: #0d1117;
-  --bg-card: #131820;
-  --bg-card-hover: #1a1f2b;
-  --bg-input: #0a0d14;
+  --bg-deep: rgba(8, 9, 13, 0.55);
+  --bg-primary: rgba(13, 17, 23, 0.5);
+  --bg-card: rgba(19, 24, 32, 0.6);
+  --bg-card-hover: rgba(26, 31, 43, 0.7);
+  --bg-input: rgba(10, 13, 20, 0.7);
   
   --border-subtle: #1e2430;
   --border-accent: #2a3142;
@@ -44,6 +44,11 @@
   
   --max-width: 1100px;
   --nav-height: 56px;
+}
+
+/* Make root element dark so transparent layers composite over the right base */
+html {
+  background: #08090d;
 }
 
 /* --- RESET --- */
