@@ -29,7 +29,7 @@
   --accent-red: #f85149;
   
   --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
-  --font-sans: 'Computer Modern', 'Latin Modern', 'CMU Serif', Georgia, 'Times New Roman', serif;
+  --font-sans: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
   
   --radius-sm: 6px;
   --radius-md: 10px;
@@ -68,7 +68,7 @@ body {
   color: var(--text-primary);
   font-family: var(--font-sans);
   line-height: 1.7;
-  font-size: 16px;
+  font-size: 15px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
@@ -372,7 +372,7 @@ a:hover { color: #00f0c0; }
 }
 
 .about-text {
-  font-size: 16px;
+  font-size: 15px;
   color: var(--text-secondary);
   line-height: 1.8;
 }
@@ -548,7 +548,7 @@ a:hover { color: #00f0c0; }
 
 .edu-degree {
   font-family: var(--font-mono);
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--text-primary);
   margin-bottom: 4px;
