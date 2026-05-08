@@ -1,14 +1,14 @@
 /**
  * ascii-bg.js — Full-page animated ASCII background canvas
- * Dither + ASCII + Motion stack across entire viewport
+ * Dither + ASCII + Motion + Cursor Interaction
  * 
- * A living, breathing ASCII particle-field backdrop that flows behind all
- * page content. Subtle enough to read on top of, beautiful enough to stare at.
- * Neural architecture + LiDAR sensor fusion vibes in Hermes teal.
+ * Computer Modern typeset aesthetic × Hermes teal.
+ * Sparse, elegant particle field that breathes. Not a block — a living backdrop.
+ * Cursor creates a subtle ripple of light through the character field.
  */
 
 (function () {
-  const CHAR_SET = '  .,:-=+*#█▓▒░';
+  const CHAR_SET = '  ·•◦◉○●';
   const BAYER = [
     [0, 8, 2, 10],
     [12, 4, 14, 6],
@@ -17,11 +17,13 @@
   ];
 
   const CELL_W = 7;
-  const CELL_H = 13;
+  const CELL_H = 12;
 
   let canvas, ctx;
   let cols, rows, width, height;
   let time = 0;
+  let mouseX = -100, mouseY = -100;
+  let targetMouseX = -100, targetMouseY = -100;
   let animId;
 
   function init() {
@@ -33,15 +35,17 @@
       width: 100vw; height: 100vh;
       z-index: 0;
       pointer-events: none;
-      opacity: 0.88;
+      opacity: 0.78;
       background: #08090d;
-      image-rendering: pixelated;
+      image-rendering: auto;
     `;
     document.body.prepend(canvas);
 
     ctx = canvas.getContext('2d', { alpha: false });
     resize();
     window.addEventListener('resize', resize);
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseleave', () => { targetMouseX = -100; targetMouseY = -100; });
     animate();
   }
 
@@ -56,52 +60,66 @@
     rows = Math.floor(height / CELL_H);
   }
 
+  function onMouseMove(e) {
+    targetMouseX = e.clientX / CELL_W;
+    targetMouseY = e.clientY / CELL_H;
+  }
+
   function sourceValue(x, y) {
     const mx = cols / 2;
     const my = rows / 2;
     let v = 0;
 
-    // Large-scale Perlin-like organic flow
-    v += Math.sin(x * 0.18 + time * 0.4) * Math.cos(y * 0.12 + time * 0.35) * 0.5;
-    v += Math.cos((x + y) * 0.09 - time * 0.5) * 0.35;
-    v += Math.sin(y * 0.22 - time * 0.3) * 0.25;
+    // Large organic Perlin-like flow — sparse, elegant waves
+    v += Math.sin(x * 0.14 + time * 0.35) * Math.cos(y * 0.1 + time * 0.3) * 0.45;
+    v += Math.cos((x + y) * 0.07 - time * 0.4) * 0.3;
 
-    // Neural layer alignment pulses (horizontal bands)
-    const layerPhase = Math.sin(time * 0.25);
-    for (let layer = 0; layer < 5; layer++) {
-      const layerY = my - 12 + layer * 6 + layerPhase * 8;
+    // Neural layer alignment — gentle horizontal bands
+    const layerPhase = Math.sin(time * 0.2);
+    for (let layer = 0; layer < 4; layer++) {
+      const layerY = my - 14 + layer * 7 + layerPhase * 10;
       const distToLayer = Math.abs(y - layerY);
       if (distToLayer < 5) {
-        v += (1 - distToLayer / 5) * 0.35 * (0.6 + 0.4 * Math.sin(time * 2 + layer));
+        v += (1 - distToLayer / 5) * 0.28 * (0.5 + 0.5 * Math.sin(time * 1.5 + layer * 0.8));
       }
     }
 
-    // LiDAR radial sweep (rotating point cloud density)
+    // LiDAR radial sweep
     const dx = x - mx;
     const dy = y - my;
     const dist = Math.sqrt(dx * dx + dy * dy);
     const angle = Math.atan2(dy, dx);
-    const sweepAngle = (time * 0.4) % (Math.PI * 2);
+    const sweepAngle = (time * 0.3) % (Math.PI * 2);
     const angleDist = Math.min(Math.abs(angle - sweepAngle), Math.PI * 2 - Math.abs(angle - sweepAngle));
-    if (dist < 18 && angleDist < 0.6) {
-      v += (1 - angleDist / 0.6) * (1 - dist / 18) * 0.4;
+    if (dist < 16 && angleDist < 0.5) {
+      v += (1 - angleDist / 0.5) * (1 - dist / 16) * 0.35;
     }
-    // Point cloud dots
-    v += (1 - dist / 24) * 0.15 * (0.7 + 0.3 * Math.sin(dist * 1.5 - time * 2));
+    v += (1 - dist / 22) * 0.1 * (0.6 + 0.4 * Math.sin(dist * 1.2 - time * 1.8));
 
-    // Particle swarm: organic micro-motion
-    v += Math.sin(x * 0.8 + y * 0.6 + time * 1.2) * 0.12;
-    v += Math.cos(x * 0.45 - y * 0.35 + time * 0.9) * 0.1;
+    // Micro particle motion
+    v += Math.sin(x * 0.7 + y * 0.5 + time * 1.0) * 0.08;
+    v += Math.cos(x * 0.4 - y * 0.3 + time * 0.7) * 0.06;
 
-    // Normalize to 0-1
-    return Math.max(0, Math.min(1, v * 0.65 + 0.35));
+    // Cursor interaction — gentle ripple of light
+    const mdx = x - mouseX;
+    const mdy = y - mouseY;
+    const mouseDist = Math.sqrt(mdx * mdx + mdy * mdy);
+    if (mouseDist < 16) {
+      v += (1 - mouseDist / 16) * 0.35;
+    }
+
+    return Math.max(0, Math.min(1, v * 0.55 + 0.28));
   }
 
   function draw() {
+    // Smooth mouse follow
+    mouseX += (targetMouseX - mouseX) * 0.12;
+    mouseY += (targetMouseY - mouseY) * 0.12;
+
     ctx.fillStyle = '#08090d';
     ctx.fillRect(0, 0, width, height);
 
-    ctx.font = (CELL_H + 1) + 'px "JetBrains Mono", "Fira Code", "Cascadia Code", monospace';
+    ctx.font = CELL_H + 'px "JetBrains Mono", "Fira Code", monospace';
     ctx.textBaseline = 'top';
 
     for (let y = 0; y < rows; y++) {
@@ -111,17 +129,25 @@
 
         // Bayer dither
         const bayerVal = BAYER[y % 4][x % 4] / 16;
-        const dithered = brightness + (bayerVal - 0.5) * 0.55;
+        const dithered = brightness + (bayerVal - 0.5) * 0.5;
         const idx = Math.floor(dithered * (CHAR_SET.length - 1));
         const char = CHAR_SET[Math.max(0, Math.min(CHAR_SET.length - 1, idx))];
 
-        if (char === ' ' && dithered < 0.3) continue;
+        // Sparse: skip very dim characters
+        if (char === ' ' && dithered < 0.35) continue;
 
-        // Color: Hermes teal gradient based on position and value
-        const hue = 168; // teal
-        const sat = 55 + brightness * 30;
-        const light = 18 + idx * 5.5 + brightness * 8;
-        ctx.fillStyle = `hsl(${hue}, ${sat}%, ${light}%)`;
+        // Color: Hermes teal, brightness-mapped
+        const hue = 170;
+        const sat = 45 + brightness * 35;
+        const light = 15 + idx * 4.5 + brightness * 6;
+
+        // Cursor proximity boosts lightness
+        const mdx = x - mouseX;
+        const mdy = y - mouseY;
+        const cursorDist = Math.sqrt(mdx * mdx + mdy * mdy);
+        const cursorBoost = cursorDist < 14 ? (1 - cursorDist / 14) * 18 : 0;
+
+        ctx.fillStyle = `hsl(${hue}, ${sat}%, ${light + cursorBoost}%)`;
 
         const px = x * CELL_W;
         ctx.fillText(char, px, py);
@@ -136,7 +162,6 @@
     animId = requestAnimationFrame(draw);
   }
 
-  // Wait for DOM + fonts
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
