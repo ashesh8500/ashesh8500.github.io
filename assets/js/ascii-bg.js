@@ -1,31 +1,27 @@
 /**
- * ascii-bg.js — Flower blooming in photorealistic shaded ASCII dither
- * V6: Single smooth visual flow — a flower blooming, living in the background canvas.
- * 8-petal flower, stem, leaves, floating pollen. Subtle teal, no glow.
- * High particle density for shaded photorealistic dither effect.
- *
- * The entire visual experience lives here. No separate hero panel needed.
+ * ascii-bg.js — Photorealistic flower dither animation
+ * V8: Offscreen procedural orchid → Floyd-Steinberg dither → scaled dot rendering.
+ * Purple/violet halftone aesthetic. Dots rendered directly — no character grid loss.
  */
 (function () {
-  var CHAR_SET = ' .:-=+*#%@█▓▒░';
-  var BAYER = [
-    [0, 8, 2, 10],
-    [12, 4, 14, 6],
-    [3, 11, 1, 9],
-    [15, 7, 13, 5]
-  ];
-
-  var CELL_W = 6;
-  var CELL_H = 11;
+  var CELL_W = 5;
+  var CELL_H = 10;
+  var OFF_W = 600;
+  var OFF_H = 840;
+  var DITHER_SKIP = 3;
 
   var canvas, ctx;
+  var offCanvas, offCtx;
+  var ditherCanvas, ditherCtx;
   var cols, rows, width, height;
   var time = 0;
   var mouseX = -100, mouseY = -100;
   var targetMouseX = -100, targetMouseY = -100;
   var animId;
+  var frameSkip = 0;
+  var ditherImgData = null; // cached ImageData for the dithered output
 
-  // Pollen particles
+  // Pollen particles (rendered separately)
   var pollen = [];
 
   function init() {
@@ -33,12 +29,23 @@
     canvas.id = 'ascii-bg-canvas';
     canvas.style.cssText = [
       'position:fixed;top:0;left:0;width:100vw;height:100vh;',
-      'z-index:0;pointer-events:none;opacity:0.72;',
-      'background:#08090d;image-rendering:auto;'
+      'z-index:0;pointer-events:none;opacity:0.82;',
+      'background:#08090d;image-rendering:pixelated;'
     ].join('');
     document.body.prepend(canvas);
 
     ctx = canvas.getContext('2d', { alpha: false });
+
+    offCanvas = document.createElement('canvas');
+    offCanvas.width = OFF_W;
+    offCanvas.height = OFF_H;
+    offCtx = offCanvas.getContext('2d', { alpha: true });
+
+    ditherCanvas = document.createElement('canvas');
+    ditherCanvas.width = OFF_W;
+    ditherCanvas.height = OFF_H;
+    ditherCtx = ditherCanvas.getContext('2d');
+
     resize();
     window.addEventListener('resize', resize);
     document.addEventListener('mousemove', onMouseMove);
@@ -46,21 +53,28 @@
       targetMouseX = -100; targetMouseY = -100;
     });
 
-    // Seed pollen
-    for (var i = 0; i < 40; i++) {
-      pollen.push({
-        x: (0.3 + Math.random() * 0.4) * 0, // will be set per frame
-        y: 0,
-        vx: (Math.random() - 0.5) * 0.3,
-        vy: -0.2 - Math.random() * 0.5,
-        life: Math.random(),
-        char: CHAR_SET[1 + Math.floor(Math.random() * 4)]
-      });
+    for (var i = 0; i < 50; i++) {
+      pollen.push(spawnPollen());
     }
 
-    // Seed initial time for a nice bloom state on load
-    time = 55; // near full bloom
+    time = 55;
     animate();
+  }
+
+  function spawnPollen(flowerCX, flowerCY, flowerR) {
+    var cx = flowerCX || OFF_W / 2;
+    var cy = flowerCY || OFF_H * 0.22;
+    var r = flowerR || 120;
+    var angle = Math.random() * Math.PI * 2;
+    var dist = r * (0.3 + Math.random() * 1.2);
+    return {
+      x: cx + Math.cos(angle) * dist,
+      y: cy + Math.sin(angle) * dist,
+      vx: (Math.random() - 0.5) * 0.25,
+      vy: -0.2 - Math.random() * 0.6,
+      life: 0.3 + Math.random() * 0.9,
+      size: 0.5 + Math.random() * 1.2
+    };
   }
 
   function resize() {
@@ -72,6 +86,8 @@
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     cols = Math.floor(width / CELL_W);
     rows = Math.floor(height / CELL_H);
+    // Force re-dither on next frame
+    ditherImgData = null;
   }
 
   function onMouseMove(e) {
@@ -81,275 +97,324 @@
 
   function clamp(v) { return Math.max(0, Math.min(1, v)); }
 
-  function circle(x, y, cx, cy, r) {
-    var d = Math.sqrt((x-cx)*(x-cx) + (y-cy)*(y-cy));
-    return d < r ? clamp(1 - d/r) : 0;
+  // ─── OFFSCREEN FLOWER RENDERING ──────────────────────────
+
+  function drawPetal(cx, cy, angle, length, width, color1, color2, color3) {
+    offCtx.save();
+    offCtx.translate(cx, cy);
+    offCtx.rotate(angle);
+
+    var hw = width / 2;
+    var baseW = hw * 0.35;
+    var tipW = hw * 0.15;
+
+    offCtx.beginPath();
+    offCtx.moveTo(baseW * -1, -2);
+    offCtx.bezierCurveTo(-hw * 0.9, length * 0.15, -hw * 0.95, length * 0.55, -tipW, length * 0.82);
+    offCtx.bezierCurveTo(-tipW * 0.3, length * 0.95, tipW * 0.3, length * 0.95, tipW, length * 0.82);
+    offCtx.bezierCurveTo(hw * 0.95, length * 0.55, hw * 0.9, length * 0.15, baseW, -2);
+    offCtx.closePath();
+
+    var grad = offCtx.createLinearGradient(0, -2, 0, length * 0.85);
+    grad.addColorStop(0, color1);
+    grad.addColorStop(0.25, color2);
+    grad.addColorStop(0.55, color3);
+    grad.addColorStop(0.85, color2);
+    grad.addColorStop(1, color3);
+    offCtx.fillStyle = grad;
+    offCtx.fill();
+
+    offCtx.restore();
   }
 
-  function line(x, y, x1, y1, x2, y2, w) {
-    var dx = x2-x1, dy = y2-y1;
-    var len = Math.sqrt(dx*dx+dy*dy);
-    if (len < 0.01) return circle(x,y,x1,y1,w);
-    var t = clamp(((x-x1)*dx + (y-y1)*dy) / (len*len));
-    var px = x1 + t*dx, py = y1 + t*dy;
-    var d = Math.sqrt((x-px)*(x-px) + (y-py)*(y-py));
-    return d < w ? clamp(1 - d/w) : 0;
+  function drawLip(cx, cy, angle, length, width, color1, color2, color3) {
+    offCtx.save();
+    offCtx.translate(cx, cy);
+    offCtx.rotate(angle);
+
+    var hw = width / 2;
+    offCtx.beginPath();
+    offCtx.moveTo(-hw * 0.3, -2);
+    offCtx.bezierCurveTo(-hw * 0.7, length * 0.1, -hw * 1.1, length * 0.35, -hw * 0.95, length * 0.5);
+    offCtx.bezierCurveTo(-hw * 0.8, length * 0.6, -hw * 0.4, length * 0.55, -hw * 0.15, length * 0.6);
+    offCtx.bezierCurveTo(-hw * 0.05, length * 0.5, hw * 0.05, length * 0.5, hw * 0.15, length * 0.6);
+    offCtx.bezierCurveTo(hw * 0.4, length * 0.55, hw * 0.8, length * 0.6, hw * 0.95, length * 0.5);
+    offCtx.bezierCurveTo(hw * 1.1, length * 0.35, hw * 0.7, length * 0.1, hw * 0.3, -2);
+    offCtx.closePath();
+
+    var grad = offCtx.createLinearGradient(0, -2, 0, length * 0.65);
+    grad.addColorStop(0, color1);
+    grad.addColorStop(0.2, color2);
+    grad.addColorStop(0.5, color3);
+    grad.addColorStop(1, color3);
+    offCtx.fillStyle = grad;
+    offCtx.fill();
+
+    offCtx.restore();
   }
 
-  function softCircle(x, y, cx, cy, r, hard) {
-    var d = Math.sqrt((x-cx)*(x-cx) + (y-cy)*(y-cy));
-    if (d > r * 1.4) return 0;
-    var t = d / r;
-    return clamp(Math.exp(-t * t * (hard || 3)) * 0.8);
-  }
+  function renderFlower(bloom, breathing, sway) {
+    offCtx.clearRect(0, 0, OFF_W, OFF_H);
+    offCtx.fillStyle = '#08090d';
+    offCtx.fillRect(0, 0, OFF_W, OFF_H);
 
-  // ─── FLOWER ──────────────────────────────────────────────
+    var fx = OFF_W / 2 + sway * 0.4;
+    var fy = OFF_H * 0.22; // bloom in upper third, above hero card
+    var scale = 1 + breathing * 0.04;
 
-  /**
-   * Full flower density field — petals, center, stem, leaves, ground.
-   * bloom: 0 (closed bud) → 1 (fully open).
-   * sway: gentle horizontal offset from wind.
-   */
-  function flowerDensity(x, y, bloom, sway) {
-    var v = 0;
-    var N = 8;
+    var petLen = 82 + bloom * 142;
+    var petWid = 27 + bloom * 45;
 
-    // Flower position — lower-center of screen
-    var fx = cols / 2 + sway;
-    var fy = rows * 0.42; // upper half
+    var darkP  = 'rgba(55,20,90,1.0)';
+    var midP   = 'rgba(130,80,190,1.0)';
+    var lightP = 'rgba(200,160,240,1.0)';
+    var lightP2 = 'rgba(225,195,255,1.0)';
+    var darkL  = 'rgba(60,25,95,1.0)';
+    var midL   = 'rgba(145,90,200,1.0)';
+    var lightL = 'rgba(210,170,245,1.0)';
 
-    var petalLen = 4 + bloom * 17;
-    var petalWid = 0.8 + bloom * 2.8;
-    var spreadAngle = (1 - bloom) * 0.70; // tight when closed, wide when open
+    offCtx.save();
+    offCtx.translate(fx, fy);
+    offCtx.scale(scale, scale);
+    offCtx.translate(-fx, -fy);
 
-    // ── Petals ──
-    for (var i = 0; i < N; i++) {
-      var baseAngle = -Math.PI / 2 + (i / N) * Math.PI * 2; // top petal first
-      var angle = baseAngle + (i - N/2) * spreadAngle * 0.15;
+    // Back petals
+    drawPetal(fx, fy, -Math.PI/2, petLen * 0.95, petWid * 0.9, darkP, midP, lightP2);
+    drawPetal(fx, fy, -Math.PI/2 + 0.25, petLen * 0.7, petWid * 0.6, darkP, midP, lightP);
+    drawPetal(fx, fy, -Math.PI/2 - 0.25, petLen * 0.7, petWid * 0.6, darkP, midP, lightP);
 
-      // Petal ellipse center (offset outward from flower center)
-      var pcx = fx + Math.cos(angle) * petalLen * 0.35;
-      var pcy = fy + Math.sin(angle) * petalLen * 0.35;
-      var prx = petalLen * 0.52;
-      var pry = petalWid;
+    // Lateral petals
+    drawPetal(fx, fy, -1.2, petLen * 0.85, petWid * 1.05, darkP, midP, lightP);
+    drawPetal(fx, fy, 1.2 - Math.PI, petLen * 0.85, petWid * 1.05, darkP, midP, lightP);
 
-      // Rotate into petal local coords
-      var dx = x - pcx;
-      var dy = y - pcy;
-      var cosA = Math.cos(-angle);
-      var sinA = Math.sin(-angle);
-      var lx = dx * cosA - dy * sinA; // along petal length
-      var ly = dx * sinA + dy * cosA; // across petal width
+    // Front petals
+    drawPetal(fx, fy, -0.75, petLen * 0.8, petWid * 0.9, darkP, midP, lightP2);
+    drawPetal(fx, fy, 0.75 - Math.PI, petLen * 0.8, petWid * 0.9, darkP, midP, lightP2);
 
-      var ed = Math.sqrt((lx*lx)/(prx*prx) + (ly*ly)/(pry*pry));
-      if (ed < 1.05) {
-        // 3D shading: brighter toward tip (+lx), darker at base (-lx)
-        // Also darker at edges (|ly| large)
-        var tipShade = clamp((lx / prx + 0.8) * 0.65); // 0.15 at base, 0.85 at tip
-        var edgeShade = 1 - Math.abs(ly) / pry * 0.4; // 0.6 at edge, 1.0 at center
-        var shade = tipShade * edgeShade;
-        var falloff = ed < 1 ? (1 - ed) : (1 - (ed - 1) / 0.05) * 0.3;
-        v += Math.max(0, falloff * shade * 0.95);
-      }
-    }
+    // Lip
+    drawLip(fx, fy + 18, Math.PI/2 + 0.15, petLen * 0.5, petWid * 1.3, darkL, midL, lightL);
 
-    // ── Flower center (dense, darker) ──
-    var centerR = 1.5 + bloom * 2.0;
-    v += circle(x, y, fx, fy, centerR) * 0.65;
+    // Column
+    offCtx.save();
+    offCtx.translate(fx, fy - 12);
+    offCtx.rotate(-Math.PI/2);
+    offCtx.beginPath();
+    offCtx.ellipse(0, petLen * 0.25 * 0.35, petWid * 0.32 * 0.55, petLen * 0.25 * 0.4, 0, 0, Math.PI * 2);
+    var colGrad = offCtx.createLinearGradient(0, 0, 0, petLen * 0.25 * 0.7);
+    colGrad.addColorStop(0, 'rgba(100,45,140,1.0)');
+    colGrad.addColorStop(0.5, 'rgba(140,80,185,1.0)');
+    colGrad.addColorStop(1, 'rgba(185,130,225,1.0)');
+    offCtx.fillStyle = colGrad;
+    offCtx.fill();
+    offCtx.beginPath();
+    offCtx.arc(0, 0, petWid * 0.3 * 0.25, 0, Math.PI * 2);
+    offCtx.fillStyle = 'rgba(235,210,255,0.9)';
+    offCtx.fill();
+    offCtx.restore();
 
-    // Inner ring (slightly brighter)
-    v += circle(x, y, fx, fy, centerR * 0.55) * 0.30;
+    // Stem
+    var stemTop = fy + petLen * 0.45;
+    var stemLen = OFF_H * 0.30; // shortened to avoid hero card
+    offCtx.beginPath();
+    offCtx.moveTo(fx - 3 + sway * 0.2, stemTop);
+    offCtx.bezierCurveTo(fx - 1 + sway * 0.3, stemTop + stemLen * 0.3, fx - 2 + sway * 0.5, stemTop + stemLen * 0.7, fx + sway * 0.6, stemTop + stemLen);
+    offCtx.lineWidth = 7;
+    offCtx.strokeStyle = 'rgba(80,40,120,0.9)';
+    offCtx.stroke();
 
-    // ── Stem ──
-    var stemTop = fy + centerR + 1;
-    var stemLen = 18 + bloom * 6;
-    var stemBot = stemTop + stemLen;
-    // Gentle curve
-    var stemMidX = fx + sway * 0.4;
-    v += line(x, y, fx, stemTop, stemMidX, stemTop + stemLen * 0.5, 1.2) * 0.45;
-    v += line(x, y, stemMidX, stemTop + stemLen * 0.5, fx + sway * 0.6, stemBot, 1.1) * 0.42;
+    // Stem highlight
+    offCtx.beginPath();
+    offCtx.moveTo(fx - 2 + sway * 0.2, stemTop);
+    offCtx.bezierCurveTo(fx + sway * 0.3, stemTop + stemLen * 0.3, fx - 1 + sway * 0.5, stemTop + stemLen * 0.7, fx - 1 + sway * 0.6, stemTop + stemLen);
+    offCtx.lineWidth = 2.7;
+    offCtx.strokeStyle = 'rgba(140,100,190,0.55)';
+    offCtx.stroke();
 
-    // ── Leaves ──
+    // Leaves
     for (var l = 0; l < 2; l++) {
-      var ly = stemTop + 4 + l * 7;
+      var lx = fx + sway * 0.3;
+      var ly = stemTop + 27 + l * 45;
       var sign = l === 0 ? 1 : -1;
-      var leafCx = fx + sway * 0.3 + sign * 5;
-      var leafCy = ly;
-      var leafRx = 5.5;
-      var leafRy = 1.8;
-      var leafAngle = sign * 0.6;
+      offCtx.save();
+      offCtx.translate(lx, ly);
+      offCtx.rotate(sign * 0.55);
+      offCtx.beginPath();
+      offCtx.ellipse(sign * 27, 0, 45, 10, 0, 0, Math.PI * 2);
+      var leafGrad = offCtx.createLinearGradient(sign * 27, -10, sign * 27, 10);
+      leafGrad.addColorStop(0, 'rgba(70,35,100,0.95)');
+      leafGrad.addColorStop(0.4, 'rgba(110,70,150,0.85)');
+      leafGrad.addColorStop(0.7, 'rgba(90,55,130,0.80)');
+      leafGrad.addColorStop(1, 'rgba(55,30,85,0.95)');
+      offCtx.fillStyle = leafGrad;
+      offCtx.fill();
+      offCtx.beginPath();
+      offCtx.moveTo(sign * -18, 0);
+      offCtx.lineTo(sign * 72, 0);
+      offCtx.lineWidth = 1.0;
+      offCtx.strokeStyle = 'rgba(130,90,180,0.5)';
+      offCtx.stroke();
+      offCtx.restore();
+    }
 
-      var ldx = x - leafCx;
-      var ldy = y - leafCy;
-      var lcos = Math.cos(-leafAngle);
-      var lsin = Math.sin(-leafAngle);
-      var llx = ldx * lcos - ldy * lsin;
-      var lly = ldx * lsin + ldy * lcos;
+    // Ground
+    var groundY = stemTop + stemLen + 5;
+    var grdGrad = offCtx.createLinearGradient(0, groundY - 8, 0, groundY + 15);
+    grdGrad.addColorStop(0, 'rgba(8,9,13,0)');
+    grdGrad.addColorStop(0.3, 'rgba(30,20,50,0.35)');
+    grdGrad.addColorStop(1, 'rgba(8,9,13,0)');
+    offCtx.fillStyle = grdGrad;
+    offCtx.fillRect(0, groundY - 8, OFF_W, 23);
 
-      var led = Math.sqrt((llx*llx)/(leafRx*leafRx) + (lly*lly)/(leafRy*leafRy));
-      if (led < 1) {
-        // Leaf vein — brighter center line
-        var veinBoost = Math.abs(lly) < 0.7 ? 0.5 : 0;
-        v += (1 - led) * (0.35 + veinBoost) * 0.9;
+    offCtx.fillStyle = 'rgba(130,90,170,0.3)';
+    for (var g = 0; g < 12; g++) {
+      var gx = fx - 45 + g * 8 + Math.sin(g * 1.3) * 5;
+      offCtx.beginPath();
+      offCtx.arc(gx, groundY + Math.random() * 6, 1 + Math.random() * 1.5, 0, Math.PI * 2);
+      offCtx.fill();
+    }
+  }
+
+  // ─── FLOYD-STEINBERG DITHERING ───────────────────────────
+
+  function computeDither() {
+    var imgData = offCtx.getImageData(0, 0, OFF_W, OFF_H);
+    var pixels = imgData.data;
+    var len = OFF_W * OFF_H;
+
+    var gray = new Float32Array(len);
+    for (var i = 0; i < len; i++) {
+      var r = pixels[i * 4];
+      var g = pixels[i * 4 + 1];
+      var b = pixels[i * 4 + 2];
+      var a = pixels[i * 4 + 3] / 255;
+      gray[i] = (0.299 * r + 0.587 * g + 0.114 * b) / 255 * a;
+    }
+
+    // Build ImageData for dither output
+    var dithData = ditherCtx.createImageData(OFF_W, OFF_H);
+
+    for (var y = 0; y < OFF_H; y++) {
+      for (var x = 0; x < OFF_W; x++) {
+        var idx = y * OFF_W + x;
+        var old = gray[idx];
+        var isOn = old > 0.15 ? 1 : 0;
+        var error = old - isOn;
+
+        // Purple color for "on" dots, dark for "off"
+        if (isOn) {
+          // Brighter purple palette
+          var bright = Math.min(1, old * 1.5);
+          var r = Math.floor(110 + bright * 130);
+          var g = Math.floor(45 + bright * 110);
+          var b = Math.floor(155 + bright * 100);
+          dithData.data[idx * 4] = r;
+          dithData.data[idx * 4 + 1] = g;
+          dithData.data[idx * 4 + 2] = b;
+          dithData.data[idx * 4 + 3] = 255;
+        } else {
+          dithData.data[idx * 4] = 8;
+          dithData.data[idx * 4 + 1] = 9;
+          dithData.data[idx * 4 + 2] = 13;
+          dithData.data[idx * 4 + 3] = 255;
+        }
+
+        // Distribute error
+        var e7 = error * 7 / 16;
+        var e3 = error * 3 / 16;
+        var e5 = error * 5 / 16;
+        var e1 = error * 1 / 16;
+        if (x + 1 < OFF_W)         gray[idx + 1]         += e7;
+        if (y + 1 < OFF_H) {
+          if (x - 1 >= 0)           gray[idx + OFF_W - 1] += e3;
+                                    gray[idx + OFF_W]     += e5;
+          if (x + 1 < OFF_W)        gray[idx + OFF_W + 1] += e1;
+        }
       }
     }
-
-    // ── Ground ──
-    var groundY = stemBot + 2;
-    if (Math.abs(y - groundY) < 1.8) {
-      v += (1 - Math.abs(y - groundY) / 1.8) * 0.22;
-    }
-    // Ground texture dots
-    for (var g = 0; g < 6; g++) {
-      var gx = fx - 15 + g * 6 + Math.sin(g * 1.7) * 3;
-      v += softCircle(x, y, gx, groundY + 1, 2.5, 2) * 0.18;
-    }
-
-    return clamp(v);
+    return dithData;
   }
 
-  // ─── POLLEN ──────────────────────────────────────────────
-
-  function updatePollen(bloom, sway) {
-    var fx = cols / 2 + sway;
-    var fy = rows * 0.42;
-
-    for (var i = 0; i < pollen.length; i++) {
-      var p = pollen[i];
-      p.life -= 0.003;
-      p.x += p.vx;
-      p.y += p.vy;
-      p.vx += (Math.random() - 0.5) * 0.04;
-      p.vy += -0.003; // slight upward buoyancy
-
-      // Wind sway
-      p.vx += 0.001 * (sway / 3);
-
-      if (p.life <= 0 || p.y < -5 || p.y > rows + 5 || p.x < -5 || p.x > cols + 5) {
-        // Respawn near flower
-        p.x = fx + (Math.random() - 0.5) * 8;
-        p.y = fy + (Math.random() - 0.5) * 6;
-        p.vx = (Math.random() - 0.5) * 0.3 + 0.002 * sway;
-        p.vy = -0.15 - Math.random() * 0.5;
-        p.life = 0.5 + Math.random() * 0.8;
-        p.char = CHAR_SET[1 + Math.floor(Math.random() * 3)];
-      }
-    }
-  }
-
-  // ─── AMBIENT BACKGROUND ──────────────────────────────────
-
-  /**
-   * Subtle environmental texture — soft ground, faint atmosphere,
-   * gentle vignette. No competing structures — the flower is the star.
-   */
-  function ambientDensity(x, y) {
-    var v = 0;
-    var mx = cols / 2;
-    var my = rows / 2;
-
-    // Very faint ground gradient
-    var groundLevel = rows * 0.72;
-    if (y > groundLevel - 8 && y < groundLevel + 4) {
-      var gd = (y - groundLevel) / 8;
-      v += Math.exp(-gd * gd * 2) * 0.12;
-    }
-
-    // Faint atmospheric haze — slightly brighter in center
-    var dxc = x - mx;
-    var dyco = y - my;
-    var dc = Math.sqrt(dxc*dxc + dyco*dyco);
-    v += Math.exp(-dc / 30) * 0.08;
-
-    // Faint vertical light rays from flower
-    var fx = mx;
-    var fy = rows * 0.42;
-    var fdx = Math.abs(x - fx);
-    if (y < fy && fdx < 8) {
-      v += (1 - fdx/8) * (1 - y/fy) * 0.10;
-    }
-
-    return clamp(v);
-  }
-
-  // ─── RENDER ──────────────────────────────────────────────
+  // ─── RENDER TO MAIN CANVAS ───────────────────────────────
 
   function draw() {
     mouseX += (targetMouseX - mouseX) * 0.10;
     mouseY += (targetMouseY - mouseY) * 0.10;
 
-    // Bloom cycle: slow sine wave, ~12s per cycle
-    var bloomRaw = Math.sin(time * 0.085) * 0.5 + 0.5;
-    // Smooth easing — spend more time fully open
+    var bloomRaw = Math.sin(time * 0.07) * 0.5 + 0.5;
     var bloom = bloomRaw < 0.5
       ? 2 * bloomRaw * bloomRaw
       : 1 - Math.pow(-2 * bloomRaw + 2, 2) / 2;
 
-    // Gentle sway
-    var sway = Math.sin(time * 0.12) * 2.5 + Math.sin(time * 0.07) * 1.5;
+    var breathing = Math.sin(time * 0.18) * 0.5 + 0.5;
+    var sway = Math.sin(time * 0.09) * 3 + Math.sin(time * 0.055) * 2;
 
-    updatePollen(bloom, sway);
+    // Re-dither every N frames
+    if (ditherImgData === null || frameSkip % DITHER_SKIP === 0) {
+      renderFlower(bloom, breathing, sway);
+      ditherImgData = computeDither();
+    }
+    frameSkip++;
 
+    // Clear and draw dither image scaled to fill
     ctx.fillStyle = '#08090d';
     ctx.fillRect(0, 0, width, height);
 
-    ctx.font = (CELL_H - 1) + 'px "JetBrains Mono", "Fira Code", "Courier New", monospace';
-    ctx.textBaseline = 'top';
+    // Draw dithered flower centered, scaled to maintain aspect ratio
+    var scaleX = width / OFF_W;
+    var scaleY = height / OFF_H;
+    var scale = Math.min(scaleX, scaleY * 1.05);
+    var dw = OFF_W * scale;
+    var dh = OFF_H * scale;
+    var dx = (width - dw) / 2;
+    var dy = (height - dh) / 2;
 
-    for (var y = 0; y < rows; y++) {
-      var py = y * CELL_H;
-      for (var x = 0; x < cols; x++) {
-        // Combine flower + ambient densities
-        var fd = flowerDensity(x, y, bloom, sway);
-        var ad = ambientDensity(x, y);
-        var d = Math.max(fd, ad * 0.6);
+    // Put dither data onto dither canvas, then draw scaled
+    ditherCtx.putImageData(ditherImgData, 0, 0);
+    ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(ditherCanvas, 0, 0, OFF_W, OFF_H, dx, dy, dw, dh);
 
-        // Pollen contribution
-        for (var pi = 0; pi < pollen.length; pi++) {
-          var p = pollen[pi];
-          var pdx = x - p.x;
-          var pdy = y - p.y;
-          var pdist = Math.sqrt(pdx*pdx + pdy*pdy);
-          if (pdist < 2.5) {
-            d += (1 - pdist/2.5) * p.life * 0.5;
-          }
-        }
+    // ── Render pollen as soft glowing dots ──
+    var offFX = OFF_W / 2 + sway * 0.4;
+    var offFY = OFF_H * 0.22;
+    for (var pi = 0; pi < pollen.length; pi++) {
+      var pp = pollen[pi];
+      pp.life -= 0.002;
+      pp.x += pp.vx;
+      pp.y += pp.vy;
+      pp.vx += (Math.random() - 0.5) * 0.04;
+      pp.vy += -0.002;
+      pp.vx += 0.0008 * (sway / 3);
 
-        // Edge vignette
-        var edgeDist = Math.min(x, y, cols - x - 1, rows - y - 1);
-        var vignette = Math.min(1, edgeDist / 5);
-        d *= 0.5 + vignette * 0.5;
-
-        // Bayer dither — lower threshold = more particles = richer shading
-        var bayerVal = BAYER[y % 4][x % 4] / 16;
-        var threshold = 0.22 + bayerVal * 0.09;
-        var dithered = d + (bayerVal - 0.5) * 0.16;
-
-        if (dithered < threshold) continue;
-
-        var range = 1 - threshold;
-        var t = (dithered - threshold) / range;
-        var idx = Math.floor(t * (CHAR_SET.length - 1));
-        idx = Math.max(1, Math.min(CHAR_SET.length - 1, idx));
-        var char = CHAR_SET[idx];
-
-        // Subtle teal color — muted, no glow
-        var hue = 170;
-        var sat = 22 + t * 18;    // 22-40% saturation
-        var light = 15 + t * 12;  // 15-27% lightness
-
-        // Cursor proximity — subtle brightening
-        var mdx = x - mouseX;
-        var mdy = y - mouseY;
-        var cursorDist = Math.sqrt(mdx*mdx + mdy*mdy);
-        var cursorBoost = cursorDist < 10 ? (1 - cursorDist/10) * 10 : 0;
-
-        ctx.fillStyle = 'hsl(' + hue + ', ' + sat + '%, ' + (light + cursorBoost) + '%)';
-        ctx.fillText(char, x * CELL_W, py);
+      if (pp.life <= 0 || pp.y < -10 || pp.y > OFF_H + 10 || pp.x < -10 || pp.x > OFF_W + 10) {
+        var fresh = spawnPollen(offFX, offFY, 120);
+        pp.x = fresh.x;
+        pp.y = fresh.y;
+        pp.vx = fresh.vx;
+        pp.vy = fresh.vy;
+        pp.life = fresh.life;
       }
+
+      // Map pollen position from offscreen coords to screen coords
+      var sx = dx + (pp.x / OFF_W) * dw;
+      var sy = dy + (pp.y / OFF_H) * dh;
+      var alpha = pp.life * 0.5;
+      if (alpha < 0.02) continue;
+
+      ctx.fillStyle = 'rgba(200,160,240,' + alpha + ')';
+      ctx.beginPath();
+      ctx.arc(sx, sy, pp.size * 1.5 * scale, 0, Math.PI * 2);
+      ctx.fill();
     }
 
-    time += 0.018;
+    // ── Subtle edge vignette overlay ──
+    var vignetteGrad = ctx.createRadialGradient(width/2, height/2, width * 0.3, width/2, height/2, width * 0.8);
+    vignetteGrad.addColorStop(0, 'rgba(0,0,0,0)');
+    vignetteGrad.addColorStop(0.75, 'rgba(0,0,0,0)');
+    vignetteGrad.addColorStop(1, 'rgba(8,9,13,0.4)');
+    ctx.fillStyle = vignetteGrad;
+    ctx.fillRect(0, 0, width, height);
+
+    time += 0.016;
     animId = requestAnimationFrame(draw);
   }
 
