@@ -1,22 +1,29 @@
 /**
- * companion.js — Video-game-style AI companion for Ashesh Kaji's web world
- * 
- * A floating avatar that lives alongside the user as they scroll.
- * Expands into a chat panel. Supports local Bonsai (WebGPU) and
- * DeepSeek V4 Flash (API proxy) with an inference toggle switch.
- * 
+ * companion.js - floating site assistant for Ashesh Kaji's personal site
+ *
+ * A floating dither orb that expands into a chat panel. Supports local
+ * Bonsai or the remote DeepSeek proxy.
+ *
  * States: idle, listening, thinking, speaking, error
  */
 
 const COMPANION = {};
 const DEEPSEEK_ENDPOINT = "https://deepseek-proxy.ashesh8500.workers.dev";
 const DEEPSEEK_MODEL = "deepseek-v4-flash"; // DeepSeek V4 Flash (fast, 284B total / 13B active params)
+const ORB_CHARS = "  ..::ilLCG0@";
+const ORB_BAYER = [
+  [0, 8, 2, 10],
+  [12, 4, 14, 6],
+  [3, 11, 1, 9],
+  [15, 7, 13, 5],
+];
 
 const PROFILE_CONTEXT = `
-You are a browser-local demo assistant on Ashesh Kaji's personal website.
-You are not Ashesh. Answer only from this factual profile context and from the visible website content.
-If asked about something not present here, say clearly that you do not know from the available website context.
+You answer as Ashesh Kaji in first person on Ashesh Kaji's personal website.
+Answer only from this factual profile context and from the visible website content.
+If asked about something not present here, say clearly that I do not know from the published site context.
 Do not invent roles, achievements, publications, links, dates, or personal facts.
+Keep answers concise and factual.
 
 ── Profile ──
 Name: Ashesh Kaji
@@ -65,12 +72,12 @@ Specialized: FPGA/hardware design, ZKP accelerators, WebAssembly, ONNX/WebGPU in
 ── This website ──
 - Built with vanilla HTML/CSS/JS — no frameworks, no build step
 - Hosted on GitHub Pages with custom domain asheshkaji.com
-- Floating AI companion (this chat) supports local Bonsai 1.7B (WebGPU) and remote DeepSeek V4 Flash (API, proxied via Cloudflare Worker)
+- Floating site assistant supports local Bonsai 1.7B (WebGPU) and remote DeepSeek V4 Flash (API, proxied via Cloudflare Worker)
 - Research blog post: https://asheshkaji.com/projects/system-optimization-methods.html
 `;
 
 /* ── Inference mode ── */
-let inferenceMode = sessionStorage.getItem("hermes_inference_mode") || "bonsai"; // "bonsai" | "deepseek"
+let inferenceMode = sessionStorage.getItem("hermes_inference_mode") || "deepseek"; // "bonsai" | "deepseek"
 let dsAbortController = null;
 let isGenerating = false;
 let currentBubble = null;
@@ -80,6 +87,9 @@ let accumulatedText = "";
 let companionState = "idle"; // idle | listening | thinking | speaking | error
 let speechTimeout = null;
 let panelOpen = false;
+let orbMode = "idle";
+let orbBoost = 0;
+let orbFrame = 0;
 
 function bootCompanion() {
   COMPANION.avatar = document.getElementById("companionAvatar");
@@ -97,8 +107,11 @@ function bootCompanion() {
   COMPANION.statusLine = document.getElementById("cpStatusLine");
   COMPANION.modelBadge = document.getElementById("cpModelBadge");
   COMPANION.statusDot = document.getElementById("cpStatusDot");
+  COMPANION.orbCanvas = document.getElementById("orbCanvas");
+  COMPANION.suggestions = document.getElementById("cpSuggestions");
 
   if (!COMPANION.avatar) return;
+  initOrb();
 
   /* ── Init toggle to match saved mode ── */
   setToggleUI(inferenceMode);
@@ -145,6 +158,18 @@ function bootCompanion() {
     console.warn("[companion] cpInput not found in DOM");
   }
 
+  if (COMPANION.suggestions) {
+    COMPANION.suggestions.querySelectorAll("[data-suggest]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const prompt = button.getAttribute("data-suggest") || "";
+        if (!prompt || isGenerating) return;
+        pulseOrb("prompt");
+        if (COMPANION.input) COMPANION.input.value = prompt;
+        companionSend();
+      });
+    });
+  }
+
   /* ── Keyboard shortcuts ── */
   document.addEventListener("keydown", (e) => {
     if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
@@ -157,7 +182,7 @@ function bootCompanion() {
   });
 
   /* ── Show initial greeting ── */
-  setTimeout(() => showSpeech("Hey! Ask me anything about Ashesh.", 5000), 2000);
+  setTimeout(() => showSpeech("Ask from site context.", 4200), 2600);
 
   /* ── Idle animations ── */
   startIdleCycle();
@@ -171,18 +196,33 @@ function setCompanionState(state) {
   companionState = state;
   if (COMPANION.avatar) {
     COMPANION.avatar.className = `companion-avatar state-${state}`;
+    if (orbMode === "suggesting" || orbBoost > 0.04) {
+      COMPANION.avatar.classList.add("orb-active");
+    }
+  }
+  if (state === "thinking" || state === "speaking" || state === "listening") {
+    pulseOrb(state);
+  } else if (state === "error") {
+    pulseOrb("error");
+  } else if (orbMode !== "suggesting") {
+    orbMode = "idle";
   }
 }
 
 function showSpeech(text, duration = 4000) {
   if (!COMPANION.speech) return;
   clearTimeout(speechTimeout);
+  pulseOrb("suggesting");
   COMPANION.speech.innerHTML = `<p>${escapeHtml(text)}</p>`;
   COMPANION.speech.removeAttribute("hidden");
   COMPANION.speech.classList.add("visible");
   speechTimeout = setTimeout(() => {
     COMPANION.speech?.classList.remove("visible");
     COMPANION.speech?.setAttribute("hidden", "");
+    if (orbMode === "suggesting" && companionState === "idle") {
+      orbMode = "idle";
+      COMPANION.avatar?.classList.remove("orb-active");
+    }
   }, duration);
 }
 
@@ -194,11 +234,9 @@ function hideSpeech() {
 
 function startIdleCycle() {
   const idlePhrases = [
-    "👋 Ask me about Ashesh's work!",
-    "💡 Press ⌘K to chat",
-    "⚡ I run locally or via API",
-    "🔬 Try asking about NYU research",
-    "🦀 Rust, Python, ML, and more!",
+    "Press Cmd K for the assistant.",
+    "Ask from published site context.",
+    "Unknown details stay unknown.",
   ];
   let idx = 0;
   setInterval(() => {
@@ -206,7 +244,88 @@ function startIdleCycle() {
       showSpeech(idlePhrases[idx], 3500);
       idx = (idx + 1) % idlePhrases.length;
     }
-  }, 15000);
+  }, 42000);
+}
+
+function pulseOrb(mode = "prompt") {
+  orbMode = mode;
+  orbBoost = Math.max(orbBoost, mode === "speaking" ? 1 : 0.72);
+  COMPANION.avatar?.classList.add("orb-active");
+}
+
+function initOrb() {
+  const canvas = COMPANION.orbCanvas;
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  const size = canvas.width || 144;
+  const cell = 4;
+  const cols = Math.ceil(size / cell);
+  const rows = Math.ceil(size / cell);
+
+  function draw() {
+    orbFrame += 1;
+    const t = orbFrame * 0.045;
+    const active = companionState === "thinking" || companionState === "speaking" || orbMode === "suggesting";
+    const speed = active ? 1.8 : 0.62;
+    const intensity = active ? 0.72 : 0.34;
+    orbBoost *= 0.94;
+    if (orbBoost < 0.03 && !active) {
+      orbBoost = 0;
+      COMPANION.avatar?.classList.remove("orb-active");
+    }
+
+    ctx.clearRect(0, 0, size, size);
+    ctx.fillStyle = "rgba(2, 9, 9, 0.9)";
+    ctx.beginPath();
+    ctx.arc(size / 2, size / 2, size * 0.46, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.font = "7px JetBrains Mono, SFMono-Regular, monospace";
+    ctx.textBaseline = "top";
+
+    for (let y = 0; y < rows; y += 1) {
+      for (let x = 0; x < cols; x += 1) {
+        const px = x * cell + cell / 2;
+        const py = y * cell + cell / 2;
+        const dx = px - size / 2;
+        const dy = py - size / 2;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        const radius = size * 0.45;
+        if (dist > radius) continue;
+
+        const angle = Math.atan2(dy, dx);
+        const ring = Math.sin(dist * 0.21 - t * speed * 2.1) * 0.5 + 0.5;
+        const sweep = Math.sin(angle * 5 + t * speed + dist * 0.045) * 0.5 + 0.5;
+        const bayer = ORB_BAYER[y & 3][x & 3] / 16;
+        let value = (1 - dist / radius) * 0.54 + ring * 0.24 + sweep * 0.22;
+        value += (bayer - 0.5) * 0.42;
+        value += orbBoost * 0.22;
+        value *= 0.58 + intensity;
+        value = Math.max(0, Math.min(1, value));
+
+        const idx = Math.max(0, Math.min(ORB_CHARS.length - 1, Math.floor(value * (ORB_CHARS.length - 1))));
+        const char = ORB_CHARS[idx];
+        if (char === " " && value < 0.28) continue;
+
+        const alpha = Math.min(0.92, 0.18 + value * 0.72);
+        const r = Math.floor(14 + value * 52);
+        const g = Math.floor(96 + value * 134);
+        const b = Math.floor(92 + value * 116);
+        ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
+        ctx.fillText(char, x * cell, y * cell);
+      }
+    }
+
+    ctx.strokeStyle = active ? "rgba(66, 220, 205, 0.44)" : "rgba(66, 220, 205, 0.22)";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(size / 2, size / 2, size * 0.44, 0, Math.PI * 2);
+    ctx.stroke();
+
+    requestAnimationFrame(draw);
+  }
+
+  requestAnimationFrame(draw);
 }
 
 /* ══════════════════════════════════════════════════════
@@ -246,13 +365,13 @@ function setInferenceMode(mode) {
   /* Adjust input placeholder */
   if (COMPANION.input) {
     if (mode === "bonsai") {
-      COMPANION.input.placeholder = "Ask about Ashesh — local Bonsai";
+      COMPANION.input.placeholder = "Ask from site context - local";
     } else {
-      COMPANION.input.placeholder = "Ask about Ashesh — DeepSeek V4 Flash";
+      COMPANION.input.placeholder = "Ask from site context - remote";
     }
   }
 
-  showSpeech(mode === "bonsai" ? "⚡ Switched to local Bonsai" : "🌐 Switched to DeepSeek V4 Flash", 2500);
+  showSpeech(mode === "bonsai" ? "Local mode selected." : "Remote mode selected.", 2200);
 }
 
 function setToggleUI(mode) {
@@ -273,11 +392,11 @@ function updateStatusDisplay() {
   }
   if (COMPANION.statusLine) {
     COMPANION.statusLine.textContent = inferenceMode === "bonsai"
-      ? "Local Bonsai 1.7B · WebGPU"
-      : "DeepSeek V4 Flash · API";
+      ? "local Bonsai - WebGPU"
+      : "site context - remote";
   }
   if (COMPANION.modelBadge) {
-    COMPANION.modelBadge.textContent = inferenceMode === "bonsai" ? "local" : "api";
+    COMPANION.modelBadge.textContent = inferenceMode === "bonsai" ? "local" : "remote";
     COMPANION.modelBadge.className = `cp-model-badge ${inferenceMode}`;
   }
 }
@@ -295,6 +414,7 @@ function companionSend() {
   }
   const text = (inputEl.value || "").trim();
   if (!text) return;
+  pulseOrb("prompt");
 
   /* Echo user message */
   addMessage("user", text);
@@ -311,9 +431,9 @@ function sendBonsaiMessage(text) {
   /* ── Mirror page-based ask-section behavior exactly ── */
   if (!window.__bonsaiReady || !window._bonsaiWorker) {
     addMessage("system", "The real Bonsai model is not ready. No simulated answer.");
-    addMessage("system", "Options: click ⚡ Load real Bonsai in the Ask Me section below, or switch the toggle above to 🌐 DeepSeek API mode and paste your key.");
+    addMessage("system", "Use the local loader in the assistant section, or switch this panel back to remote mode.");
     setCompanionState("error");
-    showSpeech("⚠️ Bonsai not loaded", 3000);
+    showSpeech("Local model is not loaded.", 3000);
     setTimeout(() => setCompanionState("idle"), 3000);
     return;
   }
@@ -343,7 +463,7 @@ function sendBonsaiMessage(text) {
       isGenerating = false;
       currentBubble = null;
       setCompanionState("error");
-      showSpeech("⚠️ Bonsai error", 3000);
+      showSpeech("Local model error.", 3000);
       setTimeout(function () { setCompanionState("idle"); }, 3000);
       window.__bonsaiTokenCallbacks = window.__bonsaiTokenCallbacks.filter(function (c) { return c !== cb; });
     }
@@ -364,7 +484,7 @@ async function sendDeepSeekMessage(text) {
   accumulatedText = "";
   currentBubble = addMessage("assistant", "", true);
   setCompanionState("thinking");
-  showSpeech("", 0); // hide any existing speech
+  hideSpeech();
 
   dsAbortController = new AbortController();
 
@@ -426,7 +546,7 @@ async function sendDeepSeekMessage(text) {
     } else {
       addMessage("system error", `DeepSeek API error: ${escapeHtml(err.message)}`);
       setCompanionState("error");
-      showSpeech("⚠️ API error — check connection", 4000);
+      showSpeech("Remote model error.", 4000);
       setTimeout(() => setCompanionState("idle"), 4000);
     }
   }
@@ -457,7 +577,7 @@ function addMessage(role, content, returnBubble) {
 
   var avatar = document.createElement("div");
   avatar.className = "cp-avatar " + normRole;
-  avatar.textContent = normRole === "user" ? "YOU" : normRole === "system" ? "⚡" : "DS";
+  avatar.textContent = normRole === "user" ? "YOU" : "AK";
 
   var bubble = document.createElement("div");
   bubble.className = "cp-bubble " + normRole;
@@ -505,7 +625,7 @@ function escapeHtml(text) {
    ══════════════════════════════════════════════════════ */
 
 function restoreSession() {
-  inferenceMode = sessionStorage.getItem("hermes_inference_mode") || "bonsai";
+  inferenceMode = sessionStorage.getItem("hermes_inference_mode") || "deepseek";
 }
 
 /* ══════════════════════════════════════════════════════
@@ -513,8 +633,8 @@ function restoreSession() {
    ══════════════════════════════════════════════════════ */
 
 document.addEventListener("DOMContentLoaded", () => {
-  bootCompanion();
   restoreSession();
+  bootCompanion();
 });
 
 /* Export for external access */

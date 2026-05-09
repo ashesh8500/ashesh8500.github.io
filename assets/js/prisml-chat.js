@@ -1,5 +1,5 @@
 /**
- * prisml-chat.js — global Bonsai drawer for Ashesh Kaji's web world
+ * prisml-chat.js - local Bonsai interface for Ashesh Kaji's personal site
  *
  * Full transparency policy:
  * - This script never fabricates a fallback answer.
@@ -27,15 +27,16 @@ const OR_FREE_MODELS = [
 ];
 
 const PROFILE_CONTEXT = `
-You are a browser-local demo assistant on Ashesh Kaji's personal website.
-You are not Ashesh. You are not fine-tuned on private data. You should answer only from this factual profile context and from the visible website content.
-If asked about something not present in this context, say clearly that you do not know from the available website context.
+You answer as Ashesh Kaji in first person on Ashesh Kaji's personal website.
+You are not fine-tuned on private data. You should answer only from this factual profile context and from the visible website content.
+If asked about something not present in this context, say clearly that I do not know from the published site context.
 Do not invent roles, achievements, publications, links, dates, or personal facts.
+Keep answers concise and factual.
 
 Factual profile context:
-- Ashesh Kaji is pursuing an MS in Computer Engineering at NYU Tandon School of Engineering, expected 01/2026 to 12/2028.
+- Ashesh Kaji is pursuing an MS in Computer Engineering at NYU Tandon School of Engineering, expected 01/2026 to 12/2027.
 - Ashesh completed a BS with Honors in Cognitive Science at UC San Diego, specializing in Machine Learning and Neural Computation, 09/2021 to 06/2025.
-- Work includes AI Engineer at UniQreate, Artificial Intelligence Engineer and Machine Learning Intern at SageX Global, Instructional Assistant for COGS 18 at UC San Diego, and Undergraduate Research Assistant in Dr. Mary Boyle's Lab at UC San Diego.
+- Work includes Consulting AI Engineer and Artificial Intelligence Engineer at SageX Global, Machine Learning Intern at UniQreate, and Undergraduate Research Assistant in Dr. Mary Boyle's Lab at UC San Diego.
 - Technical areas shown on the site include Python, PyTorch, Rust, LLMs, RAG, NLP, MLOps, Scikit-Learn, NumPy, Pandas, Azure, AWS, Docker, Git, Linux/CLI, SQL, vector databases, WebAssembly, FPGA/hardware, Statsmodels, and Seaborn.
 - Research background includes neuroimaging, iron metabolism, NAFLD, neurodegenerative disorders, UK BioBank data, ABCD study data, and metal exposure from vapes.
 - Public links shown on the site: GitHub ashesh8500, LinkedIn ashesh-kaji-b5a3161b9, email ashesh8500@gmail.com, and a local resume page.
@@ -97,8 +98,8 @@ function boot() {
     }
   });
 
-  setStatus("idle", "Real Bonsai not loaded yet", "not loaded");
-  setDiagnostics("idle", "No model has been loaded. Click Load real Bonsai to attempt WebGPU + q1 ONNX inference.");
+  setStatus("idle", "Local Bonsai not loaded", "not loaded");
+  setDiagnostics("idle", "Local model has not been loaded. Use this only if you want browser-side WebGPU inference.");
 
   const params = new URLSearchParams(window.location.search);
   if (params.get("agent") === "open") {
@@ -138,8 +139,8 @@ async function initModel() {
   if (loadingStarted) return false;
   loadingStarted = true;
 
-  setStatus("loading", "Creating module worker", "worker");
-  setDiagnostics("loading", "Creating a module Web Worker for real local inference. No fallback is enabled.");
+  setStatus("loading", "Creating local worker", "worker");
+  setDiagnostics("loading", "Creating a module Web Worker for local inference.");
   setProgress(2, true);
   D.loadBtn.disabled = true;
   D.loadBtn.textContent = "loading...";
@@ -165,9 +166,9 @@ function handleWorkerMessage(e) {
   const d = e.data || {};
   switch (d.status) {
     case "webgpu_ok":
-      setStatus("loading", `WebGPU OK — ${d.data}`, "webgpu ✓");
+      setStatus("loading", `WebGPU OK - ${d.data}`, "webgpu ok");
       setDiagnostics("webgpu", `WebGPU adapter accepted. Loading onnx-community/Bonsai-1.7B-ONNX with dtype=q1, device=webgpu.`);
-      addMessage("system", `WebGPU available: <code>${escapeHtml(d.data || "adapter detected")}</code>. Loading the real Bonsai 1.7B q1 ONNX model now.`);
+      addMessage("system", `WebGPU available: <code>${escapeHtml(d.data || "adapter detected")}</code>. Loading Bonsai 1.7B q1 now.`);
       setProgress(8, true);
       worker.postMessage({ type: "load", data: "1.7b" });
       break;
@@ -191,15 +192,15 @@ function handleWorkerMessage(e) {
       modelReady = true;
       loadingStarted = false;
       setProgress(100, false);
-      setStatus("online", "Real Bonsai 1.7B q1 is running locally", "real model");
+      setStatus("online", "Bonsai 1.7B q1 is running locally", "local");
       setDiagnostics("ready", `Model ready: ${d.model || "onnx-community/Bonsai-1.7B-ONNX"}; dtype=${d.dtype || "q1"}; device=${d.device || "webgpu"}.`);
       D.input.disabled = false;
-      D.input.placeholder = "Ask about Ashesh — answers are constrained to visible site context";
+      D.input.placeholder = "Ask from the site context";
       D.loadBtn.disabled = false;
       D.loadBtn.textContent = "send";
       D.loadBtn.onclick = sendMessage;
       if (D.smokeBtn) D.smokeBtn.disabled = false;
-      addMessage("system", "Model ready. This is real browser-local Bonsai inference, not a canned simulation. If the model does not know something from the site context, it should say so.");
+      addMessage("system", "Model ready. Answers are constrained to the site context; unknowns should stay unknown.");
       window.__bonsaiReady = true;
       window.dispatchEvent(new CustomEvent("bonsai-ready"));
       break;
@@ -222,7 +223,7 @@ function handleWorkerMessage(e) {
 
     case "complete":
       isGenerating = false;
-      setStatus("online", "Real Bonsai 1.7B q1 is running locally", "ready");
+      setStatus("online", "Bonsai 1.7B q1 is running locally", "ready");
       if (d.output && currentAssistantBubble && !accumulatedText.trim()) {
         currentAssistantBubble.innerHTML = renderText(d.output);
       }
@@ -271,11 +272,11 @@ function surfaceHardFailure(phase, message) {
   modelReady = false;
   isGenerating = false;
   setProgress(0, false);
-  setStatus("error", "Bonsai is not running", "failed");
+  setStatus("error", "Local Bonsai is not running", "failed");
   setDiagnostics("error", `[${phase}] ${message}`);
   if (D.input) {
     D.input.disabled = true;
-    D.input.placeholder = orConnected ? "Ask about Ashesh via OpenRouter" : "Bonsai failed to load — use OpenRouter fallback?";
+    D.input.placeholder = orConnected ? "Ask via OpenRouter" : "Local model failed - use OpenRouter fallback?";
   }
   if (D.loadBtn) {
     D.loadBtn.disabled = false;
@@ -301,7 +302,7 @@ function sendMessage() {
     return;
   }
   if (!modelReady || !worker) {
-    addMessage("system error", "The real Bonsai model is not ready. Click \"Load real Bonsai\" to try local inference, or scroll down to use the OpenRouter API fallback.");
+    addMessage("system error", "Local Bonsai is not ready. Load the local model first, or use the OpenRouter fallback after a local failure.");
     return;
   }
   if (isGenerating) return;
@@ -354,8 +355,8 @@ async function connectOpenRouter() {
   orApiKey = key;
   sessionStorage.setItem("or_api_key", key);
 
-  setOrStatus("connecting", "Verifying with OpenRouter…");
-  if (D.orConnectBtn) { D.orConnectBtn.disabled = true; D.orConnectBtn.textContent = "verifying…"; }
+  setOrStatus("connecting", "Verifying with OpenRouter...");
+  if (D.orConnectBtn) { D.orConnectBtn.disabled = true; D.orConnectBtn.textContent = "verifying..."; }
 
   /* validate the key with a cheap call */
   try {
@@ -397,7 +398,7 @@ async function connectOpenRouter() {
   /* enable chat */
   if (D.input) {
     D.input.disabled = false;
-    D.input.placeholder = "Ask about Ashesh — answered via OpenRouter API";
+    D.input.placeholder = "Ask from the site context via OpenRouter";
   }
   if (D.loadBtn) {
     D.loadBtn.textContent = "send (API)";
@@ -407,7 +408,7 @@ async function connectOpenRouter() {
   if (D.smokeBtn) D.smokeBtn.disabled = true;
 
   setDiagnostics("openrouter", `Connected to OpenRouter API. Model: ${D.orModelSelect?.value || OR_FREE_MODELS[0]}. The local Bonsai model was unavailable; this is a remote API fallback.`);
-  addMessage("system", `OpenRouter API fallback active (model: <code>${escapeHtml(D.orModelSelect?.value || OR_FREE_MODELS[0])}</code>). This is a remote API — your messages are sent to OpenRouter, not processed locally.`);
+  addMessage("system", `OpenRouter API fallback active (model: <code>${escapeHtml(D.orModelSelect?.value || OR_FREE_MODELS[0])}</code>). This is a remote API; your messages are sent to OpenRouter, not processed locally.`);
 
   /* update the status area */
   setStatus("online", "OpenRouter API fallback active", "API fallback");
@@ -433,10 +434,10 @@ function disconnectOpenRouter() {
     D.orConnectBtn.onclick = connectOpenRouter;
   }
   if (D.orApiKeyInput) D.orApiKeyInput.value = "";
-  setOrStatus("", "OpenRouter API fallback — disconnected");
+  setOrStatus("", "OpenRouter API fallback - disconnected");
   if (D.input) {
     D.input.disabled = true;
-    D.input.placeholder = "Bonsai failed — connect OpenRouter fallback to chat";
+    D.input.placeholder = "Bonsai failed - connect OpenRouter fallback to chat";
   }
   if (D.loadBtn) {
     D.loadBtn.textContent = "retry real model";
@@ -546,7 +547,7 @@ async function runSmokeTest() {
   getDom();
   openAgent();
   lastSmokeResult = null;
-  setDiagnostics("smoke", "Starting Bonsai smoke test: WebGPU check → model load → one constrained generation.");
+  setDiagnostics("smoke", "Starting Bonsai smoke test: WebGPU check -> model load -> one constrained generation.");
   addMessage("system", "Smoke test started. This will only pass if the real Bonsai model reaches ready and generates tokens.");
 
   const loaded = modelReady || await initModel();

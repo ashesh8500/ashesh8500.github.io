@@ -1,11 +1,11 @@
 /**
- * main.js — Ashesh Kaji Portfolio
+ * main.js - Ashesh Kaji personal index
  * Typewriter, scroll spy, nav, GitHub project fetch, animations
  */
 
 document.addEventListener('DOMContentLoaded', () => {
   initTypewriter();
-  /* ascii-bg.js self-initializes as full-page background canvas — no init needed */
+  /* ascii-bg.js self-initializes as full-page background canvas; no init needed */
   initScrollSpy();
   initMobileNav();
   initFadeInObserver();
@@ -18,11 +18,11 @@ function initTypewriter() {
   if (!el) return;
   
   const phrases = [
-    'AI Engineer · MS Computer Engineering @ NYU',
-    'building ML systems at the edge',
-    '1-bit models · RAG pipelines · autonomous agents',
-    'from cognitive science to quantized inference',
-    'Rust, Python, and everything in between',
+    'MS Computer Engineering, NYU Tandon',
+    'BS Cognitive Science, UC San Diego',
+    'Python, Rust, PyTorch, WebGPU',
+    'RAG, neuroimaging, FPGA, systems',
+    'public projects and coursework archive',
   ];
   
   let phraseIdx = 0;
@@ -94,16 +94,16 @@ function initMobileNav() {
   
   if (!toggle || !links) return;
   
-  toggle.addEventListener('click', () => {
+  toggle.onclick = () => {
     links.classList.toggle('open');
-    toggle.textContent = links.classList.contains('open') ? '✕' : '☰';
-  });
+    toggle.textContent = links.classList.contains('open') ? 'close' : 'menu';
+  };
   
   // Close on click
   links.querySelectorAll('a').forEach(a => {
     a.addEventListener('click', () => {
       links.classList.remove('open');
-      toggle.textContent = '☰';
+      toggle.textContent = 'menu';
     });
   });
 }
@@ -159,8 +159,8 @@ async function fetchGitHubProjects() {
     console.error('Failed to fetch repos:', err);
     grid.innerHTML = `
       <div class="project-loading">
-        <span>could not load repos — </span>
-        <a href="https://github.com/ashesh8500" target="_blank" rel="noopener">view on github ↗</a>
+        <span>could not read the public shelf - </span>
+        <a href="https://github.com/ashesh8500" target="_blank" rel="noopener">view on GitHub</a>
       </div>
     `;
   }
@@ -179,14 +179,14 @@ function createProjectCard(repo) {
   };
   const langColor = langColors[lang.toLowerCase()] || '#8B949E';
   
-  const desc = repo.description || 'No description';
+  const desc = repo.description || 'No description.';
   const stars = repo.stargazers_count || 0;
   const pushed = timeAgo(repo.pushed_at);
   const topics = (repo.topics || []).slice(0, 4);
   
   card.innerHTML = `
     <div class="project-header">
-      <div class="project-icon ${langClass}">📁</div>
+        <div class="project-icon ${langClass}">${projectLabel(lang)}</div>
       <div class="project-name">
         <a href="${repo.html_url}" target="_blank" rel="noopener">${repo.name}</a>
       </div>
@@ -196,7 +196,7 @@ function createProjectCard(repo) {
       <span class="project-lang">
         <span class="project-lang-dot" style="background:${langColor}"></span> ${lang}
       </span>
-      ${stars > 0 ? `<span class="project-stars">★ ${stars}</span>` : ''}
+      ${stars > 0 ? `<span class="project-stars">star ${stars}</span>` : ''}
       <span class="project-date">${pushed}</span>
     </div>
     ${topics.length > 0 ? `
@@ -213,41 +213,41 @@ function addFeaturedProjects(grid) {
   const featured = [
     {
       name: 'RL Autonomous Driving',
-      desc: 'Deep reinforcement learning for autonomous driving using CARLA simulator with real-world sensor feeds. Studied policy gradients, DQN variants, and sim-to-real transfer.',
+      desc: 'CARLA-based deep reinforcement learning project using policy gradients, DQN variants, and sensor inputs.',
       lang: 'Python',
       color: '#3572A5',
-      icon: '🚗',
+      icon: 'rl',
       url: 'https://github.com/ashesh8500/fp185',
     },
     {
       name: 'System Optimization Methods',
-      desc: 'Portfolio allocation as layered system optimization: walk-forward validation, regime detection, and attractiveness scoring with provenance-ledger tracking. Active research project.',
+      desc: 'Portfolio allocation treated as a layered optimization system: walk-forward validation, regime detection, attractiveness scoring, and provenance-ledger tracking.',
       lang: 'Research',
-      color: '#8b5cf6',
-      icon: '📊',
+      color: '#C6A15B',
+      icon: 'sys',
       url: 'projects/system-optimization-methods.html',
     },
     {
       name: 'MediaSync',
-      desc: 'Fast, local-first Rust pipeline for photo/video libraries: SHA-256 dedup, legacy container transcoding to MP4, and batched cloud upload via rclone/rsync with a terminal UI.',
+      desc: 'A local-first Rust pipeline for photo and video libraries: SHA-256 deduplication, legacy container transcoding, and batched cloud upload through terminal tools.',
       lang: 'Rust',
       color: '#DEA584',
-      icon: '🎬',
+      icon: 'rs',
       url: 'https://github.com/ashesh8500/mediasync',
     },
     {
       name: 'Apple Health Analyzer',
-      desc: 'Transform Apple Health export data into analyzable CSVs with visualization of relationships between blood glucose, exercise, and other biomarkers.',
+      desc: 'Pipeline for converting Apple Health exports into CSV files and biomarker visualizations.',
       lang: 'Python',
       color: '#3572A5',
-      icon: '❤️',
+      icon: 'bio',
       url: 'https://github.com/ashesh8500/apple_health_export',
     },
   ];
   
   // Add a separator
   const sep = document.createElement('div');
-  sep.style.cssText = 'grid-column:1/-1;height:1px;background:var(--border-subtle);margin:8px 0;';
+  sep.style.cssText = 'grid-column:1/-1;height:1px;background:var(--border-subtle);';
   grid.appendChild(sep);
   
   featured.forEach(f => {
@@ -273,6 +273,19 @@ function addFeaturedProjects(grid) {
 }
 
 // ─── UTILITIES ────────────────────────────────────────────
+function projectLabel(lang) {
+  const value = (lang || '').toLowerCase();
+  if (value.includes('python')) return 'py';
+  if (value.includes('rust')) return 'rs';
+  if (value.includes('typescript')) return 'ts';
+  if (value.includes('javascript')) return 'js';
+  if (value.includes('jupyter')) return 'nb';
+  if (value.includes('shell')) return 'sh';
+  if (value.includes('c++')) return 'c++';
+  if (value === 'c') return 'c';
+  return 'repo';
+}
+
 function timeAgo(dateStr) {
   const now = new Date();
   const then = new Date(dateStr);
