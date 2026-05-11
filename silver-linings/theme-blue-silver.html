@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Silver Linings — Blue &amp; Silver Theme</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Cinzel:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    :root{
+      --bg-deep:#060d1f;--bg-mid:#0a122a;
+      --silver-bright:#f2f2fa;--silver-mid:#c8c8da;--silver-deep:#a0a0b6;--silver-dark:#88889a;
+      --text-muted:#8899bb;--text-soft:#aabbcc;
+      --floral-purple:#b888e0;--floral-magenta:#d878b0;--floral-terracotta:#d89870;
+    }
+    html,body{
+      width:100%;min-height:100%;
+      overflow-x:hidden;overflow-y:auto;
+      background:var(--bg-deep);
+      font-family:'Inter',system-ui,sans-serif;
+      -webkit-font-smoothing:antialiased;cursor:default;
+      user-select:none;-webkit-user-select:none;
+      -webkit-overflow-scrolling:touch;
+    }
+    body::before{
+      content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+      background:radial-gradient(ellipse 75% 55% at 50% 42%,rgba(20,30,60,0) 0%,rgba(6,13,31,0.5) 55%,rgba(2,6,18,0.9) 100%);
+    }
+    body::after{
+      content:'';position:fixed;bottom:0;left:0;right:0;height:28%;z-index:0;pointer-events:none;
+      background:linear-gradient(to top,rgba(120,100,180,0.06) 0%,rgba(140,120,160,0.02) 40%,transparent 100%);
+    }
+    #fireworks{position:fixed;inset:0;z-index:0;pointer-events:none}
+    .container{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:3rem 2rem;text-align:center}
+
+    /* Ornaments */
+    .top-rules{display:flex;flex-direction:column;align-items:center;gap:5px;margin-bottom:2rem}
+    .rule-thin{width:90px;height:1px;background:linear-gradient(to right,transparent 0%,rgba(190,190,210,0.45) 30%,rgba(230,230,245,0.65) 50%,rgba(190,190,210,0.45) 70%,transparent 100%)}
+    .rule-thick{width:160px;height:2px;background:linear-gradient(to right,transparent 0%,rgba(200,200,220,0.3) 20%,rgba(245,245,252,0.75) 50%,rgba(200,200,220,0.3) 80%,transparent 100%)}
+
+    /* Title — silver metallic on blue */
+    .title{
+      font-family:'Playfair Display','Cormorant Garamond',Georgia,serif;
+      font-weight:700;font-style:italic;
+      font-size:clamp(3.2rem,8.5vw,8rem);line-height:1.05;letter-spacing:0.005em;
+      margin-bottom:0.06em;
+      --glint-x:50%;--glint-y:50%;--tilt-x:0px;--tilt-y:0px;
+      background-image:
+        radial-gradient(ellipse 30% 60% at var(--glint-x) var(--glint-y),rgba(255,255,255,0.2) 0%,rgba(240,240,255,0.05) 40%,transparent 70%),
+        linear-gradient(105deg,transparent 38%,rgba(255,255,255,0) 42%,rgba(255,255,255,0.5) 47%,rgba(255,255,255,0.9) 50%,rgba(255,255,255,0.5) 53%,rgba(255,255,255,0) 58%,transparent 62%),
+        linear-gradient(180deg,
+          #f8f8ff 0%,#e0e0f0 14%,#9898b8 18%,#8080a0 20%,
+          #d0d0e8 24%,#f0f0fa 28%,#ffffff 32%,#d8d8ec 38%,
+          #a0a0c0 44%,#787898 48%,#c8c8e0 54%,#e8e8f4 60%,
+          #9090b0 72%,#686888 76%,#b8b8d0 82%,#d0d0e0 90%,
+          #8888a8 95%,#c0c0d8 100%
+        );
+      background-size:auto,120% 100%,100% 100%;
+      background-position:0 0,-150% 0,0 0;
+      background-repeat:no-repeat;
+      -webkit-background-clip:text;background-clip:text;
+      -webkit-text-fill-color:transparent;
+      filter:drop-shadow(0 0 20px rgba(200,200,230,0.18)) drop-shadow(0 0 40px rgba(170,170,200,0.1)) drop-shadow(0 2px 4px rgba(0,0,0,0.5)) drop-shadow(0 4px 8px rgba(0,0,0,0.25));
+      animation-name:titleShimmer;animation-duration:5s;
+      animation-timing-function:cubic-bezier(0.45,0,0.55,1);
+      animation-iteration-count:infinite;animation-direction:alternate;
+      transform:translate(var(--tilt-x,0px),var(--tilt-y,0px));
+      transition:filter 0.6s ease,transform 0.1s ease-out;
+      will-change:transform;
+    }
+    .title:hover{filter:drop-shadow(0 0 28px rgba(220,220,245,0.28)) drop-shadow(0 0 50px rgba(190,190,220,0.16)) drop-shadow(0 2px 4px rgba(0,0,0,0.5)) drop-shadow(0 4px 8px rgba(0,0,0,0.25))}
+    @keyframes titleShimmer{0%{background-position:0 0,-150% 0,0 0}100%{background-position:0 0,250% 0,0 0}}
+
+    .subtitle{font-family:'Cinzel',sans-serif;font-weight:400;font-size:clamp(0.75rem,1.5vw,1rem);letter-spacing:0.34em;text-transform:uppercase;color:var(--silver-deep);margin-bottom:1.6rem}
+
+    /* Hosts */
+    .hosts-section{display:flex;flex-direction:column;align-items:center;gap:0.5rem;margin-bottom:1.6rem}
+    .hosts-ornament{display:flex;align-items:center;gap:14px}
+    .hosts-ornament-line{width:40px;height:1px;background:linear-gradient(to right,transparent 0%,rgba(190,190,210,0.55) 50%,transparent 100%)}
+    .hosts-ornament-diamond{color:var(--silver-mid);font-size:0.45rem;opacity:0.6}
+    .hosts-names{
+      font-family:'Cormorant Garamond',Georgia,serif;font-weight:600;font-style:italic;
+      font-size:clamp(1.1rem,2.1vw,1.5rem);letter-spacing:0.06em;
+      background-image:
+        linear-gradient(105deg,transparent 38%,rgba(255,255,255,0) 42%,rgba(255,255,255,0.4) 47%,rgba(255,255,255,0.82) 50%,rgba(255,255,255,0.4) 53%,rgba(255,255,255,0) 58%,transparent 62%),
+        linear-gradient(180deg,#e8e8f2 0%,#c8c8d8 20%,#9898a8 35%,#d8d8e4 50%,#90909e 65%,#c4c4d4 80%,#a8a8b8 100%);
+      background-size:120% 100%,100% 100%;background-position:-150% 0,0 0;background-repeat:no-repeat;
+      -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+      filter:drop-shadow(0 0 10px rgba(190,190,216,0.12)) drop-shadow(0 1px 3px rgba(0,0,0,0.4));
+      animation-name:hostsShimmer;animation-duration:6s;
+      animation-timing-function:cubic-bezier(0.45,0,0.55,1);
+      animation-iteration-count:infinite;animation-direction:alternate;
+    }
+    @keyframes hostsShimmer{0%{background-position:-150% 0,0 0}100%{background-position:250% 0,0 0}}
+    .hosts-ampersand{font-style:normal;font-family:'Playfair Display',Georgia,serif;color:var(--silver-bright);margin:0 0.15em;background:none;-webkit-background-clip:unset;background-clip:unset;-webkit-text-fill-color:var(--silver-bright);filter:none;animation:none}
+    .hosts-invite{font-family:'Cinzel',sans-serif;font-weight:400;font-size:clamp(0.6rem,1.05vw,0.72rem);letter-spacing:0.22em;text-transform:uppercase;color:var(--text-muted);margin-top:0.4rem}
+    .hosts-rewedding{font-family:'Cormorant Garamond',Georgia,serif;font-weight:400;font-style:italic;font-size:clamp(0.7rem,1.15vw,0.85rem);letter-spacing:0.04em;color:var(--text-soft);margin-top:0.2rem}
+
+    /* Quote */
+    .quote{
+      font-family:'Cormorant Garamond',Georgia,serif;font-weight:500;font-style:italic;
+      font-size:clamp(1.1rem,2.1vw,1.6rem);line-height:1.6;max-width:28em;margin-bottom:1.6rem;
+      background:linear-gradient(180deg,#d8d8e4 0%,#c0c0d0 35%,#b0b0c0 50%,#c8c8d4 65%,#a8a8b8 100%);
+      -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+      filter:drop-shadow(0 0 8px rgba(180,180,210,0.1)) drop-shadow(0 1px 2px rgba(0,0,0,0.35));
+    }
+    .quote .highlight{color:var(--silver-bright);font-weight:600;font-style:normal;background:none;-webkit-background-clip:unset;background-clip:unset;-webkit-text-fill-color:var(--silver-bright);filter:none}
+
+    /* Programme */
+    .programme-block{margin-bottom:1.4rem}
+    .programme-rule{width:80px;height:1px;background:linear-gradient(to right,transparent 0%,rgba(180,160,210,0.4) 30%,rgba(210,190,235,0.55) 50%,rgba(180,160,210,0.4) 70%,transparent 100%);margin:0 auto 0.6rem}
+    .programme-title{font-family:'Cinzel',sans-serif;font-weight:400;font-size:clamp(0.55rem,0.9vw,0.65rem);letter-spacing:0.24em;text-transform:uppercase;color:var(--floral-purple);margin-bottom:0.7rem}
+    .programme-list{list-style:none;display:flex;flex-direction:column;gap:0.3rem}
+    .programme-item{font-family:'Cormorant Garamond',Georgia,serif;font-weight:400;font-style:italic;font-size:clamp(0.78rem,1.3vw,0.92rem);color:var(--text-soft);letter-spacing:0.04em;line-height:1.4}
+    .programme-item.em{color:var(--silver-bright);font-weight:500}
+
+    /* Date */
+    .date-block{margin-bottom:0.5rem}
+    .date-label{font-family:'Cinzel',sans-serif;font-weight:400;font-size:clamp(0.62rem,1.15vw,0.8rem);letter-spacing:0.28em;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.6rem}
+    .date-main{
+      font-family:'Playfair Display',Georgia,serif;font-weight:600;font-style:italic;
+      font-size:clamp(2.2rem,5vw,3.8rem);line-height:1.12;letter-spacing:0.03em;
+      background-image:
+        linear-gradient(105deg,transparent 38%,rgba(255,255,255,0) 42%,rgba(255,255,255,0.35) 47%,rgba(255,255,255,0.72) 50%,rgba(255,255,255,0.35) 53%,rgba(255,255,255,0) 58%,transparent 62%),
+        linear-gradient(180deg,#dcdce8 0%,#b8b8cc 25%,#9898aa 45%,#c8c8d8 60%,#888898 78%,#b0b0c0 100%);
+      background-size:120% 100%,100% 100%;background-position:-150% 0,0 0;background-repeat:no-repeat;
+      -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+      filter:drop-shadow(0 0 12px rgba(180,180,210,0.14)) drop-shadow(0 1px 3px rgba(0,0,0,0.38));
+      animation-name:dateShimmer;animation-duration:7s;
+      animation-timing-function:cubic-bezier(0.45,0,0.55,1);
+      animation-iteration-count:infinite;animation-direction:alternate;
+    }
+    @keyframes dateShimmer{0%{background-position:-150% 0,0 0}100%{background-position:250% 0,0 0}}
+    .date-divider{display:inline-block;width:2rem;height:1px;background:rgba(190,190,210,0.5);vertical-align:middle;margin:0 0.18em;-webkit-background-clip:unset;background-clip:unset;-webkit-text-fill-color:unset;filter:none;animation:none}
+    .event-time{font-family:'Cormorant Garamond',Georgia,serif;font-weight:400;font-style:italic;font-size:clamp(0.9rem,1.7vw,1.25rem);color:var(--silver-deep);letter-spacing:0.06em;margin-top:0.4rem}
+
+    /* Venue */
+    .venue-block{display:flex;flex-direction:column;align-items:center;gap:0.25rem;margin-bottom:0.6rem}
+    .venue-name{font-family:'Cormorant Garamond',Georgia,serif;font-weight:600;font-style:italic;font-size:clamp(1rem,1.9vw,1.4rem);color:var(--silver-mid);letter-spacing:0.05em}
+    .venue-sub{font-family:'Cinzel',sans-serif;font-weight:400;font-size:clamp(0.58rem,1vw,0.7rem);letter-spacing:0.2em;text-transform:uppercase;color:var(--text-muted)}
+    .loc-button{display:inline-flex;align-items:center;gap:0.45em;margin-top:0.55rem;padding:0.5em 1.3em;font-family:'Cinzel',sans-serif;font-weight:400;font-size:clamp(0.55rem,0.9vw,0.65rem);letter-spacing:0.18em;text-transform:uppercase;text-decoration:none;color:var(--silver-mid);border:1px solid rgba(190,190,210,0.22);border-radius:100px;background:rgba(255,255,255,0.02);transition:all 0.3s ease;cursor:pointer;pointer-events:auto}
+    .loc-button:hover{color:var(--silver-bright);border-color:rgba(210,210,235,0.5);background:rgba(255,255,255,0.05);transform:translateY(-1px)}
+    .loc-icon{font-size:0.85em;opacity:0.7}
+
+    /* Dress */
+    .dress-block{display:flex;flex-direction:column;align-items:center;gap:0.3rem;margin-bottom:0.5rem}
+    .dress-label{font-family:'Cinzel',sans-serif;font-weight:400;font-size:clamp(0.55rem,0.9vw,0.65rem);letter-spacing:0.24em;text-transform:uppercase;color:var(--text-muted)}
+    .dress-detail{font-family:'Cormorant Garamond',Georgia,serif;font-weight:500;font-style:italic;font-size:clamp(0.85rem,1.5vw,1.1rem);color:var(--silver-bright);letter-spacing:0.06em}
+
+    /* No gifts */
+    .no-gifts{font-family:'Cormorant Garamond',Georgia,serif;font-weight:400;font-style:italic;font-size:clamp(0.7rem,1.1vw,0.85rem);color:var(--text-soft);letter-spacing:0.05em;margin-bottom:1.6rem}
+
+    .bottom-rule{width:100px;height:1px;background:linear-gradient(to right,transparent 0%,rgba(200,200,220,0.4) 35%,rgba(245,245,252,0.55) 50%,rgba(200,200,220,0.4) 65%,transparent 100%);padding-bottom:2rem}
+
+    @media(max-width:480px){.container{padding:2rem 1.5rem 3rem}.top-rules{gap:4px;margin-bottom:1.4rem}.rule-thin{width:60px}.rule-thick{width:110px}.hosts-ornament-line{width:28px}}
+  </style>
+</head>
+<body>
+  <canvas id="fireworks"></canvas>
+  <div class="container">
+    <div class="top-rules"><div class="rule-thin"></div><div class="rule-thick"></div><div class="rule-thin"></div></div>
+    <h1 class="title">Silver Linings</h1>
+    <div class="subtitle">Rehearsal Dinner</div>
+    <div class="hosts-section">
+      <div class="hosts-ornament"><span class="hosts-ornament-line"></span><span class="hosts-ornament-diamond">◆</span><span class="hosts-ornament-line"></span></div>
+      <div class="hosts-names">Trupti <span class="hosts-ampersand">&amp;</span> Sailav Kaji</div>
+      <div class="hosts-ornament"><span class="hosts-ornament-line"></span><span class="hosts-ornament-diamond">◆</span><span class="hosts-ornament-line"></span></div>
+      <div class="hosts-invite">request the pleasure of your company</div>
+      <div class="hosts-rewedding">at a rehearsal dinner in honour of their rewedding</div>
+    </div>
+    <p class="quote">Three hundred and sixty-four days are yours to command.<br><span class="highlight">This one, however,</span> is reserved for us.</p>
+    <div class="programme-block">
+      <div class="programme-rule"></div>
+      <div class="programme-title">Pre-Function Rehearsals</div>
+      <ul class="programme-list">
+        <li class="programme-item">Red carpet walk training</li>
+        <li class="programme-item">Raising the toast</li>
+        <li class="programme-item">First dance drill</li>
+        <li class="programme-item">A few (rehearsed) words</li>
+        <li class="programme-item em">Oscar for Lifetime Achievement<br><span style="font-size:0.85em">(or Best Partner — TBD)</span></li>
+        <li class="programme-item">Thank you punch</li>
+      </ul>
+    </div>
+    <div class="date-block">
+      <div class="date-label">The Evening</div>
+      <div class="date-main">May<span class="date-divider"></span>30<span class="date-divider"></span>2026</div>
+      <div class="event-time">6 o'clock in the evening</div>
+    </div>
+    <div class="venue-block">
+      <div class="venue-name">Zenith Hall</div>
+      <div class="venue-sub">The St. Regis Mumbai</div>
+      <a href="https://maps.google.com/?q=Zenith+Hall+The+St+Regis+Mumbai" class="loc-button" target="_blank" rel="noopener"><span class="loc-icon">📍</span> View on Map</a>
+    </div>
+    <div class="dress-block">
+      <div class="dress-label">Attire</div>
+      <div class="dress-detail">Gowns &amp; Formal Suits</div>
+    </div>
+    <p class="no-gifts">No gifts, please — your company is the celebration.</p>
+    <div class="bottom-rule"></div>
+  </div>
+  <script>
+    (function(){
+      var c=document.getElementById('fireworks'),x=c.getContext('2d'),W,H,bursts=[],sparkles=[],trails=[];
+      function rs(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}window.addEventListener('resize',rs);rs();
+      var SILVERS=[{r:235,g:234,b:248},{r:215,g:214,b:235},{r:195,g:194,b:218}];
+      var PURPLES=[{r:170,g:120,b:210},{r:150,g:95,b:195},{r:130,g:75,b:175}];
+      var MAGENTAS=[{r:210,g:95,b:160},{r:190,g:75,b:140}];
+      function pk(a){return a[Math.floor(Math.random()*a.length)]}
+      function sb(){
+        var cx=W*0.2+Math.random()*W*0.6,cy=H*0.15+Math.random()*H*0.45,ct=55+Math.floor(Math.random()*80);
+        var pal=Math.random()<0.55?SILVERS:(Math.random()<0.78?PURPLES:MAGENTAS);
+        var bc=pk(pal);
+        for(var i=0;i<8;i++){var an=(Math.PI*2*i)/8,ln=8+Math.random()*22;
+          trails.push({x1:cx,y1:cy,x2:cx+Math.cos(an)*ln,y2:cy+Math.sin(an)*ln,life:0.6+Math.random()*0.8,maxLife:1.4,color:bc})}
+        if(trails.length>40)trails.splice(0,trails.length-40);
+        var ps=[];
+        for(var j=0;j<ct;j++){var an2=(Math.PI*2*j)/ct+(Math.random()-0.5)*0.3,sp=30+Math.random()*180,cl=pk(pal);
+          ps.push({x:cx,y:cy,vx:Math.cos(an2)*sp,vy:Math.sin(an2)*sp,life:3.5*(0.4+Math.random()*0.6),maxLife:3.5,
+            color:{r:Math.min(255,Math.max(0,cl.r+(Math.random()-0.5)*30)),g:Math.min(255,Math.max(0,cl.g+(Math.random()-0.5)*30)),b:Math.min(255,Math.max(0,cl.b+(Math.random()-0.5)*30))},
+            size:0.7+Math.random()*2.6,gravity:12+Math.random()*32,drag:0.955+Math.random()*0.035})}
+        bursts.push({particles:ps,age:0});while(bursts.length>4)bursts.shift()}
+      function ss(){sparkles.push({x:Math.random()*W,y:Math.random()*H,life:1.5+Math.random()*4,maxLife:5.5,size:0.4+Math.random()*1.6,twinkleSpeed:0.02+Math.random()*0.07,twinkleOffset:Math.random()*Math.PI*2});if(sparkles.length>30)sparkles.shift()}
+      function up(dt){
+        for(var b=bursts.length-1;b>=0;b--){var bu=bursts[b];bu.age+=dt;
+          for(var p=bu.particles.length-1;p>=0;p--){var pt=bu.particles[p];pt.life-=dt;pt.vy+=pt.gravity*dt;pt.vx*=pt.drag;pt.vy*=pt.drag;pt.x+=pt.vx*dt;pt.y+=pt.vy*dt;if(pt.life<=0)bu.particles.splice(p,1)}
+          if(bu.particles.length===0||bu.age>5)bursts.splice(b,1)}
+        for(var t=trails.length-1;t>=0;t--){trails[t].life-=dt;if(trails[t].life<=0)trails.splice(t,1)}
+        for(var s=sparkles.length-1;s>=0;s--){sparkles[s].life-=dt;if(sparkles[s].life<=0)sparkles.splice(s,1)}
+      }
+      function dr(){x.clearRect(0,0,W,H);
+        for(var i=0;i<trails.length;i++){var t=trails[i],a=Math.max(0,t.life/t.maxLife)*0.5;x.strokeStyle='rgba('+t.color.r+','+t.color.g+','+t.color.b+','+a+')';x.lineWidth=0.6;x.beginPath();x.moveTo(t.x1,t.y1);x.lineTo(t.x2,t.y2);x.stroke()}
+        for(var b2=0;b2<bursts.length;b2++){var bu2=bursts[b2];
+          for(var p2=0;p2<bu2.particles.length;p2++){var pt2=bu2.particles[p2],a2=Math.max(0,pt2.life/pt2.maxLife),sz=pt2.size*(0.35+a2*0.65),fd=a2*0.85;
+            var gw=x.createRadialGradient(pt2.x,pt2.y,0,pt2.x,pt2.y,sz*3);gw.addColorStop(0,'rgba('+pt2.color.r+','+pt2.color.g+','+pt2.color.b+','+(fd*0.4)+')');gw.addColorStop(0.5,'rgba('+pt2.color.r+','+pt2.color.g+','+pt2.color.b+','+(fd*0.1)+')');gw.addColorStop(1,'rgba(0,0,0,0)');
+            x.fillStyle=gw;x.beginPath();x.arc(pt2.x,pt2.y,sz*3,0,Math.PI*2);x.fill();
+            x.fillStyle='rgba('+pt2.color.r+','+pt2.color.g+','+pt2.color.b+','+fd+')';x.beginPath();x.arc(pt2.x,pt2.y,sz,0,Math.PI*2);x.fill()}}
+        for(var s2=0;s2<sparkles.length;s2++){var sp=sparkles[s2],tw=0.25+0.75*Math.abs(Math.sin(sp.twinkleOffset+performance.now()*0.001*sp.twinkleSpeed)),a3=Math.max(0,sp.life/sp.maxLife)*tw*0.45;x.fillStyle='rgba(230,228,244,'+a3+')';x.beginPath();x.arc(sp.x,sp.y,sp.size,0,Math.PI*2);x.fill()}
+      }
+      var bt=0,st=0;
+      function snb(){bt=2.5+Math.random()*5}snb();
+      setTimeout(function(){sb();snb()},400);setTimeout(function(){if(bursts.length===0)sb()},900);
+      var lt=performance.now();
+      function lp(tm){var dt=Math.min((tm-lt)/1000,0.1);lt=tm;
+        bt-=dt;if(bt<=0){sb();snb()}st-=dt;if(st<=0){ss();st=0.3}
+        up(dt);dr();requestAnimationFrame(lp)}
+      requestAnimationFrame(lp);
+
+      // Cursor glint + phone tilt
+      (function(){
+        var t2=document.querySelector('.title');if(!t2)return;
+        var tx=50,ty=50,cx2=50,cy2=50;
+        document.addEventListener('mousemove',function(e){var r=t2.getBoundingClientRect();tx=((e.clientX-r.left)/r.width)*100;ty=((e.clientY-r.top)/r.height)*100;tx=Math.max(-20,Math.min(120,tx));ty=Math.max(-20,Math.min(120,ty))});
+        var ttx=0,tty=0,tcx=0,tcy=0;
+        window.addEventListener('deviceorientation',function(e){if(e.beta===null)return;ttx=(e.gamma||0)/90*8;tty=(e.beta||0)/180*6});
+        function lg(){cx2+=(tx-cx2)*0.08;cy2+=(ty-cy2)*0.08;tcx+=(ttx-tcx)*0.06;tcy+=(tty-tcy)*0.06;
+          t2.style.setProperty('--glint-x',cx2.toFixed(1)+'%');t2.style.setProperty('--glint-y',cy2.toFixed(1)+'%');t2.style.setProperty('--tilt-x',tcx.toFixed(2)+'px');t2.style.setProperty('--tilt-y',tcy.toFixed(2)+'px');requestAnimationFrame(lg)}
+        requestAnimationFrame(lg);
+      })();
+    })();
+  </script>
+</body>
+</html>
