@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>Silver Linings — Save the Date</title>
+  <title>Silver Linings — Rehearsal Dinner</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Cinzel:wght@400;500;600;700&family=Inter:wght@200;300&family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
@@ -26,6 +26,11 @@
       --champagne: #d4c5a9;
       --champagne-light: #ede0cc;
       --text-muted: #7a7a88;
+      /* Floral palette — from the St. Regis deck */
+      --floral-purple: #b875d9;
+      --floral-magenta: #d460a8;
+      --floral-terracotta: #cc7a50;
+      --floral-taupe: #b0a090;
       --transition-slow: 900ms cubic-bezier(0.22, 0.61, 0.36, 1);
       --transition-medium: 500ms cubic-bezier(0.22, 0.61, 0.36, 1);
     }
@@ -66,7 +71,7 @@
       pointer-events: none;
     }
 
-    /* ── Ambient Particles (floating silver dust) ── */
+    /* ── Ambient Particles (floating silver dust + petals) ── */
     .particle {
       position: fixed;
       pointer-events: none;
@@ -80,11 +85,23 @@
       filter: blur(0.5px);
     }
 
+    .particle.petal {
+      border-radius: 40% 60% 55% 45%;
+      filter: blur(1px);
+    }
+
     @keyframes floatUp {
       0%   { opacity: 0; transform: translateY(0) scale(0.4); }
       8%   { opacity: 0.75; }
       75%  { opacity: 0.25; }
       100% { opacity: 0; transform: translateY(-100vh) scale(1.3); }
+    }
+
+    @keyframes petalDrift {
+      0%   { opacity: 0; transform: translateY(0) translateX(0) rotate(0deg) scale(0.5); }
+      8%   { opacity: 0.7; }
+      50%  { transform: translateY(-45vh) translateX(30px) rotate(120deg) scale(0.9); }
+      100% { opacity: 0; transform: translateY(-100vh) translateX(-20px) rotate(280deg) scale(0.4); }
     }
 
     /* ── Main Content ── */
@@ -160,26 +177,20 @@
       letter-spacing: 0.005em;
       margin-bottom: 0.08em;
 
-      /* Dual-layer background:
-         Layer 1 — shimmer sweep (narrow bright band)
-         Layer 2 — rich multi-stop silver metallic gradient
-         Hard transitions at 18→20%, 22→27% create polished-metal banding
-         like Mandy Michael's technique */
-      /* CSS variables for cursor / tilt tracking (set by JS) */
       --glint-x: 50%;
       --glint-y: 50%;
       --tilt-x: 0px;
       --tilt-y: 0px;
 
       background-image:
-        /* Cursor glint — soft radial highlight that follows the mouse */
+        /* Cursor glint */
         radial-gradient(
           ellipse 30% 60% at var(--glint-x) var(--glint-y),
           rgba(255,255,255,0.22) 0%,
           rgba(255,255,255,0.06) 40%,
           transparent 70%
         ),
-        /* Shimmer highlight — narrow white sweep band */
+        /* Shimmer highlight */
         linear-gradient(
           105deg,
           transparent 38%,
@@ -190,7 +201,7 @@
           rgba(255,255,255,0.0) 58%,
           transparent 62%
         ),
-        /* Metallic silver base — polished with reflection bands */
+        /* Metallic silver base */
         linear-gradient(
           180deg,
           #fefefe 0%,
@@ -215,17 +226,18 @@
       background-size: auto, 120% 100%, 100% 100%;
       background-position: 0 0, -150% 0, 0 0;
 
-      /* Metallic depth — layered drop-shadows for engraved feel */
       filter:
         drop-shadow(0 0 20px rgba(210,210,230,0.18))
         drop-shadow(0 0 40px rgba(180,180,200,0.10))
         drop-shadow(0 2px 4px rgba(0,0,0,0.50))
         drop-shadow(0 4px 8px rgba(0,0,0,0.25));
 
-      /* Shimmer animation — smooth left→right→left cycle across polished silver */
-      animation: titleShimmer 5s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate;
+      animation-name: titleShimmer;
+      animation-duration: 5s;
+      animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
+      animation-iteration-count: infinite;
+      animation-direction: alternate;
 
-      /* Subtle tilt parallax (set by JS) — shifts the text as you tilt your phone */
       transform: translate(var(--tilt-x, 0px), var(--tilt-y, 0px));
       transition: filter 0.6s ease, transform 0.1s ease-out;
     }
@@ -265,7 +277,7 @@
       flex-direction: column;
       align-items: center;
       gap: 0.6rem;
-      margin-bottom: 2.4rem;
+      margin-bottom: 2rem;
       animation-name: fadeRise;
       animation-duration: 1.5s;
       animation-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
@@ -302,7 +314,6 @@
       font-size: clamp(1.05rem, 2vw, 1.45rem);
       letter-spacing: 0.06em;
 
-      /* Silver metallic — hosts get the polished treatment too */
       background-image:
         linear-gradient(
           105deg,
@@ -338,7 +349,11 @@
         drop-shadow(0 0 12px rgba(200,200,216,0.12))
         drop-shadow(0 1px 3px rgba(0,0,0,0.40));
 
-      animation: hostsShimmer 6s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate;
+      animation-name: hostsShimmer;
+      animation-duration: 6s;
+      animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
+      animation-iteration-count: infinite;
+      animation-direction: alternate;
     }
 
     @keyframes hostsShimmer {
@@ -351,7 +366,6 @@
       font-family: 'Playfair Display', Georgia, serif;
       color: var(--champagne);
       margin: 0 0.15em;
-      /* Override metallic for ampersand — keep it champagne */
       background: none;
       -webkit-background-clip: unset;
       background-clip: unset;
@@ -370,6 +384,16 @@
       margin-top: 0.5rem;
     }
 
+    .hosts-rewedding {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-weight: 400;
+      font-style: italic;
+      font-size: clamp(0.65rem, 1.1vw, 0.8rem);
+      letter-spacing: 0.04em;
+      color: var(--silver-deep);
+      margin-top: 0.25rem;
+    }
+
     /* ── Quote ── */
     .quote {
       font-family: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
@@ -378,9 +402,8 @@
       font-size: clamp(1.1rem, 2.2vw, 1.7rem);
       line-height: 1.6;
       max-width: 28em;
-      margin-bottom: 2.8rem;
+      margin-bottom: 2.4rem;
 
-      /* Subtle silver metallic for the quote */
       background: linear-gradient(
         180deg,
         #c8c8d6 0%,
@@ -407,7 +430,6 @@
       color: var(--champagne-light);
       font-weight: 600;
       font-style: normal;
-      /* Override metallic for highlight — keep champagne */
       background: none;
       -webkit-background-clip: unset;
       background-clip: unset;
@@ -417,7 +439,7 @@
 
     /* ── Date ── */
     .date-block {
-      margin-bottom: 2rem;
+      margin-bottom: 0.6rem;
       animation-name: fadeRise;
       animation-duration: 1.5s;
       animation-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
@@ -443,7 +465,6 @@
       line-height: 1.12;
       letter-spacing: 0.03em;
 
-      /* Silver metallic for the date */
       background-image:
         linear-gradient(
           105deg,
@@ -479,7 +500,11 @@
         drop-shadow(0 0 14px rgba(190,190,208,0.14))
         drop-shadow(0 1px 3px rgba(0,0,0,0.38));
 
-      animation: dateShimmer 7s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate;
+      animation-name: dateShimmer;
+      animation-duration: 7s;
+      animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
+      animation-iteration-count: infinite;
+      animation-direction: alternate;
     }
 
     @keyframes dateShimmer {
@@ -494,12 +519,124 @@
       background: rgba(190,190,200,0.55);
       vertical-align: middle;
       margin: 0 0.18em;
-      /* Dividers stay as lines — no metallic fill */
       -webkit-background-clip: unset;
       background-clip: unset;
       -webkit-text-fill-color: unset;
       filter: none;
       animation: none;
+    }
+
+    /* ── Event Time ── */
+    .event-time {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-weight: 400;
+      font-style: italic;
+      font-size: clamp(0.85rem, 1.6vw, 1.2rem);
+      color: var(--silver-deep);
+      letter-spacing: 0.06em;
+      margin-top: 0.45rem;
+    }
+
+    /* ── Venue Block ── */
+    .venue-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.3rem;
+      margin-bottom: 0.8rem;
+      animation-name: fadeRise;
+      animation-duration: 1.5s;
+      animation-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
+      animation-delay: 1.05s;
+      animation-fill-mode: forwards;
+    }
+
+    .venue-name {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-weight: 600;
+      font-style: italic;
+      font-size: clamp(0.95rem, 1.8vw, 1.35rem);
+      color: var(--silver-mid);
+      letter-spacing: 0.05em;
+    }
+
+    .venue-sub {
+      font-family: 'Cinzel', 'Inter', system-ui, sans-serif;
+      font-weight: 400;
+      font-size: clamp(0.55rem, 0.95vw, 0.68rem);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    /* ── Location Button ── */
+    .loc-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45em;
+      margin-top: 0.65rem;
+      padding: 0.45em 1.2em;
+      font-family: 'Cinzel', 'Inter', system-ui, sans-serif;
+      font-weight: 400;
+      font-size: clamp(0.52rem, 0.85vw, 0.62rem);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: var(--silver-mid);
+      border: 1px solid rgba(180,180,196,0.25);
+      border-radius: 100px;
+      background: rgba(255,255,255,0.02);
+      transition: all 0.3s ease;
+      cursor: pointer;
+      pointer-events: auto;
+    }
+
+    .loc-button:hover {
+      color: var(--silver-bright);
+      border-color: rgba(220,220,240,0.5);
+      background: rgba(255,255,255,0.05);
+      transform: translateY(-1px);
+    }
+
+    .loc-button:active {
+      transform: translateY(0);
+    }
+
+    .loc-icon {
+      font-size: 0.85em;
+      opacity: 0.7;
+    }
+
+    /* ── Dress Code Block ── */
+    .dress-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.35rem;
+      margin-bottom: 0.6rem;
+      animation-name: fadeRise;
+      animation-duration: 1.5s;
+      animation-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
+      animation-delay: 1.15s;
+      animation-fill-mode: forwards;
+    }
+
+    .dress-label {
+      font-family: 'Cinzel', 'Inter', system-ui, sans-serif;
+      font-weight: 400;
+      font-size: clamp(0.52rem, 0.85vw, 0.62rem);
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .dress-detail {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-weight: 500;
+      font-style: italic;
+      font-size: clamp(0.8rem, 1.4vw, 1.05rem);
+      color: var(--champagne);
+      letter-spacing: 0.06em;
     }
 
     /* ── Bottom Rule ── */
@@ -517,7 +654,7 @@
       animation-name: fadeRise;
       animation-duration: 1.5s;
       animation-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
-      animation-delay: 1.05s;
+      animation-delay: 1.3s;
       animation-fill-mode: forwards;
     }
 
@@ -532,7 +669,7 @@
       animation-name: fadeRise;
       animation-duration: 1.5s;
       animation-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
-      animation-delay: 1.15s;
+      animation-delay: 1.4s;
       animation-fill-mode: forwards;
     }
 
@@ -562,15 +699,19 @@
       .rule-thin { width: 60px; }
       .rule-thick { width: 110px; }
       .hosts-ornament-line { width: 28px; }
-      .hosts-section { margin-bottom: 1.8rem; }
-      .quote { margin-bottom: 2rem; }
+      .hosts-section { margin-bottom: 1.5rem; }
+      .quote { margin-bottom: 1.8rem; }
       .date-divider { width: 1.2rem; }
+      .date-block { margin-bottom: 0.4rem; }
+      .venue-block { margin-bottom: 0.5rem; }
+      .dress-block { margin-bottom: 0.4rem; }
     }
 
     @media (prefers-reduced-motion: reduce) {
       .title, .hosts-names, .date-main,
       .top-rules, .subtitle, .hosts-section,
-      .quote, .date-block, .bottom-rule, .footer-text {
+      .quote, .date-block, .venue-block, .dress-block,
+      .bottom-rule, .footer-text, .event-time {
         animation: none;
         opacity: 1;
       }
@@ -595,7 +736,7 @@
 
     <h1 class="title">Silver Linings</h1>
 
-    <div class="subtitle">An Anniversary Celebration</div>
+    <div class="subtitle">Rehearsal Dinner</div>
 
     <div class="hosts-section">
       <div class="hosts-ornament">
@@ -612,6 +753,7 @@
         <span class="hosts-ornament-line"></span>
       </div>
       <div class="hosts-invite">request the pleasure of your company</div>
+      <div class="hosts-rewedding">at a rehearsal dinner in honour of their rewedding</div>
     </div>
 
     <p class="quote">
@@ -620,10 +762,24 @@
     </p>
 
     <div class="date-block">
-      <div class="date-label">Save the Date</div>
+      <div class="date-label">Save the Evening</div>
       <div class="date-main">
-        May<span class="date-divider"></span>31<span class="date-divider"></span>2026
+        May<span class="date-divider"></span>30<span class="date-divider"></span>2026
       </div>
+      <div class="event-time">6 o'clock in the evening</div>
+    </div>
+
+    <div class="venue-block">
+      <div class="venue-name">Zenith Hall</div>
+      <div class="venue-sub">The St. Regis Mumbai</div>
+      <a href="https://maps.google.com/?q=Zenith+Hall+The+St+Regis+Mumbai+Lower+Parel" class="loc-button" target="_blank" rel="noopener">
+        <span class="loc-icon">📍</span> View on Map
+      </a>
+    </div>
+
+    <div class="dress-block">
+      <div class="dress-label">Attire</div>
+      <div class="dress-detail">Gowns &amp; Formal Suits</div>
     </div>
 
     <div class="bottom-rule"></div>
@@ -636,17 +792,18 @@
   <script>
     (function() {
       // ═══════════════════════════════════════════
-      //  AMBIENT FIREWORKS  —  Silver & Champagne
+      //  FIREWORKS  —  Silver, Champagne & Floral
       // ═══════════════════════════════════════════
-      const canvas = document.getElementById('fireworks');
-      const ctx = canvas.getContext('2d');
+      var canvas = document.getElementById('fireworks');
+      var ctx = canvas.getContext('2d');
 
-      let W, H;
-      const bursts = [];
-      const sparkles = [];
-      const trails = [];
-      const MAX_BURSTS = 5;
-      const PARTICLE_LIFE = 3.5;
+      var W, H;
+      var bursts = [];
+      var sparkles = [];
+      var trails = [];
+      var petals = [];
+      var MAX_BURSTS = 5;
+      var PARTICLE_LIFE = 3.5;
 
       function resize() {
         W = canvas.width = window.innerWidth;
@@ -656,38 +813,55 @@
       resize();
 
       // ── Palettes ──
-      const SILVERS = [
+      var SILVERS = [
         { r: 245, g: 244, b: 252 },
         { r: 225, g: 224, b: 238 },
         { r: 205, g: 204, b: 220 },
         { r: 185, g: 184, b: 200 },
       ];
-      const CHAMPAGNES = [
+      var CHAMPAGNES = [
         { r: 240, g: 228, b: 208 },
         { r: 224, g: 206, b: 176 },
         { r: 216, g: 200, b: 172 },
       ];
-      const GOLDS = [
+      var GOLDS = [
         { r: 235, g: 208, b: 148 },
         { r: 218, g: 188, b: 128 },
+      ];
+      /* Floral palette — St. Regis deck: purple, magenta, terracotta, taupe */
+      var PURPLES = [
+        { r: 160, g: 90, b: 210 },
+        { r: 140, g: 60, b: 190 },
+        { r: 120, g: 55, b: 170 },
+        { r: 180, g: 115, b: 220 },
+      ];
+      var MAGENTAS = [
+        { r: 215, g: 70, b: 155 },
+        { r: 195, g: 50, b: 135 },
+        { r: 175, g: 40, b: 120 },
+      ];
+      var TERRACOTTAS = [
+        { r: 210, g: 115, b: 75 },
+        { r: 190, g: 95, b: 58 },
+        { r: 175, g: 85, b: 50 },
       ];
 
       function pick(arr) {
         return arr[Math.floor(Math.random() * arr.length)];
       }
 
-      // ── Central sparkle burst (small diamond-like flash at burst origin) ──
+      // ── Central sparkle burst ──
       function spawnFlash(cx, cy, color) {
-        for (let i = 0; i < 8; i++) {
-          const angle = (Math.PI * 2 * i) / 8;
-          const len = 8 + Math.random() * 25;
+        for (var i = 0; i < 8; i++) {
+          var angle = (Math.PI * 2 * i) / 8;
+          var len = 8 + Math.random() * 25;
           trails.push({
             x1: cx, y1: cy,
             x2: cx + Math.cos(angle) * len,
             y2: cy + Math.sin(angle) * len,
             life: 0.6 + Math.random() * 0.8,
             maxLife: 1.4,
-            color,
+            color: color,
           });
         }
         if (trails.length > 60) trails.splice(0, trails.length - 60);
@@ -695,21 +869,35 @@
 
       // ── Burst ──
       function spawnBurst() {
-        const cx = W * 0.18 + Math.random() * W * 0.64;
-        const cy = H * 0.12 + Math.random() * H * 0.48;
-        const count = 70 + Math.floor(Math.random() * 100);
-        const palette = Math.random() < 0.55 ? SILVERS
-                       : Math.random() < 0.7 ? CHAMPAGNES
-                       : GOLDS;
+        var cx = W * 0.18 + Math.random() * W * 0.64;
+        var cy = H * 0.12 + Math.random() * H * 0.48;
+        var count = 70 + Math.floor(Math.random() * 100);
 
-        const baseColor = pick(palette);
+        // ~70% classic silver/champagne, ~30% floral
+        var roll = Math.random();
+        var palette;
+        if (roll < 0.45) {
+          palette = SILVERS;
+        } else if (roll < 0.60) {
+          palette = CHAMPAGNES;
+        } else if (roll < 0.65) {
+          palette = GOLDS;
+        } else if (roll < 0.78) {
+          palette = PURPLES;
+        } else if (roll < 0.90) {
+          palette = MAGENTAS;
+        } else {
+          palette = TERRACOTTAS;
+        }
+
+        var baseColor = pick(palette);
         spawnFlash(cx, cy, baseColor);
 
-        const particles = [];
-        for (let i = 0; i < count; i++) {
-          const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.35;
-          const speed = 35 + Math.random() * 200;
-          const color = pick(palette);
+        var particles = [];
+        for (var i = 0; i < count; i++) {
+          var angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.35;
+          var speed = 35 + Math.random() * 200;
+          var color = pick(palette);
           particles.push({
             x: cx,
             y: cy,
@@ -727,8 +915,32 @@
             drag: 0.955 + Math.random() * 0.035,
           });
         }
-        bursts.push({ particles, age: 0 });
+        bursts.push({ particles: particles, age: 0 });
         while (bursts.length > MAX_BURSTS) bursts.shift();
+      }
+
+      // ── Floating Petal ──
+      function spawnPetal() {
+        var palettes = [PURPLES, MAGENTAS, TERRACOTTAS];
+        var palette = pick(palettes);
+        var color = pick(palette);
+        petals.push({
+          x: Math.random() * W,
+          y: H + 20 + Math.random() * 60,
+          life: 6 + Math.random() * 14,
+          maxLife: 20,
+          size: 2.5 + Math.random() * 7,
+          color: {
+            r: color.r + (Math.random() - 0.5) * 30,
+            g: color.g + (Math.random() - 0.5) * 30,
+            b: color.b + (Math.random() - 0.5) * 30,
+          },
+          driftX: (Math.random() - 0.5) * 25,
+          driftSpeed: 0.15 + Math.random() * 0.6,
+          rotation: Math.random() * 360,
+          rotationSpeed: (Math.random() - 0.5) * 1.2,
+        });
+        if (petals.length > 35) petals.shift();
       }
 
       // ── Ambient Sparkle ──
@@ -747,11 +959,11 @@
 
       // ── Update ──
       function update(dt) {
-        for (let b = bursts.length - 1; b >= 0; b--) {
-          const burst = bursts[b];
+        for (var b = bursts.length - 1; b >= 0; b--) {
+          var burst = bursts[b];
           burst.age += dt;
-          for (let p = burst.particles.length - 1; p >= 0; p--) {
-            const pt = burst.particles[p];
+          for (var p = burst.particles.length - 1; p >= 0; p--) {
+            var pt = burst.particles[p];
             pt.life -= dt;
             pt.vy += pt.gravity * dt;
             pt.vx *= pt.drag;
@@ -765,14 +977,23 @@
           }
         }
 
-        for (let t = trails.length - 1; t >= 0; t--) {
+        for (var t = trails.length - 1; t >= 0; t--) {
           trails[t].life -= dt;
           if (trails[t].life <= 0) trails.splice(t, 1);
         }
 
-        for (let s = sparkles.length - 1; s >= 0; s--) {
+        for (var s = sparkles.length - 1; s >= 0; s--) {
           sparkles[s].life -= dt;
           if (sparkles[s].life <= 0) sparkles.splice(s, 1);
+        }
+
+        for (var pt2 = petals.length - 1; pt2 >= 0; pt2--) {
+          var petal = petals[pt2];
+          petal.life -= dt;
+          petal.y -= (8 + Math.sin(petal.life * 0.3) * 4) * dt;
+          petal.x += Math.sin(petal.life * petal.driftSpeed) * petal.driftX * dt;
+          petal.rotation += petal.rotationSpeed * dt * 60;
+          if (petal.life <= 0 || petal.y < -40) petals.splice(pt2, 1);
         }
       }
 
@@ -780,9 +1001,11 @@
       function draw() {
         ctx.clearRect(0, 0, W, H);
 
-        for (const t of trails) {
-          const alpha = Math.max(0, t.life / t.maxLife) * 0.5;
-          ctx.strokeStyle = `rgba(${t.color.r},${t.color.g},${t.color.b},${alpha})`;
+        // Trails
+        for (var i = 0; i < trails.length; i++) {
+          var t = trails[i];
+          var alpha = Math.max(0, t.life / t.maxLife) * 0.5;
+          ctx.strokeStyle = 'rgba(' + t.color.r + ',' + t.color.g + ',' + t.color.b + ',' + alpha + ')';
           ctx.lineWidth = 0.6;
           ctx.beginPath();
           ctx.moveTo(t.x1, t.y1);
@@ -790,79 +1013,131 @@
           ctx.stroke();
         }
 
-        for (const burst of bursts) {
-          for (const pt of burst.particles) {
-            const alpha = Math.max(0, pt.life / pt.maxLife);
-            const size = pt.size * (0.35 + alpha * 0.65);
-            const fade = alpha * 0.85;
+        // Burst particles
+        for (var b2 = 0; b2 < bursts.length; b2++) {
+          var burst = bursts[b2];
+          for (var p2 = 0; p2 < burst.particles.length; p2++) {
+            var pt3 = burst.particles[p2];
+            var alpha2 = Math.max(0, pt3.life / pt3.maxLife);
+            var size2 = pt3.size * (0.35 + alpha2 * 0.65);
+            var fade = alpha2 * 0.85;
 
-            const glow = ctx.createRadialGradient(pt.x, pt.y, 0, pt.x, pt.y, size * 3.5);
-            glow.addColorStop(0, `rgba(${pt.color.r},${pt.color.g},${pt.color.b},${fade * 0.45})`);
-            glow.addColorStop(0.4, `rgba(${pt.color.r},${pt.color.g},${pt.color.b},${fade * 0.12})`);
+            var glow = ctx.createRadialGradient(pt3.x, pt3.y, 0, pt3.x, pt3.y, size2 * 3.5);
+            glow.addColorStop(0, 'rgba(' + pt3.color.r + ',' + pt3.color.g + ',' + pt3.color.b + ',' + (fade * 0.45) + ')');
+            glow.addColorStop(0.4, 'rgba(' + pt3.color.r + ',' + pt3.color.g + ',' + pt3.color.b + ',' + (fade * 0.12) + ')');
             glow.addColorStop(1, 'rgba(0,0,0,0)');
             ctx.fillStyle = glow;
             ctx.beginPath();
-            ctx.arc(pt.x, pt.y, size * 3.5, 0, Math.PI * 2);
+            ctx.arc(pt3.x, pt3.y, size2 * 3.5, 0, Math.PI * 2);
             ctx.fill();
 
-            ctx.fillStyle = `rgba(${pt.color.r},${pt.color.g},${pt.color.b},${fade})`;
+            ctx.fillStyle = 'rgba(' + pt3.color.r + ',' + pt3.color.g + ',' + pt3.color.b + ',' + fade + ')';
             ctx.beginPath();
-            ctx.arc(pt.x, pt.y, size, 0, Math.PI * 2);
+            ctx.arc(pt3.x, pt3.y, size2, 0, Math.PI * 2);
             ctx.fill();
           }
         }
 
-        for (const s of sparkles) {
-          const twinkle = 0.25 + 0.75 * Math.abs(Math.sin(s.twinkleOffset + performance.now() * 0.001 * s.twinkleSpeed));
-          const alpha = Math.max(0, s.life / s.maxLife) * twinkle * 0.45;
-          ctx.fillStyle = `rgba(238,236,246,${alpha})`;
+        // Sparkles
+        for (var s2 = 0; s2 < sparkles.length; s2++) {
+          var sp = sparkles[s2];
+          var twinkle = 0.25 + 0.75 * Math.abs(Math.sin(sp.twinkleOffset + performance.now() * 0.001 * sp.twinkleSpeed));
+          var alpha3 = Math.max(0, sp.life / sp.maxLife) * twinkle * 0.45;
+          ctx.fillStyle = 'rgba(238,236,246,' + alpha3 + ')';
           ctx.beginPath();
-          ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+          ctx.arc(sp.x, sp.y, sp.size, 0, Math.PI * 2);
           ctx.fill();
+        }
+
+        // Floating Petals
+        for (var pt4 = 0; pt4 < petals.length; pt4++) {
+          var petal2 = petals[pt4];
+          var alpha4 = Math.max(0, petal2.life / petal2.maxLife) * 0.55;
+          if (alpha4 < 0.03) continue;
+          ctx.save();
+          ctx.translate(petal2.x, petal2.y);
+          ctx.rotate(petal2.rotation);
+          ctx.fillStyle = 'rgba(' + petal2.color.r + ',' + petal2.color.g + ',' + petal2.color.b + ',' + alpha4 + ')';
+          ctx.beginPath();
+          ctx.ellipse(0, 0, petal2.size, petal2.size * 0.55, 0, 0, Math.PI * 2);
+          ctx.fill();
+          // subtle glow
+          var petalGlow = ctx.createRadialGradient(0, 0, 0, 0, 0, petal2.size * 2);
+          petalGlow.addColorStop(0, 'rgba(' + petal2.color.r + ',' + petal2.color.g + ',' + petal2.color.b + ',' + (alpha4 * 0.3) + ')');
+          petalGlow.addColorStop(1, 'rgba(0,0,0,0)');
+          ctx.fillStyle = petalGlow;
+          ctx.beginPath();
+          ctx.arc(0, 0, petal2.size * 2, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
         }
       }
 
       // ── Spawn timers ──
-      let burstTimer = 0;
-      let sparkleTimer = 0;
+      var burstTimer = 0;
+      var sparkleTimer = 0;
 
       function scheduleNextBurst() {
         burstTimer = 2.2 + Math.random() * 5;
       }
       scheduleNextBurst();
 
-      setTimeout(() => {
+      setTimeout(function() {
         spawnBurst();
         scheduleNextBurst();
       }, 350);
 
-      setTimeout(() => {
+      setTimeout(function() {
         if (bursts.length === 0) spawnBurst();
       }, 900);
 
       // ── Ambient floating dust particles (DOM) ──
       function spawnDustParticle() {
-        const el = document.createElement('div');
+        var el = document.createElement('div');
         el.className = 'particle';
-        const size = 1 + Math.random() * 3.5;
-        const dur = 7 + Math.random() * 12;
-        const delay = Math.random() * 4;
-        el.style.cssText = `
-          width: ${size}px;
-          height: ${size}px;
-          left: ${5 + Math.random() * 90}%;
-          bottom: -10px;
-        `;
+        var size = 1 + Math.random() * 3.5;
+        var dur = 7 + Math.random() * 12;
+        var delay = Math.random() * 4;
+        el.style.cssText =
+          'width:' + size + 'px;' +
+          'height:' + size + 'px;' +
+          'left:' + (5 + Math.random() * 90) + '%;' +
+          'bottom:-10px;';
         el.style.animationDuration = dur + 's';
         el.style.animationDelay = delay + 's';
         document.body.appendChild(el);
-        setTimeout(() => el.remove(), (dur + delay) * 1000 + 500);
+        setTimeout(function() { el.remove(); }, (dur + delay) * 1000 + 500);
+      }
+
+      // ── Floating petal particles (DOM) ──
+      function spawnDomPetal() {
+        var el = document.createElement('div');
+        el.className = 'particle petal';
+        var size = 2 + Math.random() * 5;
+        var dur = 9 + Math.random() * 14;
+        var delay = Math.random() * 6;
+        var palettes = [PURPLES, MAGENTAS, TERRACOTTAS];
+        var color = pick(pick(palettes));
+        var bgColor = 'radial-gradient(ellipse, rgba(' + color.r + ',' + color.g + ',' + color.b + ',0.7) 0%, rgba(' + color.r + ',' + color.g + ',' + color.b + ',0) 70%)';
+        el.style.cssText =
+          'width:' + size + 'px;' +
+          'height:' + (size * 0.7) + 'px;' +
+          'left:' + (3 + Math.random() * 94) + '%;' +
+          'bottom:-15px;' +
+          'background:' + bgColor + ';';
+        el.style.animationName = 'petalDrift';
+        el.style.animationDuration = dur + 's';
+        el.style.animationDelay = delay + 's';
+        el.style.animationTimingFunction = 'ease-out';
+        el.style.animationFillMode = 'forwards';
+        document.body.appendChild(el);
+        setTimeout(function() { el.remove(); }, (dur + delay) * 1000 + 500);
       }
 
       // ── Main Loop ──
-      let lastTime = performance.now();
+      var lastTime = performance.now();
       function loop(time) {
-        const dt = Math.min((time - lastTime) / 1000, 0.1);
+        var dt = Math.min((time - lastTime) / 1000, 0.1);
         lastTime = time;
 
         burstTimer -= dt;
@@ -878,6 +1153,8 @@
         }
 
         if (Math.random() < 0.18) spawnDustParticle();
+        if (Math.random() < 0.06) spawnDomPetal();
+        if (Math.random() < 0.04) spawnPetal();
 
         update(dt);
         draw();
@@ -888,7 +1165,6 @@
 
       // ═══════════════════════════════════════════
       //  CURSOR GLINT + PHONE TILT PARALLAX
-      //  — polished metal catches light as you move
       // ═══════════════════════════════════════════
       (function() {
         var title = document.querySelector('.title');
@@ -902,7 +1178,6 @@
           var rect = title.getBoundingClientRect();
           targetX = ((e.clientX - rect.left) / rect.width) * 100;
           targetY = ((e.clientY - rect.top) / rect.height) * 100;
-          // Clamp within element bounds for smooth entry/exit
           targetX = Math.max(-20, Math.min(120, targetX));
           targetY = Math.max(-20, Math.min(120, targetY));
         });
@@ -912,16 +1187,12 @@
         var tiltCurrentX = 0, tiltCurrentY = 0;
 
         window.addEventListener('deviceorientation', function(e) {
-          if (e.beta === null) return; // no gyro
-          // beta: front/back tilt (-180 to 180), gamma: left/right (-90 to 90)
-          // Map to subtle offsets — max ~8px shift
-          tiltTargetX = (e.gamma || 0) / 90 * 8;  // -8 to 8
-          tiltTargetY = (e.beta || 0) / 180 * 6;   // -6 to 6
+          if (e.beta === null) return;
+          tiltTargetX = (e.gamma || 0) / 90 * 8;
+          tiltTargetY = (e.beta || 0) / 180 * 6;
         });
 
-        // ── Smooth lerp loop ──
         function lerpGlint() {
-          // Ease toward target (lerp factor: 0.08 = smooth, responsive)
           currentX += (targetX - currentX) * 0.08;
           currentY += (targetY - currentY) * 0.08;
           tiltCurrentX += (tiltTargetX - tiltCurrentX) * 0.06;
