@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Silver Linings — Silver Theme</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Cinzel:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    :root{
+      --bg: #e8e8ee;
+      --text-primary: #141420;
+      --text-muted: #5a5a6a;
+      --accent: #7a6a5a;
+      --accent-light: #a09080;
+      --floral-purple: #9b6db5;
+      --floral-magenta: #c06090;
+      --floral-terracotta: #c07850;
+    }
+    html,body{
+      width:100%;min-height:100%;
+      overflow-x:hidden;overflow-y:auto;
+      background: var(--bg);
+      font-family:'Inter',system-ui,sans-serif;
+      -webkit-font-smoothing:antialiased;
+      cursor:default;user-select:none;-webkit-user-select:none;
+    }
+    body::before{
+      content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+      background: radial-gradient(ellipse 70% 55% at 50% 45%, rgba(255,255,255,0) 0%, rgba(232,232,238,0.4) 50%, rgba(210,210,220,0.6) 100%);
+    }
+    #fireworks{position:fixed;inset:0;z-index:0;pointer-events:none}
+    .container{
+      position:relative;z-index:2;
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      min-height:100vh;padding:3rem 2rem;text-align:center;
+    }
+
+    /* Ornaments */
+    .top-rules{display:flex;flex-direction:column;align-items:center;gap:5px;margin-bottom:2rem}
+    .rule-thin{width:90px;height:1px;background:linear-gradient(to right,transparent 0%,rgba(60,60,80,0.35) 30%,rgba(40,40,60,0.5) 50%,rgba(60,60,80,0.35) 70%,transparent 100%)}
+    .rule-thick{width:160px;height:2px;background:linear-gradient(to right,transparent 0%,rgba(50,50,70,0.2) 20%,rgba(20,20,40,0.55) 50%,rgba(50,50,70,0.2) 80%,transparent 100%)}
+
+    /* Title — dark silver metallic */
+    .title{
+      font-family:'Playfair Display','Cormorant Garamond',Georgia,serif;
+      font-weight:700;font-style:italic;
+      font-size:clamp(3.2rem,8.5vw,8rem);line-height:1.05;letter-spacing:0.005em;
+      margin-bottom:0.06em;
+      background-image:
+        linear-gradient(105deg,
+          transparent 38%,rgba(0,0,0,0) 42%,rgba(0,0,0,0.25) 47%,
+          rgba(0,0,0,0.55) 50%,rgba(0,0,0,0.25) 53%,
+          rgba(0,0,0,0) 58%,transparent 62%
+        ),
+        linear-gradient(180deg,
+          #2a2a3a 0%,#1a1a2a 10%,#3a3a4a 18%,#222232 20%,
+          #383848 25%,#1e1e2e 30%,#424252 40%,#262636 48%,
+          #181828 52%,#3c3c4c 60%,#202030 70%,#343444 80%,
+          #1c1c2c 90%,#2e2e3e 100%
+        );
+      background-size:120% 100%,100% 100%;
+      background-position:-150% 0,0 0;
+      background-repeat:no-repeat;
+      -webkit-background-clip:text;background-clip:text;
+      -webkit-text-fill-color:transparent;
+      filter:drop-shadow(0 1px 3px rgba(0,0,0,0.12)) drop-shadow(0 2px 6px rgba(0,0,0,0.06));
+      animation-name:titleShimmer;animation-duration:5s;
+      animation-timing-function:cubic-bezier(0.45,0,0.55,1);
+      animation-iteration-count:infinite;animation-direction:alternate;
+    }
+    @keyframes titleShimmer{
+      0%{background-position:-150% 0,0 0}
+      100%{background-position:250% 0,0 0}
+    }
+
+    .subtitle{
+      font-family:'Cinzel',sans-serif;font-weight:400;
+      font-size:clamp(0.75rem,1.5vw,1rem);letter-spacing:0.34em;
+      text-transform:uppercase;color:var(--text-muted);
+      margin-bottom:1.6rem;
+    }
+
+    /* Hosts */
+    .hosts-section{display:flex;flex-direction:column;align-items:center;gap:0.5rem;margin-bottom:1.6rem}
+    .hosts-ornament{display:flex;align-items:center;gap:14px}
+    .hosts-ornament-line{width:40px;height:1px;background:linear-gradient(to right,transparent 0%,rgba(50,50,70,0.4) 50%,transparent 100%)}
+    .hosts-ornament-diamond{color:var(--text-muted);font-size:0.45rem;opacity:0.5}
+    .hosts-names{
+      font-family:'Cormorant Garamond',Georgia,serif;font-weight:600;font-style:italic;
+      font-size:clamp(1.1rem,2.1vw,1.5rem);letter-spacing:0.06em;
+      background-image:
+        linear-gradient(105deg,transparent 38%,rgba(0,0,0,0) 42%,rgba(0,0,0,0.18) 47%,rgba(0,0,0,0.45) 50%,rgba(0,0,0,0.18) 53%,rgba(0,0,0,0) 58%,transparent 62%),
+        linear-gradient(180deg,#3a3a4a 0%,#2a2a38 30%,#404050 50%,#2c2c3a 70%,#353545 100%);
+      background-size:120% 100%,100% 100%;background-position:-150% 0,0 0;background-repeat:no-repeat;
+      -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+      filter:drop-shadow(0 1px 2px rgba(0,0,0,0.08));
+      animation-name:hostsShimmer;animation-duration:6s;
+      animation-timing-function:cubic-bezier(0.45,0,0.55,1);
+      animation-iteration-count:infinite;animation-direction:alternate;
+    }
+    @keyframes hostsShimmer{0%{background-position:-150% 0,0 0}100%{background-position:250% 0,0 0}}
+
+    .hosts-ampersand{font-style:normal;font-family:'Playfair Display',Georgia,serif;color:var(--accent);margin:0 0.15em;background:none;-webkit-background-clip:unset;background-clip:unset;-webkit-text-fill-color:var(--accent);filter:none;animation:none}
+    .hosts-invite{font-family:'Cinzel',sans-serif;font-weight:400;font-size:clamp(0.6rem,1.05vw,0.72rem);letter-spacing:0.22em;text-transform:uppercase;color:var(--text-muted);margin-top:0.4rem}
+    .hosts-rewedding{font-family:'Cormorant Garamond',Georgia,serif;font-weight:400;font-style:italic;font-size:clamp(0.7rem,1.15vw,0.85rem);letter-spacing:0.04em;color:#6a6a7a;margin-top:0.2rem}
+
+    /* Quote */
+    .quote{
+      font-family:'Cormorant Garamond',Georgia,serif;font-weight:500;font-style:italic;
+      font-size:clamp(1.1rem,2.1vw,1.6rem);line-height:1.6;max-width:28em;margin-bottom:1.6rem;
+      color:#2a2a3a;
+    }
+    .quote .highlight{color:var(--accent);font-weight:600;font-style:normal}
+
+    /* Programme */
+    .programme-block{margin-bottom:1.4rem}
+    .programme-rule{width:80px;height:1px;background:linear-gradient(to right,transparent 0%,rgba(120,90,70,0.3) 30%,rgba(160,130,110,0.4) 50%,rgba(120,90,70,0.3) 70%,transparent 100%);margin:0 auto 0.6rem}
+    .programme-title{font-family:'Cinzel',sans-serif;font-weight:400;font-size:clamp(0.55rem,0.9vw,0.65rem);letter-spacing:0.24em;text-transform:uppercase;color:var(--floral-purple);margin-bottom:0.7rem}
+    .programme-list{list-style:none;display:flex;flex-direction:column;gap:0.3rem}
+    .programme-item{font-family:'Cormorant Garamond',Georgia,serif;font-weight:400;font-style:italic;font-size:clamp(0.78rem,1.3vw,0.92rem);color:#3a3a4a;letter-spacing:0.04em;line-height:1.4}
+    .programme-item.em{color:var(--accent);font-weight:500}
+
+    /* Date */
+    .date-block{margin-bottom:0.5rem}
+    .date-label{font-family:'Cinzel',sans-serif;font-weight:400;font-size:clamp(0.62rem,1.15vw,0.8rem);letter-spacing:0.28em;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.6rem}
+    .date-main{
+      font-family:'Playfair Display',Georgia,serif;font-weight:600;font-style:italic;
+      font-size:clamp(2.2rem,5vw,3.8rem);line-height:1.12;letter-spacing:0.03em;
+      background-image:
+        linear-gradient(105deg,transparent 38%,rgba(0,0,0,0) 42%,rgba(0,0,0,0.15) 47%,rgba(0,0,0,0.40) 50%,rgba(0,0,0,0.15) 53%,rgba(0,0,0,0) 58%,transparent 62%),
+        linear-gradient(180deg,#353545 0%,#252535 30%,#3d3d4d 50%,#282838 70%,#303040 100%);
+      background-size:120% 100%,100% 100%;background-position:-150% 0,0 0;background-repeat:no-repeat;
+      -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+      filter:drop-shadow(0 1px 2px rgba(0,0,0,0.08));
+      animation-name:dateShimmer;animation-duration:7s;
+      animation-timing-function:cubic-bezier(0.45,0,0.55,1);
+      animation-iteration-count:infinite;animation-direction:alternate;
+    }
+    @keyframes dateShimmer{0%{background-position:-150% 0,0 0}100%{background-position:250% 0,0 0}}
+    .date-divider{display:inline-block;width:2rem;height:1px;background:rgba(40,40,60,0.3);vertical-align:middle;margin:0 0.18em}
+    .event-time{font-family:'Cormorant Garamond',Georgia,serif;font-weight:400;font-style:italic;font-size:clamp(0.9rem,1.7vw,1.25rem);color:#3a3a4a;letter-spacing:0.06em;margin-top:0.4rem}
+
+    /* Venue */
+    .venue-block{display:flex;flex-direction:column;align-items:center;gap:0.25rem;margin-bottom:0.6rem}
+    .venue-name{font-family:'Cormorant Garamond',Georgia,serif;font-weight:600;font-style:italic;font-size:clamp(1rem,1.9vw,1.4rem);color:#2a2a3a;letter-spacing:0.05em}
+    .venue-sub{font-family:'Cinzel',sans-serif;font-weight:400;font-size:clamp(0.58rem,1vw,0.7rem);letter-spacing:0.2em;text-transform:uppercase;color:var(--text-muted)}
+    .loc-button{
+      display:inline-flex;align-items:center;gap:0.45em;margin-top:0.55rem;
+      padding:0.5em 1.3em;
+      font-family:'Cinzel',sans-serif;font-weight:400;
+      font-size:clamp(0.55rem,0.9vw,0.65rem);letter-spacing:0.18em;text-transform:uppercase;
+      text-decoration:none;color:#3a3a4a;
+      border:1px solid rgba(40,40,60,0.2);border-radius:100px;
+      transition:all 0.3s ease;cursor:pointer;pointer-events:auto;
+    }
+    .loc-button:hover{color:#141420;border-color:rgba(20,20,40,0.4);transform:translateY(-1px)}
+    .loc-icon{font-size:0.85em;opacity:0.6}
+
+    /* Dress */
+    .dress-block{display:flex;flex-direction:column;align-items:center;gap:0.3rem;margin-bottom:0.5rem}
+    .dress-label{font-family:'Cinzel',sans-serif;font-weight:400;font-size:clamp(0.55rem,0.9vw,0.65rem);letter-spacing:0.24em;text-transform:uppercase;color:var(--text-muted)}
+    .dress-detail{font-family:'Cormorant Garamond',Georgia,serif;font-weight:500;font-style:italic;font-size:clamp(0.85rem,1.5vw,1.1rem);color:var(--accent);letter-spacing:0.06em}
+
+    /* No gifts */
+    .no-gifts{font-family:'Cormorant Garamond',Georgia,serif;font-weight:400;font-style:italic;font-size:clamp(0.7rem,1.1vw,0.85rem);color:#6a6a7a;letter-spacing:0.05em;margin-bottom:1.6rem}
+
+    .bottom-rule{width:100px;height:1px;background:linear-gradient(to right,transparent 0%,rgba(50,50,70,0.3) 35%,rgba(30,30,50,0.4) 50%,rgba(50,50,70,0.3) 65%,transparent 100%);padding-bottom:2rem}
+
+    @media(max-width:480px){.container{padding:2rem 1.5rem 3rem}.top-rules{gap:4px;margin-bottom:1.4rem}.rule-thin{width:60px}.rule-thick{width:110px}.hosts-ornament-line{width:28px}}
+  </style>
+</head>
+<body>
+  <canvas id="fireworks"></canvas>
+  <div class="container">
+    <div class="top-rules"><div class="rule-thin"></div><div class="rule-thick"></div><div class="rule-thin"></div></div>
+    <h1 class="title">Silver Linings</h1>
+    <div class="subtitle">Rehearsal Dinner</div>
+    <div class="hosts-section">
+      <div class="hosts-ornament"><span class="hosts-ornament-line"></span><span class="hosts-ornament-diamond">◆</span><span class="hosts-ornament-line"></span></div>
+      <div class="hosts-names">Trupti <span class="hosts-ampersand">&amp;</span> Sailav Kaji</div>
+      <div class="hosts-ornament"><span class="hosts-ornament-line"></span><span class="hosts-ornament-diamond">◆</span><span class="hosts-ornament-line"></span></div>
+      <div class="hosts-invite">request the pleasure of your company</div>
+      <div class="hosts-rewedding">at a rehearsal dinner in honour of their rewedding</div>
+    </div>
+    <p class="quote">Three hundred and sixty-four days are yours to command.<br><span class="highlight">This one, however,</span> is reserved for us.</p>
+    <div class="programme-block">
+      <div class="programme-rule"></div>
+      <div class="programme-title">Pre-Function Rehearsals</div>
+      <ul class="programme-list">
+        <li class="programme-item">Red carpet walk training</li>
+        <li class="programme-item">Raising the toast</li>
+        <li class="programme-item">First dance drill</li>
+        <li class="programme-item">A few (rehearsed) words</li>
+        <li class="programme-item em">Oscar for Lifetime Achievement<br><span style="font-size:0.85em">(or Best Partner — TBD)</span></li>
+        <li class="programme-item">Thank you punch</li>
+      </ul>
+    </div>
+    <div class="date-block">
+      <div class="date-label">The Evening</div>
+      <div class="date-main">May<span class="date-divider"></span>30<span class="date-divider"></span>2026</div>
+      <div class="event-time">6 o'clock in the evening</div>
+    </div>
+    <div class="venue-block">
+      <div class="venue-name">Zenith Hall</div>
+      <div class="venue-sub">The St. Regis Mumbai</div>
+      <a href="https://maps.google.com/?q=Zenith+Hall+The+St+Regis+Mumbai" class="loc-button" target="_blank" rel="noopener"><span class="loc-icon">📍</span> View on Map</a>
+    </div>
+    <div class="dress-block">
+      <div class="dress-label">Attire</div>
+      <div class="dress-detail">Gowns &amp; Formal Suits</div>
+    </div>
+    <p class="no-gifts">No gifts, please — your company is the celebration.</p>
+    <div class="bottom-rule"></div>
+  </div>
+  <script>
+    (function(){
+      var c=document.getElementById('fireworks'),x=c.getContext('2d'),W,H,bursts=[],sparkles=[],trails=[];
+      function rs(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}window.addEventListener('resize',rs);rs();
+      var DARKS=[{r:60,g:55,b:70},{r:40,g:35,b:50},{r:80,g:75,b:90}];
+      var MAUVES=[{r:140,g:100,b:160},{r:120,g:80,b:140}];
+      var ROSES=[{r:180,g:100,b:120},{r:160,g:85,b:105}];
+      function pk(a){return a[Math.floor(Math.random()*a.length)]}
+      function sb(){
+        var cx=W*0.2+Math.random()*W*0.6,cy=H*0.15+Math.random()*H*0.45,ct=35+Math.floor(Math.random()*50);
+        var pal=Math.random()<0.5?DARKS:(Math.random()<0.7?MAUVES:ROSES);
+        var bc=pk(pal);
+        for(var i=0;i<8;i++){var an=(Math.PI*2*i)/8,ln=6+Math.random()*18;
+          trails.push({x1:cx,y1:cy,x2:cx+Math.cos(an)*ln,y2:cy+Math.sin(an)*ln,life:0.5+Math.random()*0.6,maxLife:1.1,color:bc})}
+        if(trails.length>35)trails.splice(0,trails.length-35);
+        var ps=[];
+        for(var j=0;j<ct;j++){var an2=(Math.PI*2*j)/ct+(Math.random()-0.5)*0.3,sp=25+Math.random()*140,cl=pk(pal);
+          ps.push({x:cx,y:cy,vx:Math.cos(an2)*sp,vy:Math.sin(an2)*sp,life:3*(0.4+Math.random()*0.6),maxLife:3,
+            color:{r:Math.min(255,Math.max(0,cl.r+(Math.random()-0.5)*25)),g:Math.min(255,Math.max(0,cl.g+(Math.random()-0.5)*25)),b:Math.min(255,Math.max(0,cl.b+(Math.random()-0.5)*25))},
+            size:0.5+Math.random()*2.2,gravity:10+Math.random()*30,drag:0.955+Math.random()*0.035})}
+        bursts.push({particles:ps,age:0});while(bursts.length>3)bursts.shift()}
+      function ss(){sparkles.push({x:Math.random()*W,y:Math.random()*H,life:1.5+Math.random()*4,maxLife:5.5,size:0.3+Math.random()*1.4,twinkleSpeed:0.02+Math.random()*0.07,twinkleOffset:Math.random()*Math.PI*2});if(sparkles.length>25)sparkles.shift()}
+      function up(dt){
+        for(var b=bursts.length-1;b>=0;b--){var bu=bursts[b];bu.age+=dt;
+          for(var p=bu.particles.length-1;p>=0;p--){var pt=bu.particles[p];pt.life-=dt;pt.vy+=pt.gravity*dt;pt.vx*=pt.drag;pt.vy*=pt.drag;pt.x+=pt.vx*dt;pt.y+=pt.vy*dt;if(pt.life<=0)bu.particles.splice(p,1)}
+          if(bu.particles.length===0||bu.age>4.5)bursts.splice(b,1)}
+        for(var t=trails.length-1;t>=0;t--){trails[t].life-=dt;if(trails[t].life<=0)trails.splice(t,1)}
+        for(var s=sparkles.length-1;s>=0;s--){sparkles[s].life-=dt;if(sparkles[s].life<=0)sparkles.splice(s,1)}
+      }
+      function dr(){x.clearRect(0,0,W,H);
+        for(var i=0;i<trails.length;i++){var t=trails[i],a=Math.max(0,t.life/t.maxLife)*0.4;x.strokeStyle='rgba('+t.color.r+','+t.color.g+','+t.color.b+','+a+')';x.lineWidth=0.5;x.beginPath();x.moveTo(t.x1,t.y1);x.lineTo(t.x2,t.y2);x.stroke()}
+        for(var b2=0;b2<bursts.length;b2++){var bu2=bursts[b2];
+          for(var p2=0;p2<bu2.particles.length;p2++){var pt2=bu2.particles[p2],a2=Math.max(0,pt2.life/pt2.maxLife),sz=pt2.size*(0.3+a2*0.7),fd=a2*0.8;
+            x.fillStyle='rgba('+pt2.color.r+','+pt2.color.g+','+pt2.color.b+','+fd+')';x.beginPath();x.arc(pt2.x,pt2.y,sz,0,Math.PI*2);x.fill()}}
+        for(var s2=0;s2<sparkles.length;s2++){var sp=sparkles[s2],tw=0.2+0.8*Math.abs(Math.sin(sp.twinkleOffset+performance.now()*0.001*sp.twinkleSpeed)),a3=Math.max(0,sp.life/sp.maxLife)*tw*0.35;x.fillStyle='rgba(60,55,70,'+a3+')';x.beginPath();x.arc(sp.x,sp.y,sp.size,0,Math.PI*2);x.fill()}
+      }
+      var bt=0,st=0;
+      function snb(){bt=3+Math.random()*5}snb();
+      setTimeout(function(){sb();snb()},500);
+      var lt=performance.now();
+      function lp(tm){var dt=Math.min((tm-lt)/1000,0.1);lt=tm;
+        bt-=dt;if(bt<=0){sb();snb()}st-=dt;if(st<=0){ss();st=0.35}
+        up(dt);dr();requestAnimationFrame(lp)}
+      requestAnimationFrame(lp);
+    })();
+  </script>
+</body>
+</html>
