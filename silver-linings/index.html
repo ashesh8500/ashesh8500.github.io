@@ -21,24 +21,23 @@
       --bg-deep: #060609;
       --silver-bright: #fafaff;
       --silver-mid: #d4d4e0;
-      --silver-deep: #a0a0b0;
-      --silver-dark: #787888;
+      --silver-deep: #c0c0cc;
+      --silver-dark: #9a9aa6;
       --champagne: #d4c5a9;
       --champagne-light: #ede0cc;
-      --text-muted: #aaaab8;
-      /* Floral palette */
+      --text-muted: #c4c4ce;
       --floral-purple: #c48ae0;
       --floral-magenta: #e070b4;
       --floral-terracotta: #d48860;
-      --floral-taupe: #b8a898;
       --transition-slow: 900ms cubic-bezier(0.22, 0.61, 0.36, 1);
       --transition-medium: 500ms cubic-bezier(0.22, 0.61, 0.36, 1);
     }
 
     html, body {
       width: 100%;
-      height: 100%;
-      overflow: hidden;
+      min-height: 100%;
+      overflow-x: hidden;
+      overflow-y: auto;
       background: var(--bg-deep);
       font-family: 'Inter', system-ui, -apple-system, sans-serif;
       -webkit-font-smoothing: antialiased;
@@ -46,6 +45,7 @@
       cursor: default;
       user-select: none;
       -webkit-user-select: none;
+      -webkit-overflow-scrolling: touch;
     }
 
     /* ── Background Vignette ── */
@@ -70,14 +70,14 @@
       bottom: 0;
       left: 0;
       right: 0;
-      height: 35%;
+      height: 30%;
       z-index: 0;
       pointer-events: none;
       background: linear-gradient(
         to top,
-        rgba(120,50,160,0.08) 0%,
-        rgba(180,80,130,0.04) 30%,
-        rgba(200,120,80,0.02) 60%,
+        rgba(140,60,180,0.10) 0%,
+        rgba(200,90,140,0.05) 35%,
+        rgba(210,130,90,0.02) 65%,
         transparent 100%
       );
     }
@@ -102,6 +102,7 @@
       animation-fill-mode: forwards;
       opacity: 0;
       filter: blur(0.5px);
+      will-change: transform, opacity;
     }
 
     .particle.petal {
@@ -109,7 +110,6 @@
       filter: blur(1px);
     }
 
-    /* Bottom-garden petals — larger, rising from the bottom */
     .particle.garden-petal {
       border-radius: 45% 55% 50% 50%;
       filter: blur(1.5px);
@@ -131,9 +131,9 @@
 
     @keyframes gardenRise {
       0%   { opacity: 0; transform: translateY(0) translateX(0) rotate(0deg) scale(0.6); }
-      10%  { opacity: 0.65; }
-      60%  { opacity: 0.35; }
-      100% { opacity: 0; transform: translateY(-70vh) translateX(15px) rotate(200deg) scale(1.1); }
+      10%  { opacity: 0.6; }
+      60%  { opacity: 0.3; }
+      100% { opacity: 0; transform: translateY(-65vh) translateX(15px) rotate(180deg) scale(1.0); }
     }
 
     /* ── Main Content ── */
@@ -144,8 +144,8 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      height: 100%;
-      padding: 2rem;
+      min-height: 100vh;
+      padding: 3rem 2rem;
       text-align: center;
     }
 
@@ -167,11 +167,9 @@
       width: 90px;
       height: 1px;
       background: linear-gradient(to right,
-        transparent 0%,
-        rgba(180,180,196,0.5) 30%,
-        rgba(230,230,240,0.7) 50%,
-        rgba(180,180,196,0.5) 70%,
-        transparent 100%
+        transparent 0%, rgba(190,190,210,0.55) 30%,
+        rgba(240,240,250,0.75) 50%,
+        rgba(190,190,210,0.55) 70%, transparent 100%
       );
     }
 
@@ -179,23 +177,15 @@
       width: 160px;
       height: 2px;
       background: linear-gradient(to right,
-        transparent 0%,
-        rgba(200,200,216,0.3) 20%,
-        rgba(245,245,250,0.8) 50%,
-        rgba(200,200,216,0.3) 80%,
-        transparent 100%
+        transparent 0%, rgba(210,210,230,0.35) 20%,
+        rgba(250,250,255,0.85) 50%,
+        rgba(210,210,230,0.35) 80%, transparent 100%
       );
     }
 
     /* ══════════════════════════════════════════════
        SILVER METALLIC TEXT
        ══════════════════════════════════════════════ */
-    .metallic-silver {
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-repeat: no-repeat;
-    }
 
     /* ── Title: "Silver Linings" ── */
     .title {
@@ -221,24 +211,24 @@
         ),
         linear-gradient(
           105deg,
-          transparent 38%,
-          rgba(255,255,255,0.0) 42%,
-          rgba(255,255,255,0.55) 47%,
-          rgba(255,255,255,0.95) 50%,
-          rgba(255,255,255,0.55) 53%,
-          rgba(255,255,255,0.0) 58%,
-          transparent 62%
+          transparent 38%, rgba(255,255,255,0.0) 42%, rgba(255,255,255,0.55) 47%,
+          rgba(255,255,255,0.95) 50%, rgba(255,255,255,0.55) 53%,
+          rgba(255,255,255,0.0) 58%, transparent 62%
         ),
         linear-gradient(
           180deg,
-          #fefefe 0%, #e4e4e4 16%, #909090 18%, #757575 19%,
-          #c8c8c8 22%, #f0f0f0 24%, #ffffff 27%, #e0e0e0 29%,
-          #b0b0b0 32%, #eaeaea 40%, #9e9e9e 45%, #6a6a6a 50%,
-          #aaaaaa 55%, #c8c8c8 60%, #5a5a5a 76%, #444444 78%,
-          #888888 85%, #cccccc 100%
+          #fefefe 0%, #e8e8e8 16%, #a0a0a0 18%, #808080 19%,
+          #d0d0d0 22%, #f4f4f4 24%, #ffffff 27%, #e4e4e4 29%,
+          #b8b8b8 32%, #eeeeee 40%, #a8a8a8 45%, #787878 50%,
+          #b4b4b4 55%, #d0d0d0 60%, #6e6e6e 76%, #585858 78%,
+          #989898 85%, #d4d4d4 100%
         );
       background-size: auto, 120% 100%, 100% 100%;
       background-position: 0 0, -150% 0, 0 0;
+
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
 
       filter:
         drop-shadow(0 0 20px rgba(210,210,230,0.18))
@@ -254,6 +244,7 @@
 
       transform: translate(var(--tilt-x, 0px), var(--tilt-y, 0px));
       transition: filter 0.6s ease, transform 0.1s ease-out;
+      will-change: transform;
     }
 
     .title:hover {
@@ -273,10 +264,10 @@
     .subtitle {
       font-family: 'Cinzel', 'Inter', system-ui, sans-serif;
       font-weight: 400;
-      font-size: clamp(0.7rem, 1.4vw, 0.95rem);
+      font-size: clamp(0.75rem, 1.5vw, 1rem);
       letter-spacing: 0.34em;
       text-transform: uppercase;
-      color: var(--champagne);
+      color: var(--champagne-light);
       margin-bottom: 1.6rem;
       animation-name: fadeRise;
       animation-duration: 1.5s;
@@ -309,33 +300,33 @@
       width: 40px;
       height: 1px;
       background: linear-gradient(to right,
-        transparent 0%, rgba(180,180,196,0.6) 50%, transparent 100%
+        transparent 0%, rgba(190,190,210,0.65) 50%, transparent 100%
       );
     }
 
     .hosts-ornament-diamond {
-      color: var(--silver-mid);
+      color: var(--silver-deep);
       font-size: 0.45rem;
-      opacity: 0.6;
+      opacity: 0.7;
     }
 
     .hosts-names {
       font-family: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
       font-weight: 600;
       font-style: italic;
-      font-size: clamp(1.05rem, 2vw, 1.45rem);
+      font-size: clamp(1.1rem, 2.1vw, 1.5rem);
       letter-spacing: 0.06em;
 
       background-image:
         linear-gradient(105deg,
-          transparent 38%, rgba(255,255,255,0) 42%, rgba(255,255,255,0.40) 47%,
-          rgba(255,255,255,0.85) 50%, rgba(255,255,255,0.40) 53%,
+          transparent 38%, rgba(255,255,255,0) 42%, rgba(255,255,255,0.45) 47%,
+          rgba(255,255,255,0.88) 50%, rgba(255,255,255,0.45) 53%,
           rgba(255,255,255,0) 58%, transparent 62%
         ),
         linear-gradient(180deg,
-          #e8e8ec 0%, #c8c8d2 18%, #888894 20%, #c0c0cc 24%,
-          #dcdce6 30%, #b0b0ba 45%, #90909a 55%, #c4c4ce 65%,
-          #70707a 78%, #9a9aa4 100%
+          #eeeef2 0%, #d0d0da 18%, #9898a0 20%, #c8c8d4 24%,
+          #e2e2ec 30%, #b8b8c2 45%, #9a9aa4 55%, #ccccd6 65%,
+          #808088 78%, #a6a6b0 100%
         );
       background-size: 120% 100%, 100% 100%;
       background-position: -150% 0, 0 0;
@@ -345,7 +336,7 @@
       -webkit-text-fill-color: transparent;
 
       filter:
-        drop-shadow(0 0 12px rgba(200,200,216,0.12))
+        drop-shadow(0 0 14px rgba(210,210,226,0.14))
         drop-shadow(0 1px 3px rgba(0,0,0,0.40));
 
       animation-name: hostsShimmer;
@@ -376,7 +367,7 @@
     .hosts-invite {
       font-family: 'Cinzel', 'Inter', system-ui, sans-serif;
       font-weight: 400;
-      font-size: clamp(0.58rem, 1vw, 0.7rem);
+      font-size: clamp(0.6rem, 1.05vw, 0.72rem);
       letter-spacing: 0.22em;
       text-transform: uppercase;
       color: var(--text-muted);
@@ -387,7 +378,7 @@
       font-family: 'Cormorant Garamond', Georgia, serif;
       font-weight: 400;
       font-style: italic;
-      font-size: clamp(0.65rem, 1.1vw, 0.8rem);
+      font-size: clamp(0.7rem, 1.15vw, 0.85rem);
       letter-spacing: 0.04em;
       color: var(--silver-deep);
       margin-top: 0.2rem;
@@ -398,19 +389,19 @@
       font-family: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
       font-weight: 500;
       font-style: italic;
-      font-size: clamp(1.05rem, 2vw, 1.55rem);
+      font-size: clamp(1.1rem, 2.1vw, 1.6rem);
       line-height: 1.6;
       max-width: 28em;
       margin-bottom: 1.6rem;
 
       background: linear-gradient(180deg,
-        #c8c8d6 0%, #b0b0be 35%, #a0a0ae 50%, #b8b8c6 65%, #9898a6 100%
+        #d8d8e2 0%, #c0c0cc 35%, #b4b4c0 50%, #c8c8d4 65%, #acacb8 100%
       );
       -webkit-background-clip: text;
       background-clip: text;
       -webkit-text-fill-color: transparent;
       filter:
-        drop-shadow(0 0 8px rgba(180,180,196,0.12))
+        drop-shadow(0 0 10px rgba(190,190,210,0.14))
         drop-shadow(0 1px 2px rgba(0,0,0,0.35));
 
       animation-name: fadeRise;
@@ -445,9 +436,9 @@
       width: 80px;
       height: 1px;
       background: linear-gradient(to right,
-        transparent 0%, rgba(180,160,200,0.45) 30%,
-        rgba(220,200,240,0.6) 50%,
-        rgba(180,160,200,0.45) 70%, transparent 100%
+        transparent 0%, rgba(190,175,215,0.50) 30%,
+        rgba(230,215,250,0.65) 50%,
+        rgba(190,175,215,0.50) 70%, transparent 100%
       );
       margin: 0 auto 0.6rem auto;
     }
@@ -455,7 +446,7 @@
     .programme-title {
       font-family: 'Cinzel', 'Inter', system-ui, sans-serif;
       font-weight: 400;
-      font-size: clamp(0.52rem, 0.85vw, 0.62rem);
+      font-size: clamp(0.55rem, 0.9vw, 0.65rem);
       letter-spacing: 0.24em;
       text-transform: uppercase;
       color: var(--floral-purple);
@@ -473,14 +464,14 @@
       font-family: 'Cormorant Garamond', Georgia, serif;
       font-weight: 400;
       font-style: italic;
-      font-size: clamp(0.72rem, 1.2vw, 0.88rem);
-      color: var(--silver-deep);
+      font-size: clamp(0.78rem, 1.3vw, 0.92rem);
+      color: var(--silver-mid);
       letter-spacing: 0.04em;
       line-height: 1.4;
     }
 
     .programme-item.em {
-      color: var(--champagne);
+      color: var(--champagne-light);
       font-weight: 500;
     }
 
@@ -497,7 +488,7 @@
     .date-label {
       font-family: 'Cinzel', 'Inter', system-ui, sans-serif;
       font-weight: 400;
-      font-size: clamp(0.6rem, 1.1vw, 0.78rem);
+      font-size: clamp(0.62rem, 1.15vw, 0.8rem);
       letter-spacing: 0.28em;
       text-transform: uppercase;
       color: var(--text-muted);
@@ -514,14 +505,14 @@
 
       background-image:
         linear-gradient(105deg,
-          transparent 38%, rgba(255,255,255,0) 42%, rgba(255,255,255,0.35) 47%,
-          rgba(255,255,255,0.75) 50%, rgba(255,255,255,0.35) 53%,
+          transparent 38%, rgba(255,255,255,0) 42%, rgba(255,255,255,0.40) 47%,
+          rgba(255,255,255,0.80) 50%, rgba(255,255,255,0.40) 53%,
           rgba(255,255,255,0) 58%, transparent 62%
         ),
         linear-gradient(180deg,
-          #dcdce6 0%, #c0c0cc 18%, #80808c 20%, #b8b8c4 24%,
-          #d0d0da 30%, #a8a8b4 45%, #888892 55%, #bcbcc6 65%,
-          #6a6a74 78%, #94949e 100%
+          #e2e2ec 0%, #c8c8d4 18%, #909098 20%, #c0c0cc 24%,
+          #d8d8e2 30%, #b0b0bc 45%, #92929c 55%, #c4c4ce 65%,
+          #787882 78%, #9e9ea8 100%
         );
       background-size: 120% 100%, 100% 100%;
       background-position: -150% 0, 0 0;
@@ -531,7 +522,7 @@
       -webkit-text-fill-color: transparent;
 
       filter:
-        drop-shadow(0 0 14px rgba(190,190,208,0.14))
+        drop-shadow(0 0 16px rgba(200,200,218,0.16))
         drop-shadow(0 1px 3px rgba(0,0,0,0.38));
 
       animation-name: dateShimmer;
@@ -550,7 +541,7 @@
       display: inline-block;
       width: 2rem;
       height: 1px;
-      background: rgba(190,190,200,0.55);
+      background: rgba(200,200,215,0.6);
       vertical-align: middle;
       margin: 0 0.18em;
       -webkit-background-clip: unset;
@@ -565,7 +556,7 @@
       font-family: 'Cormorant Garamond', Georgia, serif;
       font-weight: 400;
       font-style: italic;
-      font-size: clamp(0.85rem, 1.6vw, 1.2rem);
+      font-size: clamp(0.9rem, 1.7vw, 1.25rem);
       color: var(--silver-mid);
       letter-spacing: 0.06em;
       margin-top: 0.4rem;
@@ -589,7 +580,7 @@
       font-family: 'Cormorant Garamond', Georgia, serif;
       font-weight: 600;
       font-style: italic;
-      font-size: clamp(0.95rem, 1.8vw, 1.35rem);
+      font-size: clamp(1rem, 1.9vw, 1.4rem);
       color: var(--silver-mid);
       letter-spacing: 0.05em;
     }
@@ -597,7 +588,7 @@
     .venue-sub {
       font-family: 'Cinzel', 'Inter', system-ui, sans-serif;
       font-weight: 400;
-      font-size: clamp(0.55rem, 0.95vw, 0.68rem);
+      font-size: clamp(0.58rem, 1vw, 0.7rem);
       letter-spacing: 0.2em;
       text-transform: uppercase;
       color: var(--text-muted);
@@ -609,17 +600,17 @@
       align-items: center;
       gap: 0.45em;
       margin-top: 0.55rem;
-      padding: 0.45em 1.2em;
+      padding: 0.5em 1.3em;
       font-family: 'Cinzel', 'Inter', system-ui, sans-serif;
       font-weight: 400;
-      font-size: clamp(0.52rem, 0.85vw, 0.62rem);
+      font-size: clamp(0.55rem, 0.9vw, 0.65rem);
       letter-spacing: 0.18em;
       text-transform: uppercase;
       text-decoration: none;
       color: var(--silver-mid);
-      border: 1px solid rgba(180,180,196,0.25);
+      border: 1px solid rgba(200,200,220,0.30);
       border-radius: 100px;
-      background: rgba(255,255,255,0.02);
+      background: rgba(255,255,255,0.03);
       transition: all 0.3s ease;
       cursor: pointer;
       pointer-events: auto;
@@ -627,8 +618,8 @@
 
     .loc-button:hover {
       color: var(--silver-bright);
-      border-color: rgba(220,220,240,0.5);
-      background: rgba(255,255,255,0.05);
+      border-color: rgba(230,230,245,0.55);
+      background: rgba(255,255,255,0.06);
       transform: translateY(-1px);
     }
 
@@ -638,7 +629,7 @@
 
     .loc-icon {
       font-size: 0.85em;
-      opacity: 0.7;
+      opacity: 0.75;
     }
 
     /* ── Dress Code ── */
@@ -658,7 +649,7 @@
     .dress-label {
       font-family: 'Cinzel', 'Inter', system-ui, sans-serif;
       font-weight: 400;
-      font-size: clamp(0.52rem, 0.85vw, 0.62rem);
+      font-size: clamp(0.55rem, 0.9vw, 0.65rem);
       letter-spacing: 0.24em;
       text-transform: uppercase;
       color: var(--text-muted);
@@ -668,8 +659,8 @@
       font-family: 'Cormorant Garamond', Georgia, serif;
       font-weight: 500;
       font-style: italic;
-      font-size: clamp(0.8rem, 1.4vw, 1.05rem);
-      color: var(--champagne);
+      font-size: clamp(0.85rem, 1.5vw, 1.1rem);
+      color: var(--champagne-light);
       letter-spacing: 0.06em;
     }
 
@@ -678,7 +669,7 @@
       font-family: 'Cormorant Garamond', Georgia, serif;
       font-weight: 400;
       font-style: italic;
-      font-size: clamp(0.65rem, 1.05vw, 0.8rem);
+      font-size: clamp(0.7rem, 1.1vw, 0.85rem);
       color: var(--silver-deep);
       letter-spacing: 0.05em;
       margin-bottom: 1.6rem;
@@ -694,10 +685,11 @@
       width: 100px;
       height: 1px;
       background: linear-gradient(to right,
-        transparent 0%, rgba(200,200,216,0.4) 35%,
-        rgba(245,245,250,0.55) 50%,
-        rgba(200,200,216,0.4) 65%, transparent 100%
+        transparent 0%, rgba(210,210,230,0.45) 35%,
+        rgba(250,250,255,0.6) 50%,
+        rgba(210,210,230,0.45) 65%, transparent 100%
       );
+      padding-bottom: 2rem;
       animation-name: fadeRise;
       animation-duration: 1.5s;
       animation-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
@@ -721,7 +713,7 @@
 
     /* ── Responsive ── */
     @media (max-width: 480px) {
-      .container { padding: 1.5rem; }
+      .container { padding: 2rem 1.5rem 3rem; }
       .top-rules { gap: 4px; margin-bottom: 1.4rem; }
       .rule-thin { width: 60px; }
       .rule-thick { width: 110px; }
@@ -730,9 +722,10 @@
       .quote { margin-bottom: 1.2rem; }
       .programme-block { margin-bottom: 1rem; }
       .date-block { margin-bottom: 0.3rem; }
-      .date-divider { width: 1.2rem; }
+      .date-divider { width: 1.3rem; }
       .venue-block { margin-bottom: 0.4rem; }
       .dress-block { margin-bottom: 0.3rem; }
+      .no-gifts { margin-bottom: 1.2rem; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -842,7 +835,8 @@
       var sparkles = [];
       var trails = [];
       var petals = [];
-      var MAX_BURSTS = 6;
+      var MAX_BURSTS = 4;
+      var MAX_PETALS = 25;
       var PARTICLE_LIFE = 3.5;
 
       function resize() {
@@ -854,35 +848,29 @@
 
       // ── Palettes ──
       var SILVERS = [
-        { r: 245, g: 244, b: 252 },
-        { r: 225, g: 224, b: 238 },
-        { r: 205, g: 204, b: 220 },
-        { r: 185, g: 184, b: 200 },
+        { r: 248, g: 247, b: 254 },
+        { r: 230, g: 229, b: 242 },
+        { r: 210, g: 209, b: 226 },
       ];
       var CHAMPAGNES = [
-        { r: 240, g: 228, b: 208 },
-        { r: 224, g: 206, b: 176 },
-        { r: 216, g: 200, b: 172 },
+        { r: 244, g: 232, b: 214 },
+        { r: 228, g: 210, b: 182 },
       ];
       var GOLDS = [
-        { r: 235, g: 208, b: 148 },
-        { r: 218, g: 188, b: 128 },
+        { r: 238, g: 214, b: 156 },
       ];
       var PURPLES = [
-        { r: 175, g: 100, b: 220 },
-        { r: 155, g: 70, b: 200 },
-        { r: 135, g: 60, b: 180 },
-        { r: 195, g: 125, b: 230 },
+        { r: 180, g: 108, b: 224 },
+        { r: 160, g: 78, b: 204 },
+        { r: 142, g: 66, b: 186 },
       ];
       var MAGENTAS = [
-        { r: 225, g: 80, b: 165 },
-        { r: 205, g: 55, b: 145 },
-        { r: 185, g: 45, b: 130 },
+        { r: 228, g: 88, b: 170 },
+        { r: 210, g: 62, b: 150 },
       ];
       var TERRACOTTAS = [
-        { r: 215, g: 125, b: 80 },
-        { r: 195, g: 105, b: 65 },
-        { r: 180, g: 90, b: 55 },
+        { r: 218, g: 130, b: 86 },
+        { r: 198, g: 110, b: 70 },
       ];
 
       function pick(arr) {
@@ -902,13 +890,13 @@
             color: color,
           });
         }
-        if (trails.length > 60) trails.splice(0, trails.length - 60);
+        if (trails.length > 50) trails.splice(0, trails.length - 50);
       }
 
       function spawnBurst() {
-        var cx = W * 0.18 + Math.random() * W * 0.64;
-        var cy = H * 0.12 + Math.random() * H * 0.48;
-        var count = 70 + Math.floor(Math.random() * 100);
+        var cx = W * 0.2 + Math.random() * W * 0.6;
+        var cy = H * 0.15 + Math.random() * H * 0.45;
+        var count = 55 + Math.floor(Math.random() * 80);
 
         var roll = Math.random();
         var palette;
@@ -941,9 +929,9 @@
             life: PARTICLE_LIFE * (0.4 + Math.random() * 0.6),
             maxLife: PARTICLE_LIFE,
             color: {
-              r: color.r + (Math.random() - 0.5) * 35,
-              g: color.g + (Math.random() - 0.5) * 35,
-              b: color.b + (Math.random() - 0.5) * 35,
+              r: Math.min(255, Math.max(0, color.r + (Math.random() - 0.5) * 35)),
+              g: Math.min(255, Math.max(0, color.g + (Math.random() - 0.5) * 35)),
+              b: Math.min(255, Math.max(0, color.b + (Math.random() - 0.5) * 35)),
             },
             size: 0.7 + Math.random() * 2.8,
             gravity: 12 + Math.random() * 35,
@@ -954,28 +942,27 @@
         while (bursts.length > MAX_BURSTS) bursts.shift();
       }
 
-      // ── Canvas Petal (drifting up) ──
       function spawnPetal() {
+        if (petals.length >= MAX_PETALS) return;
         var palettes = [PURPLES, MAGENTAS, TERRACOTTAS];
         var palette = pick(palettes);
         var color = pick(palette);
         petals.push({
           x: Math.random() * W,
-          y: H + 20 + Math.random() * 80,
-          life: 6 + Math.random() * 16,
-          maxLife: 22,
-          size: 3 + Math.random() * 8,
+          y: H + 20 + Math.random() * 60,
+          life: 6 + Math.random() * 14,
+          maxLife: 20,
+          size: 3 + Math.random() * 7,
           color: {
-            r: color.r + (Math.random() - 0.5) * 30,
-            g: color.g + (Math.random() - 0.5) * 30,
-            b: color.b + (Math.random() - 0.5) * 30,
+            r: Math.min(255, Math.max(0, color.r + (Math.random() - 0.5) * 25)),
+            g: Math.min(255, Math.max(0, color.g + (Math.random() - 0.5) * 25)),
+            b: Math.min(255, Math.max(0, color.b + (Math.random() - 0.5) * 25)),
           },
-          driftX: (Math.random() - 0.5) * 30,
-          driftSpeed: 0.15 + Math.random() * 0.7,
+          driftX: (Math.random() - 0.5) * 28,
+          driftSpeed: 0.15 + Math.random() * 0.6,
           rotation: Math.random() * 360,
-          rotationSpeed: (Math.random() - 0.5) * 1.5,
+          rotationSpeed: (Math.random() - 0.5) * 1.2,
         });
-        if (petals.length > 55) petals.shift();
       }
 
       function spawnSparkle() {
@@ -988,7 +975,7 @@
           twinkleSpeed: 0.025 + Math.random() * 0.08,
           twinkleOffset: Math.random() * Math.PI * 2,
         });
-        if (sparkles.length > 55) sparkles.shift();
+        if (sparkles.length > 40) sparkles.shift();
       }
 
       function update(dt) {
@@ -1023,7 +1010,7 @@
         for (var pt2 = petals.length - 1; pt2 >= 0; pt2--) {
           var petal = petals[pt2];
           petal.life -= dt;
-          petal.y -= (7 + Math.sin(petal.life * 0.35) * 5) * dt;
+          petal.y -= (6 + Math.sin(petal.life * 0.3) * 4) * dt;
           petal.x += Math.sin(petal.life * petal.driftSpeed) * petal.driftX * dt;
           petal.rotation += petal.rotationSpeed * dt * 60;
           if (petal.life <= 0 || petal.y < -40) petals.splice(pt2, 1);
@@ -1036,9 +1023,9 @@
         // Trails
         for (var i = 0; i < trails.length; i++) {
           var t = trails[i];
-          var alpha = Math.max(0, t.life / t.maxLife) * 0.5;
+          var alpha = Math.max(0, t.life / t.maxLife) * 0.55;
           ctx.strokeStyle = 'rgba(' + t.color.r + ',' + t.color.g + ',' + t.color.b + ',' + alpha + ')';
-          ctx.lineWidth = 0.6;
+          ctx.lineWidth = 0.7;
           ctx.beginPath();
           ctx.moveTo(t.x1, t.y1);
           ctx.lineTo(t.x2, t.y2);
@@ -1074,8 +1061,8 @@
         for (var s2 = 0; s2 < sparkles.length; s2++) {
           var sp = sparkles[s2];
           var twinkle = 0.25 + 0.75 * Math.abs(Math.sin(sp.twinkleOffset + performance.now() * 0.001 * sp.twinkleSpeed));
-          var alpha3 = Math.max(0, sp.life / sp.maxLife) * twinkle * 0.45;
-          ctx.fillStyle = 'rgba(238,236,246,' + alpha3 + ')';
+          var alpha3 = Math.max(0, sp.life / sp.maxLife) * twinkle * 0.5;
+          ctx.fillStyle = 'rgba(240,238,248,' + alpha3 + ')';
           ctx.beginPath();
           ctx.arc(sp.x, sp.y, sp.size, 0, Math.PI * 2);
           ctx.fill();
@@ -1093,13 +1080,6 @@
           ctx.beginPath();
           ctx.ellipse(0, 0, petal2.size, petal2.size * 0.55, 0, 0, Math.PI * 2);
           ctx.fill();
-          var petalGlow = ctx.createRadialGradient(0, 0, 0, 0, 0, petal2.size * 2.5);
-          petalGlow.addColorStop(0, 'rgba(' + petal2.color.r + ',' + petal2.color.g + ',' + petal2.color.b + ',' + (alpha4 * 0.35) + ')');
-          petalGlow.addColorStop(1, 'rgba(0,0,0,0)');
-          ctx.fillStyle = petalGlow;
-          ctx.beginPath();
-          ctx.arc(0, 0, petal2.size * 2.5, 0, Math.PI * 2);
-          ctx.fill();
           ctx.restore();
         }
       }
@@ -1109,42 +1089,42 @@
       var sparkleTimer = 0;
 
       function scheduleNextBurst() {
-        burstTimer = 1.8 + Math.random() * 4.5;
+        burstTimer = 2.5 + Math.random() * 5;
       }
       scheduleNextBurst();
 
       setTimeout(function() {
         spawnBurst();
         scheduleNextBurst();
-      }, 300);
+      }, 400);
 
       setTimeout(function() {
         if (bursts.length === 0) spawnBurst();
-      }, 800);
+      }, 900);
 
       // ── DOM Dust ──
       function spawnDustParticle() {
         var el = document.createElement('div');
         el.className = 'particle';
-        var size = 1 + Math.random() * 3.5;
-        var dur = 7 + Math.random() * 12;
-        var delay = Math.random() * 4;
+        var size = 1 + Math.random() * 3;
+        var dur = 8 + Math.random() * 10;
+        var delay = Math.random() * 3;
         el.style.cssText =
           'width:' + size + 'px;height:' + size + 'px;' +
           'left:' + (5 + Math.random() * 90) + '%;bottom:-10px;';
         el.style.animationDuration = dur + 's';
         el.style.animationDelay = delay + 's';
         document.body.appendChild(el);
-        setTimeout(function() { el.remove(); }, (dur + delay) * 1000 + 500);
+        setTimeout(function() { el.remove(); }, (dur + delay) * 1000 + 400);
       }
 
-      // ── DOM Petal (drifting up) ──
+      // ── DOM Petal ──
       function spawnDomPetal() {
         var el = document.createElement('div');
         el.className = 'particle petal';
-        var size = 3 + Math.random() * 6;
-        var dur = 9 + Math.random() * 14;
-        var delay = Math.random() * 6;
+        var size = 3 + Math.random() * 5;
+        var dur = 10 + Math.random() * 12;
+        var delay = Math.random() * 4;
         var palettes = [PURPLES, MAGENTAS, TERRACOTTAS];
         var color = pick(pick(palettes));
         var bgColor = 'radial-gradient(ellipse, rgba(' + color.r + ',' + color.g + ',' + color.b + ',0.75) 0%, rgba(' + color.r + ',' + color.g + ',' + color.b + ',0) 70%)';
@@ -1159,16 +1139,16 @@
         el.style.animationTimingFunction = 'ease-out';
         el.style.animationFillMode = 'forwards';
         document.body.appendChild(el);
-        setTimeout(function() { el.remove(); }, (dur + delay) * 1000 + 500);
+        setTimeout(function() { el.remove(); }, (dur + delay) * 1000 + 400);
       }
 
-      // ── Garden Petal (large, bottom-heavy) ──
+      // ── Garden Petal (large, bottom-anchored) ──
       function spawnGardenPetal() {
         var el = document.createElement('div');
         el.className = 'particle garden-petal';
-        var size = 5 + Math.random() * 10;
-        var dur = 12 + Math.random() * 18;
-        var delay = Math.random() * 3;
+        var size = 5 + Math.random() * 8;
+        var dur = 14 + Math.random() * 16;
+        var delay = Math.random() * 2;
         var palettes = [PURPLES, MAGENTAS, TERRACOTTAS];
         var color = pick(pick(palettes));
         var bgColor = 'radial-gradient(ellipse, rgba(' + color.r + ',' + color.g + ',' + color.b + ',0.8) 0%, rgba(' + color.r + ',' + color.g + ',' + color.b + ',0.15) 55%, rgba(0,0,0,0) 100%)';
@@ -1183,7 +1163,7 @@
         el.style.animationTimingFunction = 'cubic-bezier(0.33, 0, 0.67, 1)';
         el.style.animationFillMode = 'forwards';
         document.body.appendChild(el);
-        setTimeout(function() { el.remove(); }, (dur + delay) * 1000 + 500);
+        setTimeout(function() { el.remove(); }, (dur + delay) * 1000 + 400);
       }
 
       // ── Main Loop ──
@@ -1201,13 +1181,14 @@
         sparkleTimer -= dt;
         if (sparkleTimer <= 0) {
           spawnSparkle();
-          sparkleTimer = 0.22;
+          sparkleTimer = 0.3;
         }
 
-        if (Math.random() < 0.20) spawnDustParticle();
-        if (Math.random() < 0.10) spawnDomPetal();
-        if (Math.random() < 0.08) spawnGardenPetal();
-        if (Math.random() < 0.06) spawnPetal();
+        // Controlled spawn rates — no overlapping timers
+        if (Math.random() < 0.14) spawnDustParticle();
+        if (Math.random() < 0.05) spawnDomPetal();
+        if (Math.random() < 0.035) spawnGardenPetal();
+        if (Math.random() < 0.04) spawnPetal();
 
         update(dt);
         draw();
