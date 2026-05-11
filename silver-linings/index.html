@@ -25,12 +25,12 @@
       --silver-dark: #787888;
       --champagne: #d4c5a9;
       --champagne-light: #ede0cc;
-      --text-muted: #7a7a88;
-      /* Floral palette — from the St. Regis deck */
-      --floral-purple: #b875d9;
-      --floral-magenta: #d460a8;
-      --floral-terracotta: #cc7a50;
-      --floral-taupe: #b0a090;
+      --text-muted: #aaaab8;
+      /* Floral palette */
+      --floral-purple: #c48ae0;
+      --floral-magenta: #e070b4;
+      --floral-terracotta: #d48860;
+      --floral-taupe: #b8a898;
       --transition-slow: 900ms cubic-bezier(0.22, 0.61, 0.36, 1);
       --transition-medium: 500ms cubic-bezier(0.22, 0.61, 0.36, 1);
     }
@@ -58,8 +58,27 @@
       background: radial-gradient(
         ellipse 80% 60% at 50% 45%,
         rgba(20,20,28,0) 0%,
-        rgba(6,6,9,0.6) 60%,
-        rgba(2,2,4,0.92) 100%
+        rgba(6,6,9,0.55) 55%,
+        rgba(2,2,4,0.90) 100%
+      );
+    }
+
+    /* ── Bottom floral glow ── */
+    body::after {
+      content: '';
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 35%;
+      z-index: 0;
+      pointer-events: none;
+      background: linear-gradient(
+        to top,
+        rgba(120,50,160,0.08) 0%,
+        rgba(180,80,130,0.04) 30%,
+        rgba(200,120,80,0.02) 60%,
+        transparent 100%
       );
     }
 
@@ -71,7 +90,7 @@
       pointer-events: none;
     }
 
-    /* ── Ambient Particles (floating silver dust + petals) ── */
+    /* ── Ambient Particles ── */
     .particle {
       position: fixed;
       pointer-events: none;
@@ -90,6 +109,12 @@
       filter: blur(1px);
     }
 
+    /* Bottom-garden petals — larger, rising from the bottom */
+    .particle.garden-petal {
+      border-radius: 45% 55% 50% 50%;
+      filter: blur(1.5px);
+    }
+
     @keyframes floatUp {
       0%   { opacity: 0; transform: translateY(0) scale(0.4); }
       8%   { opacity: 0.75; }
@@ -102,6 +127,13 @@
       8%   { opacity: 0.7; }
       50%  { transform: translateY(-45vh) translateX(30px) rotate(120deg) scale(0.9); }
       100% { opacity: 0; transform: translateY(-100vh) translateX(-20px) rotate(280deg) scale(0.4); }
+    }
+
+    @keyframes gardenRise {
+      0%   { opacity: 0; transform: translateY(0) translateX(0) rotate(0deg) scale(0.6); }
+      10%  { opacity: 0.65; }
+      60%  { opacity: 0.35; }
+      100% { opacity: 0; transform: translateY(-70vh) translateX(15px) rotate(200deg) scale(1.1); }
     }
 
     /* ── Main Content ── */
@@ -117,13 +149,13 @@
       text-align: center;
     }
 
-    /* ── Ornamental Top Rules (thin-thick-thin) ── */
+    /* ── Ornamental Top Rules ── */
     .top-rules {
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 5px;
-      margin-bottom: 2.2rem;
+      margin-bottom: 2rem;
       animation-name: fadeRise;
       animation-duration: 1.5s;
       animation-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
@@ -155,11 +187,9 @@
       );
     }
 
-    /* ═══════════════════════════════════════════════════════
-       SHARED SILVER METALLIC BASE
-       Inspired by Mandy Michael's silver text technique:
-       hard color transitions create realistic polished-metal banding
-       ═══════════════════════════════════════════════════════ */
+    /* ══════════════════════════════════════════════
+       SILVER METALLIC TEXT
+       ══════════════════════════════════════════════ */
     .metallic-silver {
       -webkit-background-clip: text;
       background-clip: text;
@@ -175,7 +205,7 @@
       font-size: clamp(3.2rem, 8.5vw, 8rem);
       line-height: 1.05;
       letter-spacing: 0.005em;
-      margin-bottom: 0.08em;
+      margin-bottom: 0.06em;
 
       --glint-x: 50%;
       --glint-y: 50%;
@@ -183,14 +213,12 @@
       --tilt-y: 0px;
 
       background-image:
-        /* Cursor glint */
         radial-gradient(
           ellipse 30% 60% at var(--glint-x) var(--glint-y),
           rgba(255,255,255,0.22) 0%,
           rgba(255,255,255,0.06) 40%,
           transparent 70%
         ),
-        /* Shimmer highlight */
         linear-gradient(
           105deg,
           transparent 38%,
@@ -201,27 +229,13 @@
           rgba(255,255,255,0.0) 58%,
           transparent 62%
         ),
-        /* Metallic silver base */
         linear-gradient(
           180deg,
-          #fefefe 0%,
-          #e4e4e4 16%,
-          #909090 18%,
-          #757575 19%,
-          #c8c8c8 22%,
-          #f0f0f0 24%,
-          #ffffff 27%,
-          #e0e0e0 29%,
-          #b0b0b0 32%,
-          #eaeaea 40%,
-          #9e9e9e 45%,
-          #6a6a6a 50%,
-          #aaaaaa 55%,
-          #c8c8c8 60%,
-          #5a5a5a 76%,
-          #444444 78%,
-          #888888 85%,
-          #cccccc 100%
+          #fefefe 0%, #e4e4e4 16%, #909090 18%, #757575 19%,
+          #c8c8c8 22%, #f0f0f0 24%, #ffffff 27%, #e0e0e0 29%,
+          #b0b0b0 32%, #eaeaea 40%, #9e9e9e 45%, #6a6a6a 50%,
+          #aaaaaa 55%, #c8c8c8 60%, #5a5a5a 76%, #444444 78%,
+          #888888 85%, #cccccc 100%
         );
       background-size: auto, 120% 100%, 100% 100%;
       background-position: 0 0, -150% 0, 0 0;
@@ -263,7 +277,7 @@
       letter-spacing: 0.34em;
       text-transform: uppercase;
       color: var(--champagne);
-      margin-bottom: 2rem;
+      margin-bottom: 1.6rem;
       animation-name: fadeRise;
       animation-duration: 1.5s;
       animation-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
@@ -271,13 +285,13 @@
       animation-fill-mode: forwards;
     }
 
-    /* ── Hosts: Trupti & Sailav Kaji ── */
+    /* ── Hosts ── */
     .hosts-section {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 0.6rem;
-      margin-bottom: 2rem;
+      gap: 0.5rem;
+      margin-bottom: 1.6rem;
       animation-name: fadeRise;
       animation-duration: 1.5s;
       animation-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
@@ -295,9 +309,7 @@
       width: 40px;
       height: 1px;
       background: linear-gradient(to right,
-        transparent 0%,
-        rgba(180,180,196,0.6) 50%,
-        transparent 100%
+        transparent 0%, rgba(180,180,196,0.6) 50%, transparent 100%
       );
     }
 
@@ -315,28 +327,15 @@
       letter-spacing: 0.06em;
 
       background-image:
-        linear-gradient(
-          105deg,
-          transparent 38%,
-          rgba(255,255,255,0) 42%,
-          rgba(255,255,255,0.40) 47%,
-          rgba(255,255,255,0.85) 50%,
-          rgba(255,255,255,0.40) 53%,
-          rgba(255,255,255,0) 58%,
-          transparent 62%
+        linear-gradient(105deg,
+          transparent 38%, rgba(255,255,255,0) 42%, rgba(255,255,255,0.40) 47%,
+          rgba(255,255,255,0.85) 50%, rgba(255,255,255,0.40) 53%,
+          rgba(255,255,255,0) 58%, transparent 62%
         ),
-        linear-gradient(
-          180deg,
-          #e8e8ec 0%,
-          #c8c8d2 18%,
-          #888894 20%,
-          #c0c0cc 24%,
-          #dcdce6 30%,
-          #b0b0ba 45%,
-          #90909a 55%,
-          #c4c4ce 65%,
-          #70707a 78%,
-          #9a9aa4 100%
+        linear-gradient(180deg,
+          #e8e8ec 0%, #c8c8d2 18%, #888894 20%, #c0c0cc 24%,
+          #dcdce6 30%, #b0b0ba 45%, #90909a 55%, #c4c4ce 65%,
+          #70707a 78%, #9a9aa4 100%
         );
       background-size: 120% 100%, 100% 100%;
       background-position: -150% 0, 0 0;
@@ -381,7 +380,7 @@
       letter-spacing: 0.22em;
       text-transform: uppercase;
       color: var(--text-muted);
-      margin-top: 0.5rem;
+      margin-top: 0.4rem;
     }
 
     .hosts-rewedding {
@@ -391,7 +390,7 @@
       font-size: clamp(0.65rem, 1.1vw, 0.8rem);
       letter-spacing: 0.04em;
       color: var(--silver-deep);
-      margin-top: 0.25rem;
+      margin-top: 0.2rem;
     }
 
     /* ── Quote ── */
@@ -399,24 +398,19 @@
       font-family: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
       font-weight: 500;
       font-style: italic;
-      font-size: clamp(1.1rem, 2.2vw, 1.7rem);
+      font-size: clamp(1.05rem, 2vw, 1.55rem);
       line-height: 1.6;
       max-width: 28em;
-      margin-bottom: 2.4rem;
+      margin-bottom: 1.6rem;
 
-      background: linear-gradient(
-        180deg,
-        #c8c8d6 0%,
-        #b0b0be 35%,
-        #a0a0ae 50%,
-        #b8b8c6 65%,
-        #9898a6 100%
+      background: linear-gradient(180deg,
+        #c8c8d6 0%, #b0b0be 35%, #a0a0ae 50%, #b8b8c6 65%, #9898a6 100%
       );
       -webkit-background-clip: text;
       background-clip: text;
       -webkit-text-fill-color: transparent;
       filter:
-        drop-shadow(0 0 8px rgba(180,180,196,0.10))
+        drop-shadow(0 0 8px rgba(180,180,196,0.12))
         drop-shadow(0 1px 2px rgba(0,0,0,0.35));
 
       animation-name: fadeRise;
@@ -437,13 +431,66 @@
       filter: none;
     }
 
-    /* ── Date ── */
-    .date-block {
-      margin-bottom: 0.6rem;
+    /* ── Programme Block ── */
+    .programme-block {
+      margin-bottom: 1.4rem;
       animation-name: fadeRise;
       animation-duration: 1.5s;
       animation-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
-      animation-delay: 0.9s;
+      animation-delay: 0.85s;
+      animation-fill-mode: forwards;
+    }
+
+    .programme-rule {
+      width: 80px;
+      height: 1px;
+      background: linear-gradient(to right,
+        transparent 0%, rgba(180,160,200,0.45) 30%,
+        rgba(220,200,240,0.6) 50%,
+        rgba(180,160,200,0.45) 70%, transparent 100%
+      );
+      margin: 0 auto 0.6rem auto;
+    }
+
+    .programme-title {
+      font-family: 'Cinzel', 'Inter', system-ui, sans-serif;
+      font-weight: 400;
+      font-size: clamp(0.52rem, 0.85vw, 0.62rem);
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: var(--floral-purple);
+      margin-bottom: 0.7rem;
+    }
+
+    .programme-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .programme-item {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-weight: 400;
+      font-style: italic;
+      font-size: clamp(0.72rem, 1.2vw, 0.88rem);
+      color: var(--silver-deep);
+      letter-spacing: 0.04em;
+      line-height: 1.4;
+    }
+
+    .programme-item.em {
+      color: var(--champagne);
+      font-weight: 500;
+    }
+
+    /* ── Date ── */
+    .date-block {
+      margin-bottom: 0.5rem;
+      animation-name: fadeRise;
+      animation-duration: 1.5s;
+      animation-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
+      animation-delay: 0.95s;
       animation-fill-mode: forwards;
     }
 
@@ -454,40 +501,27 @@
       letter-spacing: 0.28em;
       text-transform: uppercase;
       color: var(--text-muted);
-      margin-bottom: 0.7rem;
+      margin-bottom: 0.6rem;
     }
 
     .date-main {
       font-family: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
       font-weight: 600;
       font-style: italic;
-      font-size: clamp(2.2rem, 5vw, 4rem);
+      font-size: clamp(2.2rem, 5vw, 3.8rem);
       line-height: 1.12;
       letter-spacing: 0.03em;
 
       background-image:
-        linear-gradient(
-          105deg,
-          transparent 38%,
-          rgba(255,255,255,0) 42%,
-          rgba(255,255,255,0.35) 47%,
-          rgba(255,255,255,0.75) 50%,
-          rgba(255,255,255,0.35) 53%,
-          rgba(255,255,255,0) 58%,
-          transparent 62%
+        linear-gradient(105deg,
+          transparent 38%, rgba(255,255,255,0) 42%, rgba(255,255,255,0.35) 47%,
+          rgba(255,255,255,0.75) 50%, rgba(255,255,255,0.35) 53%,
+          rgba(255,255,255,0) 58%, transparent 62%
         ),
-        linear-gradient(
-          180deg,
-          #dcdce6 0%,
-          #c0c0cc 18%,
-          #80808c 20%,
-          #b8b8c4 24%,
-          #d0d0da 30%,
-          #a8a8b4 45%,
-          #888892 55%,
-          #bcbcc6 65%,
-          #6a6a74 78%,
-          #94949e 100%
+        linear-gradient(180deg,
+          #dcdce6 0%, #c0c0cc 18%, #80808c 20%, #b8b8c4 24%,
+          #d0d0da 30%, #a8a8b4 45%, #888892 55%, #bcbcc6 65%,
+          #6a6a74 78%, #94949e 100%
         );
       background-size: 120% 100%, 100% 100%;
       background-position: -150% 0, 0 0;
@@ -532,18 +566,18 @@
       font-weight: 400;
       font-style: italic;
       font-size: clamp(0.85rem, 1.6vw, 1.2rem);
-      color: var(--silver-deep);
+      color: var(--silver-mid);
       letter-spacing: 0.06em;
-      margin-top: 0.45rem;
+      margin-top: 0.4rem;
     }
 
-    /* ── Venue Block ── */
+    /* ── Venue ── */
     .venue-block {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 0.3rem;
-      margin-bottom: 0.8rem;
+      gap: 0.25rem;
+      margin-bottom: 0.6rem;
       animation-name: fadeRise;
       animation-duration: 1.5s;
       animation-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
@@ -574,7 +608,7 @@
       display: inline-flex;
       align-items: center;
       gap: 0.45em;
-      margin-top: 0.65rem;
+      margin-top: 0.55rem;
       padding: 0.45em 1.2em;
       font-family: 'Cinzel', 'Inter', system-ui, sans-serif;
       font-weight: 400;
@@ -607,13 +641,13 @@
       opacity: 0.7;
     }
 
-    /* ── Dress Code Block ── */
+    /* ── Dress Code ── */
     .dress-block {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 0.35rem;
-      margin-bottom: 0.6rem;
+      gap: 0.3rem;
+      margin-bottom: 0.5rem;
       animation-name: fadeRise;
       animation-duration: 1.5s;
       animation-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
@@ -639,37 +673,35 @@
       letter-spacing: 0.06em;
     }
 
+    /* ── No Gifts ── */
+    .no-gifts {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-weight: 400;
+      font-style: italic;
+      font-size: clamp(0.65rem, 1.05vw, 0.8rem);
+      color: var(--silver-deep);
+      letter-spacing: 0.05em;
+      margin-bottom: 1.6rem;
+      animation-name: fadeRise;
+      animation-duration: 1.5s;
+      animation-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
+      animation-delay: 1.22s;
+      animation-fill-mode: forwards;
+    }
+
     /* ── Bottom Rule ── */
     .bottom-rule {
       width: 100px;
       height: 1px;
       background: linear-gradient(to right,
-        transparent 0%,
-        rgba(200,200,216,0.4) 35%,
+        transparent 0%, rgba(200,200,216,0.4) 35%,
         rgba(245,245,250,0.55) 50%,
-        rgba(200,200,216,0.4) 65%,
-        transparent 100%
+        rgba(200,200,216,0.4) 65%, transparent 100%
       );
-      margin-bottom: 1.8rem;
       animation-name: fadeRise;
       animation-duration: 1.5s;
       animation-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
-      animation-delay: 1.3s;
-      animation-fill-mode: forwards;
-    }
-
-    /* ── Footer ── */
-    .footer-text {
-      font-family: 'Cinzel', 'Inter', system-ui, sans-serif;
-      font-weight: 400;
-      font-size: clamp(0.65rem, 1.2vw, 0.8rem);
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      animation-name: fadeRise;
-      animation-duration: 1.5s;
-      animation-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
-      animation-delay: 1.4s;
+      animation-delay: 1.35s;
       animation-fill-mode: forwards;
     }
 
@@ -689,29 +721,26 @@
 
     /* ── Responsive ── */
     @media (max-width: 480px) {
-      .container {
-        padding: 1.5rem;
-      }
-      .top-rules {
-        gap: 4px;
-        margin-bottom: 1.6rem;
-      }
+      .container { padding: 1.5rem; }
+      .top-rules { gap: 4px; margin-bottom: 1.4rem; }
       .rule-thin { width: 60px; }
       .rule-thick { width: 110px; }
       .hosts-ornament-line { width: 28px; }
-      .hosts-section { margin-bottom: 1.5rem; }
-      .quote { margin-bottom: 1.8rem; }
+      .hosts-section { margin-bottom: 1.2rem; }
+      .quote { margin-bottom: 1.2rem; }
+      .programme-block { margin-bottom: 1rem; }
+      .date-block { margin-bottom: 0.3rem; }
       .date-divider { width: 1.2rem; }
-      .date-block { margin-bottom: 0.4rem; }
-      .venue-block { margin-bottom: 0.5rem; }
-      .dress-block { margin-bottom: 0.4rem; }
+      .venue-block { margin-bottom: 0.4rem; }
+      .dress-block { margin-bottom: 0.3rem; }
     }
 
     @media (prefers-reduced-motion: reduce) {
       .title, .hosts-names, .date-main,
       .top-rules, .subtitle, .hosts-section,
-      .quote, .date-block, .venue-block, .dress-block,
-      .bottom-rule, .footer-text, .event-time {
+      .quote, .programme-block, .date-block,
+      .venue-block, .dress-block, .no-gifts,
+      .bottom-rule, .event-time {
         animation: none;
         opacity: 1;
       }
@@ -761,8 +790,21 @@
       <span class="highlight">This one, however,</span> is reserved for us.
     </p>
 
+    <div class="programme-block">
+      <div class="programme-rule"></div>
+      <div class="programme-title">Pre-Function Rehearsals</div>
+      <ul class="programme-list">
+        <li class="programme-item">Red carpet walk training</li>
+        <li class="programme-item">Raising the toast</li>
+        <li class="programme-item">First dance drill</li>
+        <li class="programme-item">A few (rehearsed) words</li>
+        <li class="programme-item em">Oscar for Lifetime Achievement<br><span style="font-size:0.85em;">(or Best Partner — TBD)</span></li>
+        <li class="programme-item">Thank you punch</li>
+      </ul>
+    </div>
+
     <div class="date-block">
-      <div class="date-label">Save the Evening</div>
+      <div class="date-label">The Evening</div>
       <div class="date-main">
         May<span class="date-divider"></span>30<span class="date-divider"></span>2026
       </div>
@@ -782,17 +824,15 @@
       <div class="dress-detail">Gowns &amp; Formal Suits</div>
     </div>
 
-    <div class="bottom-rule"></div>
+    <p class="no-gifts">No gifts, please — your company is the celebration.</p>
 
-    <div class="footer-text">
-      Formal Invitation to Follow
-    </div>
+    <div class="bottom-rule"></div>
   </div>
 
   <script>
     (function() {
       // ═══════════════════════════════════════════
-      //  FIREWORKS  —  Silver, Champagne & Floral
+      //  FIREWORKS — Silver, Champagne & Floral
       // ═══════════════════════════════════════════
       var canvas = document.getElementById('fireworks');
       var ctx = canvas.getContext('2d');
@@ -802,7 +842,7 @@
       var sparkles = [];
       var trails = [];
       var petals = [];
-      var MAX_BURSTS = 5;
+      var MAX_BURSTS = 6;
       var PARTICLE_LIFE = 3.5;
 
       function resize() {
@@ -828,29 +868,27 @@
         { r: 235, g: 208, b: 148 },
         { r: 218, g: 188, b: 128 },
       ];
-      /* Floral palette — St. Regis deck: purple, magenta, terracotta, taupe */
       var PURPLES = [
-        { r: 160, g: 90, b: 210 },
-        { r: 140, g: 60, b: 190 },
-        { r: 120, g: 55, b: 170 },
-        { r: 180, g: 115, b: 220 },
+        { r: 175, g: 100, b: 220 },
+        { r: 155, g: 70, b: 200 },
+        { r: 135, g: 60, b: 180 },
+        { r: 195, g: 125, b: 230 },
       ];
       var MAGENTAS = [
-        { r: 215, g: 70, b: 155 },
-        { r: 195, g: 50, b: 135 },
-        { r: 175, g: 40, b: 120 },
+        { r: 225, g: 80, b: 165 },
+        { r: 205, g: 55, b: 145 },
+        { r: 185, g: 45, b: 130 },
       ];
       var TERRACOTTAS = [
-        { r: 210, g: 115, b: 75 },
-        { r: 190, g: 95, b: 58 },
-        { r: 175, g: 85, b: 50 },
+        { r: 215, g: 125, b: 80 },
+        { r: 195, g: 105, b: 65 },
+        { r: 180, g: 90, b: 55 },
       ];
 
       function pick(arr) {
         return arr[Math.floor(Math.random() * arr.length)];
       }
 
-      // ── Central sparkle burst ──
       function spawnFlash(cx, cy, color) {
         for (var i = 0; i < 8; i++) {
           var angle = (Math.PI * 2 * i) / 8;
@@ -867,24 +905,22 @@
         if (trails.length > 60) trails.splice(0, trails.length - 60);
       }
 
-      // ── Burst ──
       function spawnBurst() {
         var cx = W * 0.18 + Math.random() * W * 0.64;
         var cy = H * 0.12 + Math.random() * H * 0.48;
         var count = 70 + Math.floor(Math.random() * 100);
 
-        // ~70% classic silver/champagne, ~30% floral
         var roll = Math.random();
         var palette;
-        if (roll < 0.45) {
+        if (roll < 0.40) {
           palette = SILVERS;
-        } else if (roll < 0.60) {
+        } else if (roll < 0.52) {
           palette = CHAMPAGNES;
-        } else if (roll < 0.65) {
+        } else if (roll < 0.56) {
           palette = GOLDS;
-        } else if (roll < 0.78) {
+        } else if (roll < 0.72) {
           palette = PURPLES;
-        } else if (roll < 0.90) {
+        } else if (roll < 0.86) {
           palette = MAGENTAS;
         } else {
           palette = TERRACOTTAS;
@@ -899,8 +935,7 @@
           var speed = 35 + Math.random() * 200;
           var color = pick(palette);
           particles.push({
-            x: cx,
-            y: cy,
+            x: cx, y: cy,
             vx: Math.cos(angle) * speed,
             vy: Math.sin(angle) * speed,
             life: PARTICLE_LIFE * (0.4 + Math.random() * 0.6),
@@ -919,31 +954,30 @@
         while (bursts.length > MAX_BURSTS) bursts.shift();
       }
 
-      // ── Floating Petal ──
+      // ── Canvas Petal (drifting up) ──
       function spawnPetal() {
         var palettes = [PURPLES, MAGENTAS, TERRACOTTAS];
         var palette = pick(palettes);
         var color = pick(palette);
         petals.push({
           x: Math.random() * W,
-          y: H + 20 + Math.random() * 60,
-          life: 6 + Math.random() * 14,
-          maxLife: 20,
-          size: 2.5 + Math.random() * 7,
+          y: H + 20 + Math.random() * 80,
+          life: 6 + Math.random() * 16,
+          maxLife: 22,
+          size: 3 + Math.random() * 8,
           color: {
             r: color.r + (Math.random() - 0.5) * 30,
             g: color.g + (Math.random() - 0.5) * 30,
             b: color.b + (Math.random() - 0.5) * 30,
           },
-          driftX: (Math.random() - 0.5) * 25,
-          driftSpeed: 0.15 + Math.random() * 0.6,
+          driftX: (Math.random() - 0.5) * 30,
+          driftSpeed: 0.15 + Math.random() * 0.7,
           rotation: Math.random() * 360,
-          rotationSpeed: (Math.random() - 0.5) * 1.2,
+          rotationSpeed: (Math.random() - 0.5) * 1.5,
         });
-        if (petals.length > 35) petals.shift();
+        if (petals.length > 55) petals.shift();
       }
 
-      // ── Ambient Sparkle ──
       function spawnSparkle() {
         sparkles.push({
           x: Math.random() * W,
@@ -957,7 +991,6 @@
         if (sparkles.length > 55) sparkles.shift();
       }
 
-      // ── Update ──
       function update(dt) {
         for (var b = bursts.length - 1; b >= 0; b--) {
           var burst = bursts[b];
@@ -990,14 +1023,13 @@
         for (var pt2 = petals.length - 1; pt2 >= 0; pt2--) {
           var petal = petals[pt2];
           petal.life -= dt;
-          petal.y -= (8 + Math.sin(petal.life * 0.3) * 4) * dt;
+          petal.y -= (7 + Math.sin(petal.life * 0.35) * 5) * dt;
           petal.x += Math.sin(petal.life * petal.driftSpeed) * petal.driftX * dt;
           petal.rotation += petal.rotationSpeed * dt * 60;
           if (petal.life <= 0 || petal.y < -40) petals.splice(pt2, 1);
         }
       }
 
-      // ── Draw ──
       function draw() {
         ctx.clearRect(0, 0, W, H);
 
@@ -1020,7 +1052,7 @@
             var pt3 = burst.particles[p2];
             var alpha2 = Math.max(0, pt3.life / pt3.maxLife);
             var size2 = pt3.size * (0.35 + alpha2 * 0.65);
-            var fade = alpha2 * 0.85;
+            var fade = alpha2 * 0.88;
 
             var glow = ctx.createRadialGradient(pt3.x, pt3.y, 0, pt3.x, pt3.y, size2 * 3.5);
             glow.addColorStop(0, 'rgba(' + pt3.color.r + ',' + pt3.color.g + ',' + pt3.color.b + ',' + (fade * 0.45) + ')');
@@ -1049,10 +1081,10 @@
           ctx.fill();
         }
 
-        // Floating Petals
+        // Canvas Petals
         for (var pt4 = 0; pt4 < petals.length; pt4++) {
           var petal2 = petals[pt4];
-          var alpha4 = Math.max(0, petal2.life / petal2.maxLife) * 0.55;
+          var alpha4 = Math.max(0, petal2.life / petal2.maxLife) * 0.6;
           if (alpha4 < 0.03) continue;
           ctx.save();
           ctx.translate(petal2.x, petal2.y);
@@ -1061,13 +1093,12 @@
           ctx.beginPath();
           ctx.ellipse(0, 0, petal2.size, petal2.size * 0.55, 0, 0, Math.PI * 2);
           ctx.fill();
-          // subtle glow
-          var petalGlow = ctx.createRadialGradient(0, 0, 0, 0, 0, petal2.size * 2);
-          petalGlow.addColorStop(0, 'rgba(' + petal2.color.r + ',' + petal2.color.g + ',' + petal2.color.b + ',' + (alpha4 * 0.3) + ')');
+          var petalGlow = ctx.createRadialGradient(0, 0, 0, 0, 0, petal2.size * 2.5);
+          petalGlow.addColorStop(0, 'rgba(' + petal2.color.r + ',' + petal2.color.g + ',' + petal2.color.b + ',' + (alpha4 * 0.35) + ')');
           petalGlow.addColorStop(1, 'rgba(0,0,0,0)');
           ctx.fillStyle = petalGlow;
           ctx.beginPath();
-          ctx.arc(0, 0, petal2.size * 2, 0, Math.PI * 2);
+          ctx.arc(0, 0, petal2.size * 2.5, 0, Math.PI * 2);
           ctx.fill();
           ctx.restore();
         }
@@ -1078,20 +1109,20 @@
       var sparkleTimer = 0;
 
       function scheduleNextBurst() {
-        burstTimer = 2.2 + Math.random() * 5;
+        burstTimer = 1.8 + Math.random() * 4.5;
       }
       scheduleNextBurst();
 
       setTimeout(function() {
         spawnBurst();
         scheduleNextBurst();
-      }, 350);
+      }, 300);
 
       setTimeout(function() {
         if (bursts.length === 0) spawnBurst();
-      }, 900);
+      }, 800);
 
-      // ── Ambient floating dust particles (DOM) ──
+      // ── DOM Dust ──
       function spawnDustParticle() {
         var el = document.createElement('div');
         el.className = 'particle';
@@ -1099,29 +1130,26 @@
         var dur = 7 + Math.random() * 12;
         var delay = Math.random() * 4;
         el.style.cssText =
-          'width:' + size + 'px;' +
-          'height:' + size + 'px;' +
-          'left:' + (5 + Math.random() * 90) + '%;' +
-          'bottom:-10px;';
+          'width:' + size + 'px;height:' + size + 'px;' +
+          'left:' + (5 + Math.random() * 90) + '%;bottom:-10px;';
         el.style.animationDuration = dur + 's';
         el.style.animationDelay = delay + 's';
         document.body.appendChild(el);
         setTimeout(function() { el.remove(); }, (dur + delay) * 1000 + 500);
       }
 
-      // ── Floating petal particles (DOM) ──
+      // ── DOM Petal (drifting up) ──
       function spawnDomPetal() {
         var el = document.createElement('div');
         el.className = 'particle petal';
-        var size = 2 + Math.random() * 5;
+        var size = 3 + Math.random() * 6;
         var dur = 9 + Math.random() * 14;
         var delay = Math.random() * 6;
         var palettes = [PURPLES, MAGENTAS, TERRACOTTAS];
         var color = pick(pick(palettes));
-        var bgColor = 'radial-gradient(ellipse, rgba(' + color.r + ',' + color.g + ',' + color.b + ',0.7) 0%, rgba(' + color.r + ',' + color.g + ',' + color.b + ',0) 70%)';
+        var bgColor = 'radial-gradient(ellipse, rgba(' + color.r + ',' + color.g + ',' + color.b + ',0.75) 0%, rgba(' + color.r + ',' + color.g + ',' + color.b + ',0) 70%)';
         el.style.cssText =
-          'width:' + size + 'px;' +
-          'height:' + (size * 0.7) + 'px;' +
+          'width:' + size + 'px;height:' + (size * 0.7) + 'px;' +
           'left:' + (3 + Math.random() * 94) + '%;' +
           'bottom:-15px;' +
           'background:' + bgColor + ';';
@@ -1129,6 +1157,30 @@
         el.style.animationDuration = dur + 's';
         el.style.animationDelay = delay + 's';
         el.style.animationTimingFunction = 'ease-out';
+        el.style.animationFillMode = 'forwards';
+        document.body.appendChild(el);
+        setTimeout(function() { el.remove(); }, (dur + delay) * 1000 + 500);
+      }
+
+      // ── Garden Petal (large, bottom-heavy) ──
+      function spawnGardenPetal() {
+        var el = document.createElement('div');
+        el.className = 'particle garden-petal';
+        var size = 5 + Math.random() * 10;
+        var dur = 12 + Math.random() * 18;
+        var delay = Math.random() * 3;
+        var palettes = [PURPLES, MAGENTAS, TERRACOTTAS];
+        var color = pick(pick(palettes));
+        var bgColor = 'radial-gradient(ellipse, rgba(' + color.r + ',' + color.g + ',' + color.b + ',0.8) 0%, rgba(' + color.r + ',' + color.g + ',' + color.b + ',0.15) 55%, rgba(0,0,0,0) 100%)';
+        el.style.cssText =
+          'width:' + size + 'px;height:' + (size * 0.65) + 'px;' +
+          'left:' + (2 + Math.random() * 96) + '%;' +
+          'bottom:-25px;' +
+          'background:' + bgColor + ';';
+        el.style.animationName = 'gardenRise';
+        el.style.animationDuration = dur + 's';
+        el.style.animationDelay = delay + 's';
+        el.style.animationTimingFunction = 'cubic-bezier(0.33, 0, 0.67, 1)';
         el.style.animationFillMode = 'forwards';
         document.body.appendChild(el);
         setTimeout(function() { el.remove(); }, (dur + delay) * 1000 + 500);
@@ -1149,12 +1201,13 @@
         sparkleTimer -= dt;
         if (sparkleTimer <= 0) {
           spawnSparkle();
-          sparkleTimer = 0.25;
+          sparkleTimer = 0.22;
         }
 
-        if (Math.random() < 0.18) spawnDustParticle();
-        if (Math.random() < 0.06) spawnDomPetal();
-        if (Math.random() < 0.04) spawnPetal();
+        if (Math.random() < 0.20) spawnDustParticle();
+        if (Math.random() < 0.10) spawnDomPetal();
+        if (Math.random() < 0.08) spawnGardenPetal();
+        if (Math.random() < 0.06) spawnPetal();
 
         update(dt);
         draw();
@@ -1164,13 +1217,12 @@
       requestAnimationFrame(loop);
 
       // ═══════════════════════════════════════════
-      //  CURSOR GLINT + PHONE TILT PARALLAX
+      //  CURSOR GLINT + PHONE TILT
       // ═══════════════════════════════════════════
       (function() {
         var title = document.querySelector('.title');
         if (!title) return;
 
-        // ── Cursor-following glint ──
         var targetX = 50, targetY = 50;
         var currentX = 50, currentY = 50;
 
@@ -1182,7 +1234,6 @@
           targetY = Math.max(-20, Math.min(120, targetY));
         });
 
-        // ── Device orientation (phone tilt) ──
         var tiltTargetX = 0, tiltTargetY = 0;
         var tiltCurrentX = 0, tiltCurrentY = 0;
 
