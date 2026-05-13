@@ -390,8 +390,8 @@
     </div>
     <div class="card">
       <div class="card-label">Target Margin</div>
-      <div class="card-value green">85–94%</div>
-      <div class="card-sub">At $49–99/mo pricing</div>
+      <div class="card-value green">~50%+</div>
+      <div class="card-sub">Generous limits at competitive pricing</div>
     </div>
   </div>
 </section>
@@ -721,38 +721,38 @@
 
   <table class="data-table">
     <thead>
-      <tr><th>Tier</th><th class="num">Price/mo</th><th>Audits</th><th>Chat Refinement</th><th>Cost/User</th><th class="num">Margin</th></tr>
+      <tr><th>Tier</th><th class="num">Price/mo</th><th>Audits</th><th>Key Features</th><th>Cost/User</th><th class="num">Margin</th></tr>
     </thead>
     <tbody>
       <tr>
         <td><strong>Starter</strong></td>
-        <td class="num">$49</td>
-        <td>2/mo</td>
-        <td>5 messages</td>
-        <td>$1.20–3.60</td>
-        <td class="num"><span class="tag good">~93%</span></td>
-      </tr>
-      <tr>
-        <td><strong>Pro</strong></td>
-        <td class="num">$99</td>
+        <td class="num">$30</td>
         <td>5/mo</td>
-        <td>Unlimited</td>
+        <td>Instagram & TikTok · 10 chat refinements · HTML export</td>
         <td>$3.00–9.00</td>
-        <td class="num"><span class="tag good">~91%</span></td>
+        <td class="num"><span class="tag good">~60%</span></td>
       </tr>
       <tr class="highlight">
-        <td><strong>Agency</strong></td>
-        <td class="num">$249</td>
-        <td>20/mo</td>
-        <td>Unlimited + white-label</td>
-        <td>$12.00–36.00</td>
-        <td class="num"><span class="tag good">~86%</span></td>
+        <td><strong>Pro</strong></td>
+        <td class="num">$50</td>
+        <td>15/mo</td>
+        <td>All platforms · Unlimited chat · Automated comparisons · Target trajectory · PDF export</td>
+        <td>$9.00–27.00</td>
+        <td class="num"><span class="tag good">~55%</span></td>
+      </tr>
+      <tr>
+        <td><strong>Enterprise</strong></td>
+        <td class="num">Contact</td>
+        <td>Unlimited</td>
+        <td>White-label · Multi-competitor · Priority queue · Team sharing · API · Custom skills</td>
+        <td>Custom</td>
+        <td class="num"><span class="tag good">Negotiated</span></td>
       </tr>
     </tbody>
   </table>
 
   <div class="callout info">
-    <p><strong>At 10 Pro users:</strong> $990/mo revenue on ~$10/mo variable cost + $5/mo infra. <strong>~98% gross margin.</strong> The business breaks even at <strong>1 user.</strong></p>
+    <p><strong>At 10 Pro users:</strong> $500/mo revenue on ~$180/mo variable cost + $5/mo infra. <strong>~63% gross margin.</strong> Break-even at <strong>1 user.</strong> Target ~50%+ margins — generous audit limits keep retention high while per-audit costs stay predictable at $0.60–1.80.</p>
   </div>
 
   <h3>Token Budget & Quality Guardrails</h3>
@@ -764,7 +764,7 @@
     <li><strong>Model tiering:</strong> DeepSeek v4 for analysis & writing; cheaper flash model for data extraction & formatting</li>
     <li><strong>Hard cap:</strong> $3.00 per audit — if exceeded, the report is delivered as-is with a note</li>
   </ul>
-  <p>These limits are configured in the API proxy, not exposed to clients. They can be relaxed for Agency tier or "Deep Audit" add-ons.</p>
+  <p>These limits are configured in the API proxy, not exposed to clients. They can be relaxed for Enterprise tier or "Deep Audit" add-ons.</p>
 </section>
 
 <!-- ═══════════════════════════════════════════════════════════════ -->
@@ -798,7 +798,7 @@
   <div class="phase">
     <div class="phase-label">Phase 4 · Weeks 7+</div>
     <h4>Scale + Platform Expansion</h4>
-    <p>Add TikTok and YouTube audit support (reuse the same skill framework; different data sources). Multi-platform audits (single report covering Instagram + TikTok). PDF export (Hermes generates LaTeX → pdflatex; texlive already installed). White-label for Agency tier (client's logo on reports). If concurrency becomes a bottleneck, add a second CX22 node behind a load balancer.</p>
+    <p>Add TikTok and YouTube audit support (reuse the same skill framework; different data sources). Multi-platform audits (single report covering Instagram + TikTok). PDF export (Hermes generates LaTeX → pdflatex; texlive already installed). White-label for Enterprise tier (client's logo on reports). If concurrency becomes a bottleneck, add a second CX22 node behind a load balancer.</p>
     <p style="font-size:0.82rem;color:var(--muted);">Deliverable: Multi-platform. PDF. White-label. Ready for 50+ users.</p>
   </div>
 </section>
@@ -953,7 +953,7 @@
     <li><strong>Set up Cloudflare Tunnel + Access.</strong> (20 minutes). Point the domain at the CX22. Enable Google OAuth gating. Zero open ports.</li>
     <li><strong>Scaffold the portal.</strong> (1–2 evenings). Next.js app with Clerk auth, "New Audit" form, and a report viewer page. Start with a static mock of the @hemalpatelphd report as the viewer template.</li>
     <li><strong>Run 3 pilot audits through the portal flow.</strong> Manual trigger via Hermes. Narin reviews quality before delivery. This validates the end-to-end experience before automating generation.</li>
-    <li><strong>Set up Stripe.</strong> Create products for Starter/Pro/Agency. Use Payment Links for now (no integration needed). Share links with pilot clients.</li>
+    <li><strong>Set up Stripe.</strong> Create products for Starter/Pro/Enterprise. Use Payment Links for now (no integration needed). Share links with pilot clients.</li>
     <li><strong>Discuss pricing with Narin.</strong> Validate $49/$99/$249 against her network's willingness to pay. Adjust before launch.</li>
   </ol>
 </section>
