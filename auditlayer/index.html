@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>AuditLayer — Social Media Competitive Intelligence</title>
+<meta name="description" content="Deep social media audits for brands, creators, and agencies. Powered by AI.">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #fafaf9;
+  --surface: #ffffff;
+  --text: #1c1917;
+  --muted: #78716c;
+  --line: #e7e5e4;
+  --accent: #7c3aed;
+  --accent-muted: #f5f3ff;
+  --accent-hover: #6d28d9;
+  --green: #059669;
+  --green-muted: #ecfdf5;
+  --amber: #d97706;
+  --amber-muted: #fffbeb;
+  --red: #dc2626;
+  --red-muted: #fef2f2;
+  --blue: #2563eb;
+  --blue-muted: #eff6ff;
+  --radius-sm: 6px;
+  --radius: 10px;
+  --radius-lg: 16px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.06), 0 2px 4px rgba(0,0,0,0.04);
+  --shadow-lg: 0 12px 32px rgba(0,0,0,0.08), 0 4px 8px rgba(0,0,0,0.04);
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+
+body{
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  min-height:100vh;
+}
+
+/* ── Screen Container ── */
+.screen{display:none;min-height:100vh}
+.screen.active{display:block}
+
+/* ── Global Header ── */
+.topbar{
+  position:sticky;top:0;z-index:100;
+  background:rgba(255,255,255,0.85);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--line);
+  padding:12px 24px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.topbar .logo{
+  font-weight:800;font-size:1.1rem;letter-spacing:-0.02em;
+  color:var(--text);
+}
+.topbar .logo span{color:var(--accent)}
+.topbar nav{display:flex;gap:20px;align-items:center}
+.topbar nav a{
+  font-size:0.85rem;color:var(--muted);text-decoration:none;
+  font-weight:500;transition:color 0.15s;
+}
+.topbar nav a:hover{color:var(--text)}
+.topbar .btn-sm{
+  padding:7px 16px;border-radius:var(--radius-sm);
+  font-size:0.82rem;font-weight:600;cursor:pointer;border:none;
+  transition:all 0.15s;
+}
+.btn-primary{
+  background:var(--accent);color:white;
+}
+.btn-primary:hover{background:var(--accent-hover)}
+.btn-outline{
+  background:transparent;color:var(--accent);
+  border:1.5px solid var(--accent);
+}
+.btn-outline:hover{background:var(--accent-muted)}
+
+/* ── Containers ── */
+.container{max-width:1100px;margin:0 auto;padding:0 24px}
+.container-sm{max-width:640px;margin:0 auto;padding:0 24px}
+.container-lg{max-width:860px;margin:0 auto;padding:0 24px}
+
+/* ── Buttons ── */
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:12px 24px;border-radius:var(--radius);
+  font-size:0.92rem;font-weight:600;cursor:pointer;
+  border:none;transition:all 0.2s;font-family:inherit;
+}
+.btn-lg{padding:16px 32px;font-size:1rem;border-radius:var(--radius-lg)}
+.btn-primary{background:var(--accent);color:white}
+.btn-primary:hover{background:var(--accent-hover);transform:translateY(-1px);box-shadow:var(--shadow-md)}
+.btn-outline-lg{
+  background:transparent;color:var(--accent);
+  border:2px solid var(--accent);font-size:1rem;padding:16px 32px;border-radius:var(--radius-lg);font-weight:600;
+}
+.btn-ghost{background:transparent;color:var(--muted)}
+.btn-ghost:hover{color:var(--text)}
+
+/* ── LANDING ── */
+.hero{padding:100px 0 60px;text-align:center}
+.hero .badge{
+  display:inline-block;font-size:0.75rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:0.1em;color:var(--accent);background:var(--accent-muted);
+  padding:5px 14px;border-radius:20px;margin-bottom:20px;
+}
+.hero h1{font-size:3rem;font-weight:800;letter-spacing:-0.04em;line-height:1.1;margin-bottom:16px}
+.hero h1 span{color:var(--accent)}
+.hero .subtitle{font-size:1.15rem;color:var(--muted);max-width:540px;margin:0 auto 32px;line-height:1.6}
+
+.pricing-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;
+  margin:60px 0;max-width:960px;margin-left:auto;margin-right:auto;
+}
+.pricing-card{
+  background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--radius-lg);padding:32px 28px;
+  transition:all 0.2s;
+}
+.pricing-card.featured{border:2px solid var(--accent);box-shadow:var(--shadow-lg);position:relative}
+.pricing-card.featured::before{
+  content:'Most Popular';position:absolute;top:-12px;left:50%;transform:translateX(-50%);
+  background:var(--accent);color:white;font-size:0.7rem;font-weight:700;
+  padding:4px 14px;border-radius:20px;text-transform:uppercase;letter-spacing:0.06em;
+}
+.pricing-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)}
+.pricing-card .plan{font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);margin-bottom:8px}
+.pricing-card .price{font-size:2.4rem;font-weight:800;letter-spacing:-0.03em;margin-bottom:4px}
+.pricing-card .price span{font-size:0.9rem;font-weight:500;color:var(--muted)}
+.pricing-card .desc{font-size:0.88rem;color:var(--muted);margin-bottom:20px}
+.pricing-card ul{list-style:none;margin-bottom:24px}
+.pricing-card li{font-size:0.85rem;padding:6px 0;color:#44403c}
+.pricing-card li::before{content:'✓ ';color:var(--green);font-weight:700}
+
+/* ── DASHBOARD ── */
+.dashboard{padding:40px 0}
+.dashboard h2{font-size:1.5rem;font-weight:700;margin-bottom:24px;letter-spacing:-0.02em}
+
+.new-audit-card{
+  background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--radius-lg);padding:28px;
+  margin-bottom:32px;box-shadow:var(--shadow);
+}
+.new-audit-card h3{font-size:1.1rem;font-weight:600;margin-bottom:16px}
+.field-group{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.field{
+  display:flex;flex-direction:column;gap:4px;flex:1;min-width:180px;
+}
+.field label{font-size:0.78rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em}
+.field input,.field select{
+  padding:10px 14px;border:1px solid var(--line);border-radius:var(--radius-sm);
+  font-size:0.9rem;font-family:inherit;transition:border-color 0.15s;
+}
+.field input:focus,.field select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-muted)}
+
+.platform-pills{display:flex;gap:8px;flex-wrap:wrap}
+.platform-pill{
+  padding:10px 18px;border:1.5px solid var(--line);border-radius:var(--radius);
+  font-size:0.85rem;font-weight:500;cursor:pointer;background:var(--surface);
+  transition:all 0.15s;font-family:inherit;
+}
+.platform-pill:hover{border-color:var(--accent);background:var(--accent-muted)}
+.platform-pill.selected{border-color:var(--accent);background:var(--accent-muted);color:var(--accent);font-weight:600}
+
+.recent-list{display:flex;flex-direction:column;gap:10px}
+.recent-item{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:16px 20px;background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--radius);cursor:pointer;transition:all 0.15s;
+}
+.recent-item:hover{border-color:var(--accent);box-shadow:var(--shadow)}
+.recent-item .ri-title{font-weight:600;font-size:0.92rem}
+.recent-item .ri-meta{font-size:0.78rem;color:var(--muted)}
+
+/* ── GUIDED QUESTIONS ── */
+.question-screen{padding:80px 0}
+.steps{display:flex;gap:8px;margin-bottom:40px;justify-content:center}
+.step-dot{
+  width:36px;height:36px;border-radius:18px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.8rem;font-weight:700;
+  border:2px solid var(--line);color:var(--muted);transition:all 0.3s;
+}
+.step-dot.active{border-color:var(--accent);background:var(--accent);color:white}
+.step-dot.done{border-color:var(--green);background:var(--green);color:white}
+.question-card{
+  background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--radius-lg);padding:40px 32px;text-align:center;
+  box-shadow:var(--shadow);transition:opacity 0.3s,transform 0.3s;
+}
+.question-card h2{font-size:1.5rem;font-weight:700;margin-bottom:8px;letter-spacing:-0.02em}
+.question-card .q-sub{font-size:0.9rem;color:var(--muted);margin-bottom:28px}
+.question-card .q-options{display:flex;flex-direction:column;gap:10px;max-width:480px;margin:0 auto}
+.q-option{
+  padding:14px 20px;border:1.5px solid var(--line);border-radius:var(--radius);
+  font-size:0.92rem;font-weight:500;cursor:pointer;text-align:left;
+  background:var(--surface);transition:all 0.15s;font-family:inherit;
+}
+.q-option:hover{border-color:var(--accent);background:var(--accent-muted)}
+.q-option.selected{border-color:var(--accent);background:var(--accent-muted);color:var(--accent);font-weight:600}
+
+/* ── GENERATING ── */
+.gen-screen{padding:120px 0;text-align:center}
+.gen-animation{margin:0 auto 40px;position:relative;width:200px;height:200px}
+.gen-ring{
+  position:absolute;inset:0;border-radius:50%;
+  border:3px solid var(--line);border-top-color:var(--accent);
+  animation:spin 1.2s linear infinite;
+}
+.gen-inner{
+  position:absolute;inset:15px;border-radius:50%;
+  border:2px solid var(--line);border-top-color:var(--accent);
+  animation:spin 1.8s linear infinite reverse;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.gen-text{font-size:1.2rem;font-weight:600;margin-bottom:8px}
+.gen-subtext{font-size:0.88rem;color:var(--muted);margin-bottom:32px}
+.gen-steps{text-align:left;max-width:400px;margin:0 auto}
+.gen-step{
+  display:flex;align-items:center;gap:10px;padding:8px 0;
+  font-size:0.85rem;color:var(--muted);
+}
+.gen-step.done{color:var(--green)}
+.gen-step.done::before{content:'✓';font-weight:700;color:var(--green)}
+.gen-step.current{color:var(--text);font-weight:500}
+.gen-step.current::before{content:'●';color:var(--accent);animation:pulse 1s ease-in-out infinite}
+.gen-step.pending{color:var(--muted)}
+.gen-step.pending::before{content:'○';color:var(--line)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+
+/* ── REPORT VIEWER ── */
+.report-frame{border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden;margin:24px 0;box-shadow:var(--shadow-md)}
+.report-header-bar{
+  background:#f5f5f4;padding:10px 20px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid var(--line);
+}
+.report-actions{display:flex;gap:8px}
+.report-body{background:white;padding:40px 48px;max-height:70vh;overflow-y:auto}
+.report-body h1{font-size:1.8rem;font-weight:700;margin-bottom:4px}
+.report-body .report-label{font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--accent);margin-bottom:4px}
+.report-body .report-sub{font-size:0.9rem;color:var(--muted);margin-bottom:24px}
+.report-body .report-meta{display:flex;gap:20px;font-size:0.78rem;color:var(--muted);margin-bottom:32px}
+.report-body h2{font-size:1.15rem;font-weight:700;margin:32px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+.report-body p{font-size:0.9rem;color:#44403c;margin-bottom:12px;line-height:1.65}
+
+.metric-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:16px 0}
+.metric-card{
+  background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--radius);padding:16px;text-align:center;
+}
+.metric-card .mv{font-size:1.4rem;font-weight:700;letter-spacing:-0.02em}
+.metric-card .mv.red{color:var(--red)}
+.metric-card .mv.green{color:var(--green)}
+.metric-card .ml{font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-top:2px}
+
+/* ── Chat Panel (floating) ── */
+.chat-toggle{
+  position:fixed;bottom:28px;right:28px;z-index:200;
+  width:52px;height:52px;border-radius:26px;
+  background:var(--accent);color:white;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.3rem;cursor:pointer;border:none;
+  box-shadow:var(--shadow-lg);transition:transform 0.2s;
+}
+.chat-toggle:hover{transform:scale(1.08)}
+.chat-panel{
+  position:fixed;bottom:96px;right:28px;z-index:199;
+  width:360px;max-height:520px;background:var(--surface);
+  border:1px solid var(--line);border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-lg);display:none;flex-direction:column;overflow:hidden;
+}
+.chat-panel.open{display:flex}
+.chat-header{
+  padding:14px 18px;border-bottom:1px solid var(--line);
+  font-weight:600;font-size:0.9rem;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.chat-messages{flex:1;overflow-y:auto;padding:14px 18px;display:flex;flex-direction:column;gap:10px}
+.chat-msg{font-size:0.84rem;line-height:1.5;padding:10px 14px;border-radius:var(--radius-sm);max-width:85%}
+.chat-msg.user{background:var(--accent-muted);color:var(--accent);align-self:flex-end;font-weight:500}
+.chat-msg.agent{background:#f5f5f4;color:var(--text);align-self:flex-start}
+.chat-input-row{display:flex;padding:12px 14px;border-top:1px solid var(--line);gap:8px}
+.chat-input-row input{
+  flex:1;padding:10px 14px;border:1px solid var(--line);border-radius:var(--radius-sm);
+  font-size:0.84rem;font-family:inherit;
+}
+.chat-input-row button{
+  padding:10px 14px;background:var(--accent);color:white;border:none;
+  border-radius:var(--radius-sm);font-weight:600;cursor:pointer;font-size:0.82rem;
+}
+
+/* ── PAYMENT ── */
+.payment-screen{padding:60px 0}
+.payment-grid{display:grid;grid-template-columns:1fr 360px;gap:32px;align-items:start}
+.payment-form{
+  background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--radius-lg);padding:32px;box-shadow:var(--shadow);
+}
+.payment-form h2{font-size:1.2rem;font-weight:700;margin-bottom:20px}
+.stripe-field{
+  padding:14px 16px;border:1px solid var(--line);border-radius:var(--radius-sm);
+  margin-bottom:12px;background:#fafaf9;font-size:0.9rem;
+}
+.stripe-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.payment-summary{
+  background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--radius-lg);padding:24px;box-shadow:var(--shadow);position:sticky;top:80px;
+}
+.payment-summary h3{font-size:1rem;font-weight:700;margin-bottom:16px}
+.payment-summary .ps-row{display:flex;justify-content:space-between;font-size:0.88rem;padding:6px 0;color:var(--muted)}
+.payment-summary .ps-total{font-weight:700;color:var(--text);font-size:1.1rem;border-top:1px solid var(--line);padding-top:12px;margin-top:8px}
+.payment-summary .ps-note{font-size:0.75rem;color:var(--muted);margin-top:8px}
+
+/* ── Success ── */
+.success-screen{padding:120px 0;text-align:center}
+.success-icon{font-size:4rem;margin-bottom:20px}
+.success-screen h2{font-size:1.8rem;font-weight:800;margin-bottom:8px;letter-spacing:-0.03em}
+.success-screen p{font-size:1rem;color:var(--muted);max-width:480px;margin:0 auto 32px}
+
+/* ── Misc ── */
+.text-center{text-align:center}
+.mt-20{margin-top:20px}
+.mt-40{margin-top:40px}
+.fade-in{animation:fadeIn 0.4s ease-out}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+@media(max-width:768px){
+  .hero h1{font-size:2rem}
+  .pricing-grid{grid-template-columns:1fr}
+  .payment-grid{grid-template-columns:1fr}
+  .report-body{padding:24px 20px}
+  .metric-row{grid-template-columns:1fr 1fr}
+  .chat-panel{width:calc(100vw - 40px);right:20px;bottom:90px}
+  .new-audit-card .field-group{flex-direction:column}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════ TOP BAR ═══════════════════ -->
+<header class="topbar">
+  <div class="logo">Audit<span>Layer</span></div>
+  <nav>
+    <a href="#" onclick="showScreen('landing')">Home</a>
+    <a href="#" onclick="showScreen('pricing')">Pricing</a>
+    <button class="btn-sm btn-primary" onclick="showScreen('signup')">Get Started</button>
+  </nav>
+</header>
+
+<!-- ═══════════════════ SCREEN: LANDING ═══════════════════ -->
+<div class="screen active" id="screen-landing">
+  <div class="hero container">
+    <div class="badge">Now in Pilot</div>
+    <h1>Social media audits<br>that <span>actually mean something.</span></h1>
+    <p class="subtitle">Enter a handle. Answer a few questions. Get a 15-section competitive intelligence report — growth strategy, content gaps, audience psychology, monetization levers. In 8 minutes.</p>
+    <button class="btn btn-lg btn-primary" onclick="showScreen('signup')">Start Your First Audit →</button>
+    <p style="font-size:0.82rem;color:var(--muted);margin-top:12px">Free trial · No credit card required</p>
+  </div>
+
+  <div class="container" style="padding:60px 0">
+    <div class="pricing-grid">
+      <div class="pricing-card">
+        <div class="plan">Starter</div>
+        <div class="price">$49<span>/mo</span></div>
+        <div class="desc">For creators getting serious about growth.</div>
+        <ul>
+          <li>2 audits per month</li>
+          <li>Instagram &amp; TikTok</li>
+          <li>5 chat refinements</li>
+          <li>HTML report download</li>
+        </ul>
+        <button class="btn btn-outline" style="width:100%;justify-content:center" onclick="showScreen('signup')">Start Free Trial</button>
+      </div>
+
+      <div class="pricing-card featured">
+        <div class="plan">Pro</div>
+        <div class="price">$99<span>/mo</span></div>
+        <div class="desc">For brands and growing agencies.</div>
+        <ul>
+          <li>5 audits per month</li>
+          <li>All platforms</li>
+          <li>Unlimited chat refinements</li>
+          <li>Competitive comparisons</li>
+          <li>PDF export</li>
+        </ul>
+        <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="showScreen('signup')">Start Free Trial</button>
+      </div>
+
+      <div class="pricing-card">
+        <div class="plan">Agency</div>
+        <div class="price">$249<span>/mo</span></div>
+        <div class="desc">For teams managing multiple clients.</div>
+        <ul>
+          <li>20 audits per month</li>
+          <li>White-label reports</li>
+          <li>Multi-platform audits</li>
+          <li>Priority generation</li>
+          <li>Team sharing</li>
+        </ul>
+        <button class="btn btn-outline" style="width:100%;justify-content:center" onclick="showScreen('signup')">Contact Sales</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ SCREEN: SIGNUP ═══════════════════ -->
+<div class="screen" id="screen-signup">
+  <div class="container-sm" style="padding:80px 0">
+    <div style="text-align:center;margin-bottom:40px">
+      <h2 style="font-size:1.6rem;font-weight:700;letter-spacing:-0.02em">Create your account</h2>
+      <p style="color:var(--muted);font-size:0.92rem">Free 7-day trial. No credit card.</p>
+    </div>
+
+    <div style="background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:32px;box-shadow:var(--shadow);max-width:440px;margin:0 auto">
+      <button class="btn btn-outline" style="width:100%;justify-content:center;margin-bottom:20px;padding:14px">
+        Continue with Google
+      </button>
+
+      <div style="display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--muted);font-size:0.82rem">
+        <hr style="flex:1;border:none;border-top:1px solid var(--line)"><span>or</span><hr style="flex:1;border:none;border-top:1px solid var(--line)">
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="field"><label>Full name</label><input placeholder="Sarah Chen" style="width:100%"></div>
+        <div class="field"><label>Email</label><input type="email" placeholder="sarah@agency.com" style="width:100%"></div>
+        <div class="field"><label>Password</label><input type="password" placeholder="••••••••" style="width:100%"></div>
+        <button class="btn btn-primary" style="width:100%;justify-content:center;padding:14px;margin-top:4px" onclick="showScreen('dashboard')">Create Account →</button>
+      </div>
+      <p style="font-size:0.75rem;color:var(--muted);text-align:center;margin-top:16px">By continuing you agree to our Terms and Privacy Policy.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ SCREEN: DASHBOARD ═══════════════════ -->
+<div class="screen" id="screen-dashboard">
+  <div class="dashboard container-lg">
+    <h2>Welcome back, Sarah 👋</h2>
+
+    <div class="new-audit-card">
+      <h3>✦ New Audit</h3>
+      <div class="field-group">
+        <div class="field"><label>Social Handle</label><input placeholder="@hemalpatelphd" id="handleInput"></div>
+        <div class="field"><label>Platform</label>
+          <select id="platformSelect">
+            <option>Instagram</option><option>TikTok</option><option>YouTube</option><option>X (Twitter)</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="startGuidedFlow()">Continue to Questions →</button>
+    </div>
+
+    <h3 style="font-size:1rem;font-weight:600;margin-bottom:12px">Recent Audits</h3>
+    <div class="recent-list">
+      <div class="recent-item" onclick="showSampleReport()">
+        <div>
+          <div class="ri-title">@hemalpatelphd · Instagram</div>
+          <div class="ri-meta">May 12, 2026 · Score 62/100</div>
+        </div>
+        <span style="color:var(--accent);font-weight:600;font-size:0.85rem">View →</span>
+      </div>
+      <div class="recent-item" style="opacity:0.5">
+        <div>
+          <div class="ri-title">@versediscovery · Instagram</div>
+          <div class="ri-meta">May 8, 2026 · Score 48/100</div>
+        </div>
+        <span style="color:var(--muted);font-size:0.85rem">View →</span>
+      </div>
+      <div class="recent-item" style="opacity:0.5">
+        <div>
+          <div class="ri-title">@drjameswu · TikTok + Instagram</div>
+          <div class="ri-meta">May 3, 2026 · Score 71/100</div>
+        </div>
+        <span style="color:var(--muted);font-size:0.85rem">View →</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ SCREEN: GUIDED QUESTIONS ═══════════════════ -->
+<div class="screen" id="screen-questions">
+  <div class="question-screen container-sm">
+    <div class="steps" id="stepDots"></div>
+    <div class="question-card fade-in" id="questionCard"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════ SCREEN: GENERATING ═══════════════════ -->
+<div class="screen" id="screen-generating">
+  <div class="gen-screen container-sm">
+    <div class="gen-animation">
+      <div class="gen-ring"></div>
+      <div class="gen-inner"></div>
+    </div>
+    <div class="gen-text" id="genStatus">Researching @hemalpatelphd...</div>
+    <div class="gen-subtext">Estimated time: 6 minutes</div>
+    <div class="gen-steps" id="genSteps"></div>
+    <button class="btn btn-primary mt-40" id="viewReportBtn" style="display:none" onclick="showScreen('report')">View Report →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════ SCREEN: REPORT VIEWER ═══════════════════ -->
+<div class="screen" id="screen-report">
+  <div class="container-lg" style="padding:32px 0">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <div>
+        <h2 style="font-size:1.3rem;font-weight:700;margin:0">@hemalpatelphd · Instagram Audit</h2>
+        <p style="font-size:0.82rem;color:var(--muted);margin:4px 0 0">Generated May 13, 2026</p>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-outline" style="padding:8px 16px;font-size:0.82rem">Download HTML</button>
+        <button class="btn btn-outline" style="padding:8px 16px;font-size:0.82rem">Export PDF</button>
+        <button class="btn btn-primary" style="padding:8px 16px;font-size:0.82rem" onclick="showScreen('payment')">Upgrade to Save</button>
+      </div>
+    </div>
+
+    <div class="report-frame">
+      <div class="report-header-bar">
+        <span style="font-size:0.8rem;color:var(--muted)">Report Preview</span>
+        <div class="report-actions">
+          <span style="font-size:0.75rem;color:var(--green);font-weight:600">● Generated</span>
+        </div>
+      </div>
+      <div class="report-body" id="reportContent">
+        <div class="report-label">Instagram Account Audit</div>
+        <h1>@hemalpatelphd</h1>
+        <div class="report-sub">Dr. Hemal Patel — UCSD Professor, Mitochondrial Researcher, CSO of Verséa Discovery</div>
+        <div class="report-meta">
+          <span>📅 May 2026</span><span>📊 Data: Social Blade</span><span>⏱ Analysis: 14 days</span>
+        </div>
+
+        <h2>Executive Summary</h2>
+        <p>Dr. Hemal Patel brings <strong>world-class academic credibility</strong> to Instagram — tenured UCSD professor, Vice-Chair for Research, NASA twin study collaborator, and Chief Scientific Advisor behind mescreen™. His account has grown steadily to <strong>10,692 followers</strong> with consistent posting and an engaged comment community.</p>
+        <p>However, the account's engagement rate sits at <strong>1.96%</strong> — roughly half the 4% benchmark for the 10K-follower tier. The root cause is not content quality but <strong>content packaging and format mix</strong>: the feed leans heavily toward product promotion and static posts, missing the carousel and Reel formats that drive saves, shares, and algorithmic reach.</p>
+        <p>The gap between his real-world stature and his Instagram performance is <strong>the biggest opportunity on the table</strong>. With targeted changes to format strategy, this account can realistically double engagement within 90 days.</p>
+
+        <div style="background:var(--accent-muted);border:1px solid #e9d5ff;border-radius:8px;padding:14px 18px;margin:16px 0;font-size:0.88rem">
+          💡 <strong>Core insight:</strong> The audience is there. The credibility is unmatched. The bottleneck is format, not substance.
+        </div>
+
+        <h2>Key Metrics</h2>
+        <div class="metric-row">
+          <div class="metric-card"><div class="mv">10.7K</div><div class="ml">Followers</div></div>
+          <div class="metric-card"><div class="mv red">1.96%</div><div class="ml">Engagement Rate</div></div>
+          <div class="metric-card"><div class="mv">178</div><div class="ml">Avg Likes/Post</div></div>
+          <div class="metric-card"><div class="mv green">32</div><div class="ml">Avg Comments</div></div>
+        </div>
+
+        <table style="width:100%;border-collapse:collapse;font-size:0.85rem;margin:16px 0">
+          <thead style="border-bottom:2px solid var(--line)"><tr><th style="text-align:left;padding:8px 12px;font-size:0.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em">Metric</th><th style="text-align:right;padding:8px 12px;font-size:0.75rem;color:var(--muted)">@hemalpatelphd</th><th style="text-align:right;padding:8px 12px;font-size:0.75rem;color:var(--muted)">Benchmark</th><th style="padding:8px 12px;font-size:0.75rem;color:var(--muted)">Status</th></tr></thead>
+          <tbody>
+            <tr><td style="padding:8px 12px;border-bottom:1px solid var(--line)">Followers</td><td style="text-align:right;padding:8px 12px;border-bottom:1px solid var(--line);font-family:'JetBrains Mono',monospace;font-size:0.82rem">10,692</td><td style="text-align:right;padding:8px 12px;border-bottom:1px solid var(--line);font-family:'JetBrains Mono',monospace;font-size:0.82rem">—</td><td style="padding:8px 12px;border-bottom:1px solid var(--line)">—</td></tr>
+            <tr><td style="padding:8px 12px;border-bottom:1px solid var(--line)">Engagement Rate</td><td style="text-align:right;padding:8px 12px;border-bottom:1px solid var(--line);font-family:'JetBrains Mono',monospace;font-size:0.82rem;color:var(--red)">1.96%</td><td style="text-align:right;padding:8px 12px;border-bottom:1px solid var(--line);font-family:'JetBrains Mono',monospace;font-size:0.82rem">~4.0%</td><td style="padding:8px 12px;border-bottom:1px solid var(--line)"><span style="background:var(--red-muted);color:var(--red);font-size:0.7rem;font-weight:600;padding:2px 8px;border-radius:4px">Below</span></td></tr>
+            <tr style="background:var(--accent-muted)"><td style="padding:8px 12px;border-bottom:1px solid var(--line)">14-Day Growth</td><td style="text-align:right;padding:8px 12px;border-bottom:1px solid var(--line);font-family:'JetBrains Mono',monospace;font-size:0.82rem;color:var(--green)">+149 (+1.4%)</td><td style="text-align:right;padding:8px 12px;border-bottom:1px solid var(--line);font-family:'JetBrains Mono',monospace;font-size:0.82rem">—</td><td style="padding:8px 12px;border-bottom:1px solid var(--line)"><span style="background:var(--green-muted);color:var(--green);font-size:0.7rem;font-weight:600;padding:2px 8px;border-radius:4px">Strong</span></td></tr>
+            <tr><td style="padding:8px 12px;border-bottom:1px solid var(--line)">Posting Cadence</td><td style="text-align:right;padding:8px 12px;border-bottom:1px solid var(--line);font-family:'JetBrains Mono',monospace;font-size:0.82rem">~0.5/day</td><td style="text-align:right;padding:8px 12px;border-bottom:1px solid var(--line);font-family:'JetBrains Mono',monospace;font-size:0.82rem">—</td><td style="padding:8px 12px;border-bottom:1px solid var(--line)"><span style="background:var(--green-muted);color:var(--green);font-size:0.7rem;font-weight:600;padding:2px 8px;border-radius:4px">Consistent</span></td></tr>
+          </tbody>
+        </table>
+        <p style="font-size:0.75rem;color:var(--muted)">Sources: Social Blade (May 2026), Viralist.ai. Benchmarks from Influencer Marketing Hub.</p>
+
+        <h2>Strengths</h2>
+        <p><strong>1. World-Class Credibility.</strong> Tenured UCSD professor + NASA collaborator = instant authority signal that no amount of content can replicate.</p>
+        <p><strong>2. Strong Comment Engagement.</strong> 32 avg comments/post with high-quality discussion threads — rare at this follower tier.</p>
+        <p><strong>3. Consistent Posting.</strong> ~0.5 posts/day maintained over months. The habit is there.</p>
+        <p><strong>4. Unique Positioning.</strong> Mitochondrial researcher + CSO of a biotech company. No one else in the wellness space has this exact intersection.</p>
+        <p style="font-size:0.82rem;color:var(--muted);margin-top:8px">+ 6 more strengths in the full report...</p>
+
+        <h2>Performance Score: 62/100</h2>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:0.84rem">
+          <div>Branding & Messaging <span style="float:right;font-weight:600">7/10</span></div>
+          <div>Engagement Quality <span style="float:right;font-weight:600">10/15</span></div>
+          <div>Audience Alignment <span style="float:right;font-weight:600">11/15</span></div>
+          <div>Growth Potential <span style="float:right;font-weight:600">9/15</span></div>
+          <div>Content Strategy <span style="float:right;font-weight:600">11/20</span></div>
+          <div>Platform Optimization <span style="float:right;font-weight:600">8/15</span></div>
+        </div>
+        <p style="font-size:0.82rem;color:var(--muted);margin-top:12px">Full 15-section report includes: Weaknesses, Growth Bottlenecks, Content Gaps, Audience Psychology, Viral Opportunities, Monetization, Competitive Context, 30-Day Optimization Plan, Visual Branding Blueprint, and 10 Content Ideas. <strong>Upgrade to Pro to unlock the complete report.</strong></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ SCREEN: PAYMENT ═══════════════════ -->
+<div class="screen" id="screen-payment">
+  <div class="payment-screen container">
+    <div class="payment-grid">
+      <div class="payment-form">
+        <h2>Subscribe to Pro</h2>
+        <p style="font-size:0.88rem;color:var(--muted);margin-bottom:24px">7-day free trial, then $99/month. Cancel anytime.</p>
+
+        <div class="field" style="margin-bottom:12px"><label>Email</label><input value="sarah@agency.com" style="width:100%"></div>
+
+        <div style="margin-bottom:12px"><label style="font-size:0.78rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;display:block;margin-bottom:4px">Card Information</label>
+          <div class="stripe-field" style="display:flex;align-items:center;gap:10px">
+            <span style="font-size:1.2rem">💳</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.88rem">4242 4242 4242 4242</span>
+          </div>
+        </div>
+
+        <div class="stripe-row">
+          <div class="stripe-field" style="display:flex;align-items:center;gap:10px">
+            <span style="font-size:0.82rem;color:var(--muted)">MM/YY</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.88rem">12/28</span>
+          </div>
+          <div class="stripe-field" style="display:flex;align-items:center;gap:10px">
+            <span style="font-size:0.82rem;color:var(--muted)">CVC</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.88rem">123</span>
+          </div>
+        </div>
+
+        <div class="field" style="margin-bottom:12px"><label>Name on card</label><input value="Sarah Chen" style="width:100%"></div>
+
+        <div class="field" style="margin-bottom:20px"><label>Country</label>
+          <select style="width:100%;padding:10px 14px;border:1px solid var(--line);border-radius:var(--radius-sm);font-family:inherit;font-size:0.9rem">
+            <option>United States</option><option>Canada</option><option>United Kingdom</option>
+          </select>
+        </div>
+
+        <button class="btn btn-primary btn-lg" style="width:100%;justify-content:center" onclick="showScreen('success')">Start Free Trial →</button>
+        <p style="font-size:0.75rem;color:var(--muted);text-align:center;margin-top:12px">🔒 Secured by Stripe. Your card will not be charged during the trial.</p>
+      </div>
+
+      <div class="payment-summary">
+        <h3>Order Summary</h3>
+        <div class="ps-row"><span>Pro Plan</span><span>$99.00/mo</span></div>
+        <div class="ps-row"><span>7-day free trial</span><span style="color:var(--green);font-weight:600">-$99.00</span></div>
+        <div class="ps-row"><span>Tax</span><span>$0.00</span></div>
+        <div class="ps-total" style="display:flex;justify-content:space-between"><span>Due today</span><span>$0.00</span></div>
+        <div class="ps-note">Your card will be charged $99.00 on May 20, 2026. Cancel anytime before then and you won't be charged.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ SCREEN: SUCCESS ═══════════════════ -->
+<div class="screen" id="screen-success">
+  <div class="success-screen container-sm">
+    <div class="success-icon">🎉</div>
+    <h2>You're all set!</h2>
+    <p>Your Pro plan is active. Your full @hemalpatelphd report is ready. Check your email for a receipt.</p>
+    <button class="btn btn-primary btn-lg" onclick="showScreen('report')">View Your Report →</button>
+    <p style="font-size:0.85rem;color:var(--muted);margin-top:16px">
+      <a href="#" onclick="showScreen('dashboard')" style="color:var(--accent);text-decoration:none">← Back to Dashboard</a>
+    </p>
+  </div>
+</div>
+
+<!-- ═══════════════════ CHAT PANEL ═══════════════════ -->
+<button class="chat-toggle" id="chatToggle" style="display:none" onclick="toggleChat()">💬</button>
+<div class="chat-panel" id="chatPanel">
+  <div class="chat-header">
+    <span>Refine Report</span>
+    <button onclick="toggleChat()" style="background:none;border:none;cursor:pointer;font-size:1.1rem;color:var(--muted)">✕</button>
+  </div>
+  <div class="chat-messages" id="chatMessages">
+    <div class="chat-msg agent">Hi Sarah! I've generated your @hemalpatelphd audit. Is there anything you'd like me to adjust or expand?</div>
+  </div>
+  <div class="chat-input-row">
+    <input id="chatInput" placeholder="Add competitive comparison..." onkeydown="if(event.key==='Enter')sendChat()">
+    <button onclick="sendChat()">Send</button>
+  </div>
+</div>
+
+<script>
+// ═══════════════ SCREEN NAVIGATION ═══════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active')});
+  var screen = document.getElementById('screen-' + id);
+  if (screen) screen.classList.add('active');
+  window.scrollTo(0,0);
+
+  var chatBtn = document.getElementById('chatToggle');
+  if (id === 'report' || id === 'dashboard') {
+    chatBtn.style.display = 'flex';
+  } else {
+    chatBtn.style.display = 'none';
+    document.getElementById('chatPanel').classList.remove('open');
+  }
+
+  // Demo: show payment screen from report
+  if (id === 'pricing') showScreen('landing');
+}
+
+// ═══════════════ GUIDED QUESTIONS ═══════════════
+var questions = [
+  {q:"What's the primary goal for this audit?",sub:"This helps us tailor the analysis focus.",options:["Growth strategy","Competitive positioning","Content optimization","Rebrand assessment"]},
+  {q:"Any competitors to benchmark against?",sub:"Optional — leave blank if unsure.",options:["@drmarkhyman","@hubermanlab","@foundmyfitness","None / skip"]},
+  {q:"Target audience context?",sub:"Helps calibrate our recommendations.",options:["B2B — selling to businesses","B2C — direct to consumers","Personal brand / creator","Nonprofit / academic"]},
+  {q:"Preferred report depth?",sub:"Standard covers 15 sections. Deep adds competitive matrix + content calendar.",options:["Standard (15 sections)","Deep (25+ sections, Pro only)"]},
+  {q:"Anything unusual about this account we should know?",sub:"Recent pivot, controversy, or special context.",options:["Recent rebrand","Platform migration","Controversy / PR issue","Nothing unusual"]}
+];
+
+var currentQ = 0;
+var answers = [];
+
+function startGuidedFlow() {
+  currentQ = 0;
+  answers = [];
+  showScreen('questions');
+  renderQuestion();
+  renderSteps();
+}
+
+function renderSteps() {
+  var dots = document.getElementById('stepDots');
+  var html = '';
+  for (var i = 0; i < questions.length; i++) {
+    var cls = 'step-dot';
+    if (i < currentQ) cls += ' done';
+    if (i === currentQ) cls += ' active';
+    html += '<div class="' + cls + '">' + (i < currentQ ? '✓' : (i+1)) + '</div>';
+  }
+  dots.innerHTML = html;
+}
+
+function renderQuestion() {
+  if (currentQ >= questions.length) {
+    showScreen('generating');
+    simulateGeneration();
+    return;
+  }
+  var q = questions[currentQ];
+  var card = document.getElementById('questionCard');
+  var opts = q.options.map(function(o,i){
+    var sel = answers[currentQ] === o ? ' selected' : '';
+    return '<button class="q-option' + sel + '" onclick="selectAnswer(' + currentQ + ',\'' + o.replace(/'/g,"\\'") + '\',this)">' + o + '</button>';
+  }).join('');
+  card.innerHTML = '<h2>' + q.q + '</h2><div class="q-sub">' + q.sub + '</div><div class="q-options">' + opts + '</div>';
+  renderSteps();
+  card.style.opacity = '0'; card.style.transform = 'translateY(10px)';
+  setTimeout(function(){card.style.opacity = '1'; card.style.transform = 'translateY(0)';},50);
+}
+
+function selectAnswer(qIdx, answer, btn) {
+  answers[qIdx] = answer;
+  var opts = btn.parentElement.querySelectorAll('.q-option');
+  for (var i = 0; i < opts.length; i++) opts[i].classList.remove('selected');
+  btn.classList.add('selected');
+  setTimeout(function(){
+    currentQ++;
+    renderQuestion();
+  }, 400);
+}
+
+// ═══════════════ GENERATION SIMULATION ═══════════════
+var genPhases = [
+  {text:'Researching @hemalpatelphd...',steps:[
+    {label:'Fetching profile data',time:1500},
+    {label:'Gathering Social Blade metrics',time:2500},
+    {label:'Scanning recent posts (last 30)',time:2000},
+    {label:'Extracting engagement patterns',time:3000}
+  ]},
+  {text:'Analyzing content strategy...',steps:[
+    {label:'Classifying content formats',time:2000},
+    {label:'Identifying content gaps',time:2500},
+    {label:'Comparing to benchmark accounts',time:3500}
+  ]},
+  {text:'Computing competitive analysis...',steps:[
+    {label:'Researching competitor @drmarkhyman',time:2500},
+    {label:'Mapping competitive landscape',time:2000}
+  ]},
+  {text:'Assembling your report...',steps:[
+    {label:'Scoring across 8 dimensions',time:1500},
+    {label:'Generating recommendations',time:2000},
+    {label:'Building 30-day strategy',time:2500},
+    {label:'Compiling HTML report',time:1500}
+  ]}
+];
+
+function simulateGeneration() {
+  var stepsEl = document.getElementById('genSteps');
+  var statusEl = document.getElementById('genStatus');
+  var viewBtn = document.getElementById('viewReportBtn');
+  viewBtn.style.display = 'none';
+  stepsEl.innerHTML = '';
+  statusEl.textContent = 'Starting analysis...';
+
+  var allSteps = [];
+  for (var p = 0; p < genPhases.length; p++) {
+    for (var s = 0; s < genPhases[p].steps.length; s++) {
+      allSteps.push({phase:p, label:genPhases[p].steps[s].label, time:genPhases[p].steps[s].time, phaseText:genPhases[p].text});
+    }
+  }
+
+  var stepIdx = 0;
+  var accTime = 0;
+
+  function advance() {
+    if (stepIdx >= allSteps.length) {
+      statusEl.textContent = 'Report complete!';
+      viewBtn.style.display = 'inline-flex';
+      var items = stepsEl.querySelectorAll('.gen-step');
+      for (var i = 0; i < items.length; i++) {items[i].className = 'gen-step done';}
+      return;
+    }
+    var s = allSteps[stepIdx];
+    statusEl.textContent = s.phaseText;
+
+    // Mark previous as done
+    var items = stepsEl.querySelectorAll('.gen-step');
+    for (var i = 0; i < items.length; i++) {
+      if (i < stepIdx) items[i].className = 'gen-step done';
+      else if (i === stepIdx) items[i].className = 'gen-step current';
+      else items[i].className = 'gen-step pending';
+    }
+
+    // Add step if new
+    if (stepIdx === items.length) {
+      var div = document.createElement('div');
+      div.className = 'gen-step current';
+      div.textContent = s.label;
+      stepsEl.appendChild(div);
+    }
+
+    stepIdx++;
+    accTime += s.time;
+    setTimeout(advance, s.time);
+  }
+
+  advance();
+}
+
+// ═══════════════ CHAT ═══════════════
+function toggleChat() {
+  document.getElementById('chatPanel').classList.toggle('open');
+}
+
+function sendChat() {
+  var input = document.getElementById('chatInput');
+  var msg = input.value.trim();
+  if (!msg) return;
+  var msgs = document.getElementById('chatMessages');
+  msgs.innerHTML += '<div class="chat-msg user">' + msg + '</div>';
+  input.value = '';
+  msgs.scrollTop = msgs.scrollHeight;
+
+  // Mock agent response
+  setTimeout(function(){
+    var responses = [
+      "Great idea! I've added a competitive comparison section. Scroll down to see how @hemalpatelphd stacks up against @drmarkhyman on engagement, content mix, and growth trajectory.",
+      "Done! I've expanded the Content Gaps section to include Reels analysis and added 3 specific Reel ideas in the Content Ideas section.",
+      "I've recalculated the Performance Score with the updated data. The new score is 64/100 — Content Strategy improved from 11 to 13/20 based on the additional context you provided.",
+      "Good catch! I've updated the 30-Day Strategy to prioritize carousel posts over static images in Week 1-2, and added specific carousel templates in the Visual Branding section."
+    ];
+    var resp = responses[Math.floor(Math.random() * responses.length)];
+    msgs.innerHTML += '<div class="chat-msg agent">' + resp + '</div>';
+    msgs.scrollTop = msgs.scrollHeight;
+  }, 800 + Math.random() * 1200);
+}
+
+// ═══════════════ SAMPLE REPORT ═══════════════
+function showSampleReport() {
+  showScreen('report');
+}
+
+// Init
+document.addEventListener('DOMContentLoaded', function(){
+  showScreen('landing');
+});
+</script>
+
+</body>
+</html>

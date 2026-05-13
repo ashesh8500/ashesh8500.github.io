@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AuditLayer — Viability Plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fafaf9;
+    --surface: #ffffff;
+    --text: #1c1917;
+    --muted: #78716c;
+    --line: #e7e5e4;
+    --accent: #7c3aed;
+    --accent-muted: #f5f3ff;
+    --accent2: #0d9488;
+    --green: #059669;
+    --green-muted: #ecfdf5;
+    --amber: #d97706;
+    --amber-muted: #fffbeb;
+    --red: #dc2626;
+    --red-muted: #fef2f2;
+    --blue: #2563eb;
+    --blue-muted: #eff6ff;
+    --slate: #64748b;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .container {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 72px 28px 120px;
+  }
+
+  /* ── Cover ── */
+  .cover {
+    text-align: center;
+    padding: 80px 0 64px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 64px;
+  }
+  .cover .badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--accent);
+    background: var(--accent-muted);
+    padding: 5px 14px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+  }
+  .cover h1 {
+    font-size: 2.6rem;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+    margin-bottom: 12px;
+  }
+  .cover .tagline {
+    font-size: 1.15rem;
+    color: var(--muted);
+    font-weight: 400;
+    max-width: 520px;
+    margin: 0 auto 32px;
+  }
+  .cover .meta {
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+  .cover .meta span { margin: 0 12px; }
+
+  /* ── Sections ── */
+  section { margin-bottom: 56px; }
+  section h2 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin-bottom: 8px;
+    color: var(--text);
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--line);
+  }
+  section .section-desc {
+    font-size: 0.88rem;
+    color: var(--muted);
+    margin-bottom: 24px;
+  }
+  section h3 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin: 32px 0 10px;
+    color: var(--text);
+  }
+  section p {
+    margin-bottom: 14px;
+    font-size: 0.95rem;
+    color: #44403c;
+  }
+  section ul, section ol {
+    margin: 0 0 16px 20px;
+    font-size: 0.93rem;
+    color: #44403c;
+  }
+  section li { margin-bottom: 8px; }
+
+  /* ── Cards ── */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+    margin: 20px 0;
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 20px 22px;
+  }
+  .card .card-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .card .card-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.02em;
+  }
+  .card .card-value.accent { color: var(--accent); }
+  .card .card-value.green { color: var(--green); }
+  .card .card-sub {
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  /* ── Tables ── */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 0.9rem;
+  }
+  .data-table thead { border-bottom: 2px solid var(--line); }
+  .data-table th {
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    padding: 8px 12px;
+  }
+  .data-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+  }
+  .data-table .num { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; text-align: right; }
+  .data-table tr.highlight { background: var(--accent-muted); }
+
+  .tag {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+  .tag.good { background: var(--green-muted); color: var(--green); }
+  .tag.warn { background: var(--amber-muted); color: var(--amber); }
+  .tag.bad  { background: var(--red-muted); color: var(--red); }
+  .tag.info { background: var(--blue-muted); color: var(--blue); }
+
+  /* ── UX Mockup ── */
+  .ux-frame {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+    margin: 20px 0;
+  }
+  .ux-frame .ux-topbar {
+    background: #f5f5f4;
+    padding: 8px 16px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    border-bottom: 1px solid var(--line);
+  }
+  .ux-frame .ux-dot { width: 10px; height: 10px; border-radius: 10px; }
+  .ux-frame .ux-dot.r { background: #ef4444; }
+  .ux-frame .ux-dot.y { background: #eab308; }
+  .ux-frame .ux-dot.g { background: #22c55e; }
+  .ux-frame .ux-title {
+    font-size: 0.72rem;
+    color: var(--muted);
+    margin-left: 8px;
+    font-weight: 500;
+  }
+  .ux-frame .ux-body {
+    padding: 24px;
+  }
+
+  /* ── Flow Steps ── */
+  .flow {
+    display: flex;
+    gap: 12px;
+    margin: 20px 0;
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+  .flow-step {
+    flex: 0 0 160px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 16px;
+    text-align: center;
+  }
+  .flow-step .step-num {
+    width: 28px; height: 28px;
+    border-radius: 14px;
+    background: var(--accent);
+    color: white;
+    font-weight: 700;
+    font-size: 0.82rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 10px;
+  }
+  .flow-step .step-label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .flow-step .step-desc {
+    font-size: 0.72rem;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+  .flow-arrow {
+    display: flex;
+    align-items: center;
+    color: var(--muted);
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+
+  /* ── Phase Timeline ── */
+  .phase {
+    border-left: 3px solid var(--accent);
+    padding: 4px 0 20px 20px;
+    margin-left: 6px;
+    position: relative;
+  }
+  .phase::before {
+    content: '';
+    position: absolute;
+    left: -9px;
+    top: 8px;
+    width: 14px; height: 14px;
+    border-radius: 14px;
+    background: var(--accent);
+    border: 2px solid var(--bg);
+  }
+  .phase .phase-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+  .phase h4 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .phase p { font-size: 0.88rem; color: var(--muted); }
+
+  /* ── Callout ── */
+  .callout {
+    background: var(--accent-muted);
+    border: 1px solid #e9d5ff;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 20px 0;
+    font-size: 0.9rem;
+  }
+  .callout strong { color: var(--accent); }
+
+  .callout.info {
+    background: var(--blue-muted);
+    border-color: #bfdbfe;
+  }
+  .callout.info strong { color: var(--blue); }
+
+  .callout.warn {
+    background: var(--amber-muted);
+    border-color: #fde68a;
+  }
+  .callout.warn strong { color: var(--amber); }
+
+  /* ── Footer ── */
+  .report-footer {
+    margin-top: 64px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 600px) {
+    .container { padding: 40px 18px 80px; }
+    .cover h1 { font-size: 1.8rem; }
+    .card-grid { grid-template-columns: 1fr 1fr; }
+    .flow { flex-wrap: wrap; }
+    .flow-arrow { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- COVER -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<header class="cover">
+  <div class="badge">Viability Plan v1.0</div>
+  <h1>AuditLayer</h1>
+  <p class="tagline">Social media competitive intelligence as a subscription service — powered by Hermes Agent, shaped by domain expertise.</p>
+  <p class="meta">
+    <span>📅 May 2026</span>
+    <span>👤 Ashesh Kaji · Technical</span>
+    <span>👤 Narin · Domain</span>
+  </p>
+</header>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- EXECUTIVE SUMMARY -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section>
+  <h2>Executive Summary</h2>
+  <p class="section-desc">What we're building, for whom, and why now.</p>
+
+  <p><strong>AuditLayer</strong> is a subscription platform that generates deep, structured social media audit reports for brands, creators, and agencies. A client enters a social media handle, answers a few guiding questions, and receives a polished, actionable 15-section audit — competitive metrics, content gaps, audience psychology, growth strategy, visual branding blueprint — delivered as a self-contained HTML report with an optional chat interface for iterative refinement.</p>
+
+  <p>The engine is <strong>Hermes Agent</strong> running the <code>social-media-audit</code> skill — a battle-tested pipeline already proven with real clients, most recently a comprehensive Instagram audit for Dr. Hemal Patel (<code>@hemalpatelphd</code>, 10.7K followers) that generated immediate commercial interest from Narin's network of med-tech marketing teams.</p>
+
+  <div class="callout">
+    <p><strong>Core insight:</strong> The audit pipeline already works. The skill already exists. The report format has been validated by real clients. The gap is not technology — it's productization: a portal, a payment flow, and self-serve access.</p>
+  </div>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-label">Time to MVP</div>
+      <div class="card-value accent">3–4 weeks</div>
+      <div class="card-sub">Weekend-warrior pace</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Monthly Run Cost</div>
+      <div class="card-value">$20–40</div>
+      <div class="card-sub">CX22 + API usage</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Cost per Audit</div>
+      <div class="card-value green">$0.80–2.00</div>
+      <div class="card-sub">LLM tokens + data APIs</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Target Margin</div>
+      <div class="card-value green">85–94%</div>
+      <div class="card-sub">At $49–99/mo pricing</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- PRODUCT VISION -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section>
+  <h2>Product Vision</h2>
+  <p class="section-desc">What the user sees. Simplicity is the feature.</p>
+
+  <h3>Core Experience</h3>
+
+  <div class="flow">
+    <div class="flow-step">
+      <div class="step-num">1</div>
+      <div class="step-label">Sign Up</div>
+      <div class="step-desc">Google OAuth. 10 seconds. No credit card for trial.</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">
+      <div class="step-num">2</div>
+      <div class="step-label">New Audit</div>
+      <div class="step-desc">Enter handle, pick platform, answer 3–5 guiding questions.</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">
+      <div class="step-num">3</div>
+      <div class="step-label">Generate</div>
+      <div class="step-desc">Hermes researches, analyzes, and produces the report. 5–8 min.</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">
+      <div class="step-num">4</div>
+      <div class="step-label">Review & Refine</div>
+      <div class="step-desc">Read the report. Chat to iterate: "add competitor comparison."</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">
+      <div class="step-num">5</div>
+      <div class="step-label">Export & Share</div>
+      <div class="step-desc">Download HTML, PDF, or share a link with the team.</div>
+    </div>
+  </div>
+
+  <h3>Portal UX — What the Client Sees</h3>
+
+  <p>The portal has exactly <strong>three screens</strong>:</p>
+
+  <div class="ux-frame">
+    <div class="ux-topbar">
+      <div class="ux-dot r"></div><div class="ux-dot y"></div><div class="ux-dot g"></div>
+      <div class="ux-title">Dashboard — AuditLayer</div>
+    </div>
+    <div class="ux-body">
+      <p style="font-weight:600;margin-bottom:16px;">Welcome back, Sarah</p>
+
+      <div style="background:var(--accent-muted);border-radius:8px;padding:16px 20px;margin-bottom:20px;border:1px solid #e9d5ff;">
+        <p style="font-weight:600;color:var(--accent);margin-bottom:4px;font-size:0.88rem;">+ New Audit</p>
+        <p style="font-size:0.82rem;color:var(--muted);margin:0;">
+          <input type="text" placeholder="Enter Instagram / TikTok / YouTube handle..." style="width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:6px;font-size:0.9rem;margin:8px 0;font-family:inherit;">
+        </p>
+        <p style="font-size:0.78rem;color:var(--muted);margin:6px 0 2px;">Platform: 
+          <span style="display:inline-block;background:var(--surface);padding:3px 10px;border-radius:4px;border:1px solid var(--line);margin:0 4px;font-size:0.78rem;">Instagram</span>
+          <span style="display:inline-block;background:var(--surface);padding:3px 10px;border-radius:4px;border:1px solid var(--line);margin:0 4px;font-size:0.78rem;">TikTok</span>
+          <span style="display:inline-block;background:var(--surface);padding:3px 10px;border-radius:4px;border:1px solid var(--line);margin:0 4px;font-size:0.78rem;">YouTube</span>
+        </p>
+        <p style="font-size:0.78rem;color:var(--muted);margin:8px 0 0;">
+          <strong>Focus:</strong> <em>Growth strategy & content gaps</em> &nbsp;|&nbsp; <strong>Depth:</strong> <em>Standard (15 sections)</em>
+        </p>
+        <p style="margin:12px 0 0;">
+          <span style="display:inline-block;background:var(--accent);color:white;padding:8px 22px;border-radius:6px;font-weight:600;font-size:0.85rem;cursor:pointer;">Generate Audit →</span>
+        </p>
+      </div>
+
+      <p style="font-weight:600;margin-bottom:8px;">Recent Audits</p>
+      <div style="border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin-bottom:8px;">
+        <p style="font-weight:600;font-size:0.88rem;">@hemalpatelphd · Instagram</p>
+        <p style="font-size:0.78rem;color:var(--muted);">Generated May 12 · Score 62/100 · <span style="color:var(--accent);cursor:pointer;">View →</span></p>
+      </div>
+      <div style="border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin-bottom:8px;">
+        <p style="font-weight:600;font-size:0.88rem;">@versediscovery · Instagram</p>
+        <p style="font-size:0.78rem;color:var(--muted);">Generated May 8 · Score 48/100 · <span style="color:var(--accent);cursor:pointer;">View →</span></p>
+      </div>
+    </div>
+  </div>
+
+  <h3>Report Viewer — What the Client Sees After Generation</h3>
+
+  <p>The report renders as a clean, scrollable HTML page — exactly like the <code>@hemalpatelphd-instagram-audit.html</code> artifact. A floating chat panel in the bottom-right corner allows iterative refinement:</p>
+
+  <div class="ux-frame">
+    <div class="ux-topbar">
+      <div class="ux-dot r"></div><div class="ux-dot y"></div><div class="ux-dot g"></div>
+      <div class="ux-title">Instagram Audit — @hemalpatelphd</div>
+    </div>
+    <div class="ux-body">
+      <p style="font-weight:600;font-size:1.1rem;margin-bottom:20px;">📊 Executive Summary</p>
+      <p style="font-size:0.88rem;color:#44403c;margin-bottom:16px;">Dr. Hemal Patel brings world-class academic credibility to Instagram — tenured UCSD professor, Vice-Chair for Research, NASA twin study collaborator. His account has grown steadily to <strong>10,692 followers</strong> with consistent posting and an engaged comment community...</p>
+
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:16px 0;">
+        <div style="background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px;text-align:center;">
+          <div style="font-size:1.3rem;font-weight:700;">10.7K</div>
+          <div style="font-size:0.7rem;color:var(--muted);">Followers</div>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px;text-align:center;">
+          <div style="font-size:1.3rem;font-weight:700;color:var(--red);">1.96%</div>
+          <div style="font-size:0.7rem;color:var(--muted);">Engagement Rate</div>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px;text-align:center;">
+          <div style="font-size:1.3rem;font-weight:700;">178</div>
+          <div style="font-size:0.7rem;color:var(--muted);">Avg Likes/Post</div>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px;text-align:center;">
+          <div style="font-size:1.3rem;font-weight:700;color:var(--green);">32</div>
+          <div style="font-size:0.7rem;color:var(--muted);">Avg Comments</div>
+        </div>
+      </div>
+
+      <p style="font-size:0.88rem;margin-top:20px;">... [full 15-section report continues below]</p>
+
+      <!-- Floating chat mockup -->
+      <div style="position:relative;margin-top:24px;border:2px solid var(--accent);border-radius:12px;padding:16px;background:var(--accent-muted);max-width:380px;float:right;">
+        <p style="font-weight:600;font-size:0.82rem;color:var(--accent);margin-bottom:6px;">💬 Refine this report</p>
+        <p style="font-size:0.78rem;color:var(--muted);margin-bottom:8px;">Ask me to adjust any section:</p>
+        <div style="background:white;border-radius:6px;padding:8px 12px;font-size:0.78rem;margin-bottom:6px;">
+          "Add a competitive comparison with @drmarkhyman"
+        </div>
+        <div style="background:white;border-radius:6px;padding:8px 12px;font-size:0.78rem;margin-bottom:6px;">
+          <em>✓ Added comparison section. Scroll to "Competitive Context."</em>
+        </div>
+        <input type="text" placeholder="Type a refinement..." style="width:100%;padding:8px 12px;border:1px solid var(--line);border-radius:6px;font-size:0.78rem;margin-top:4px;font-family:inherit;">
+      </div>
+      <div style="clear:both;"></div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <p><strong>Design principle:</strong> The portal has exactly three screens — Dashboard, Report Viewer, and Account. No settings maze, no configuration panels, no model pickers. The user never sees Hermes, prompts, or infrastructure. They see a report.</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- TECHNICAL ARCHITECTURE -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section>
+  <h2>Technical Architecture</h2>
+  <p class="section-desc">What runs where, and how data flows.</p>
+
+  <h3>Current Stack (Already Running)</h3>
+
+  <table class="data-table">
+    <thead>
+      <tr><th>Component</th><th>Location</th><th>Status</th><th>Role</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Hermes Gateway</strong></td>
+        <td class="num">CX22 · :8642</td>
+        <td><span class="tag good">Running</span></td>
+        <td>Agent loop, tool dispatch, session management</td>
+      </tr>
+      <tr>
+        <td><strong>Hermes API Server</strong></td>
+        <td class="num">CX22 · :8642/v1</td>
+        <td><span class="tag good">Running</span></td>
+        <td>OpenAI-compatible endpoint for programmatic access</td>
+      </tr>
+      <tr>
+        <td><strong>Hermes Workspace</strong></td>
+        <td class="num">CX22 · :3000</td>
+        <td><span class="tag good">Running</span></td>
+        <td>Admin web UI (used internally, not client-facing)</td>
+      </tr>
+      <tr>
+        <td><strong>social-media-audit skill</strong></td>
+        <td class="num">~/.hermes/skills/</td>
+        <td><span class="tag good">Installed</span></td>
+        <td>15-section audit pipeline, scoring, research framework</td>
+      </tr>
+      <tr>
+        <td><strong>Tailscale VPN</strong></td>
+        <td class="num">Mesh</td>
+        <td><span class="tag good">Running</span></td>
+        <td>Secure laptop↔VM connectivity</td>
+      </tr>
+      <tr>
+        <td><strong>Syncthing</strong></td>
+        <td class="num">Bidirectional</td>
+        <td><span class="tag good">Running</span></td>
+        <td>Skills, memory, projects sync across machines</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Target Architecture (MVP)</h3>
+
+  <pre style="background:#1c1917;color:#e7e5e4;padding:20px 24px;border-radius:10px;font-family:'JetBrains Mono',monospace;font-size:0.78rem;line-height:1.7;overflow-x:auto;margin:16px 0;">
+                         Internet
+                            │
+                    ┌───────▼────────┐
+                    │   Cloudflare    │
+                    │  • TLS (free)   │
+                    │  • OAuth (free) │
+                    │  • WAF          │
+                    └───────┬────────┘
+                            │ CF Tunnel (outbound only, no open ports)
+                    ┌───────▼────────┐
+                    │  Client Portal  │  ← NEW (Next.js, ~500 LOC)
+                    │  • /dashboard   │     Hetzner CX22
+                    │  • /audit/:id   │     :3001 (or alongside Workspace)
+                    │  • /account     │
+                    └───────┬────────┘
+                            │ POST /api/audits  ← auth'd by Clerk session
+                    ┌───────▼────────┐
+                    │   API Proxy     │  ← NEW (Express/Fastify, ~200 LOC)
+                    │  • Rate limit   │
+                    │  • Cost track   │
+                    │  • Queue        │
+                    └───────┬────────┘
+                            │ OpenAI /v1/chat/completions
+                    ┌───────▼────────┐
+                    │  Hermes API     │  ← EXISTING
+                    │  :8642/v1       │
+                    │  + audit skill  │
+                    └───────┬────────┘
+                            │ Web search, Social Blade, Instagram scraping
+                    ┌───────▼────────┐
+                    │   Internet      │
+                    │  Public social  │
+                    │  media data     │
+                    └────────────────┘
+  </pre>
+
+  <h3>Why This Architecture</h3>
+  <ul>
+    <li><strong>Zero new infrastructure.</strong> Everything runs on the existing CX22. No new VMs, no Docker, no databases beyond what Hermes already uses.</li>
+    <li><strong>Cloudflare Tunnel</strong> means no open inbound ports. The CX22 makes an outbound connection to Cloudflare. TLS termination, DDoS protection, and OAuth gating all happen at Cloudflare's edge — free for &lt;50 users.</li>
+    <li><strong>Hermes sessions are already isolated.</strong> Each audit runs in its own session. The gateway handles concurrency natively. No per-user containers needed for the pilot.</li>
+    <li><strong>The portal is thin.</strong> It's a UI shell. All intelligence lives in Hermes + the audit skill. The portal just renders HTML reports and proxies chat messages.</li>
+  </ul>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- THE AUDIT SKILL -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section>
+  <h2>The Audit Skill — What Powers Every Report</h2>
+  <p class="section-desc">The engine that turns a handle into a 15-section intelligence report.</p>
+
+  <h3>Audit Pipeline (Existing)</h3>
+
+  <table class="data-table">
+    <thead>
+      <tr><th>Phase</th><th>What Happens</th><th>Data Sources</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>1. Research</strong></td><td>Extract website, identify all platforms, gather followers/engagement, check Reddit sentiment, search for funding/valuation</td><td>Social Blade, Viralist.ai, public Instagram, Google, Reddit</td></tr>
+      <tr><td><strong>2. Analysis</strong></td><td>Compute metrics vs. benchmarks, identify patterns, rank bottlenecks by severity, score across 8 dimensions</td><td>Skill's scoring framework, creator-strategy knowledge base</td></tr>
+      <tr><td><strong>3. Report Assembly</strong></td><td>15-section structured report: snapshot → platform audit → strengths/weaknesses → bottlenecks → gaps → psychology → viral opps → monetization → score → competitors → recommendations → content ideas → 30-day plan → visual branding</td><td>Structured HTML template (replicating @hemalpatelphd format)</td></tr>
+      <tr><td><strong>4. Delivery</strong></td><td>Self-contained HTML file with embedded CSS, ready to view or print</td><td>Written to portal-accessible path</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Report Sections (Existing, Proven)</h3>
+  <ol>
+    <li><strong>Executive Summary</strong> — 2–3 paragraphs, core insight callout</li>
+    <li><strong>Key Metrics</strong> — metric cards + benchmark comparison table</li>
+    <li><strong>Strengths</strong> — 8–10 items, what's working</li>
+    <li><strong>Weaknesses</strong> — 8–10 items, what's broken</li>
+    <li><strong>Growth Bottlenecks</strong> — severity-ranked table with impact assessment</li>
+    <li><strong>Content Gaps</strong> — formats/topics entirely absent</li>
+    <li><strong>Audience Psychology</strong> — primary + secondary audience motivations</li>
+    <li><strong>Viral Opportunities</strong> — high-leverage content ideas</li>
+    <li><strong>Monetization Opportunities</strong> — revenue levers from social presence</li>
+    <li><strong>Performance Score</strong> — 8-dimension weighted score out of 100</li>
+    <li><strong>Competitive Context</strong> — competitor comparison table</li>
+    <li><strong>High-Impact Recommendations</strong> — 3 tiers (★★★★★ to ★★)</li>
+    <li><strong>Platform-Specific Improvements</strong> — per-platform tactical guidance</li>
+    <li><strong>Content Ideas</strong> — 10 specific content pieces to produce</li>
+    <li><strong>30-Day Optimization Strategy</strong> — week-by-week plan with success metrics</li>
+  </ol>
+
+  <div class="callout">
+    <p><strong>Key advantage:</strong> This skill improves over time. Every audit run refines the prompts, data sources, and analysis patterns. After 50 audits, the skill is materially better than a fresh install — and that accumulated quality is impossible for a competitor to replicate.</p>
+  </div>
+
+  <h3>Guided Questions (New — Replaces Raw Prompt)</h3>
+  <p>Instead of exposing a blank chat or raw configuration, the portal asks 3–5 guiding questions that shape the audit:</p>
+  <ol>
+    <li><strong>"What's the primary goal for this audit?"</strong> → Growth strategy / Competitive positioning / Content optimization / Rebrand assessment</li>
+    <li><strong>"Any specific competitors to benchmark against?"</strong> → Free-text, optional</li>
+    <li><strong>"Anything unusual about this account we should know?"</strong> → Recent pivot, controversy, platform migration</li>
+    <li><strong>"Preferred depth?"</strong> → Standard (15 sections) / Deep (25+ sections, premium tier)</li>
+    <li><strong>"Target audience context?"</strong> → B2B / B2C / Creator-personal-brand</li>
+  </ol>
+  <p>These answers are injected into the audit skill's prompt as context parameters — the client never touches a system prompt.</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ECONOMICS -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section>
+  <h2>Economics & Pricing</h2>
+  <p class="section-desc">Real numbers. Conservative assumptions.</p>
+
+  <h3>Cost Structure (Monthly, at Scale)</h3>
+
+  <table class="data-table">
+    <thead>
+      <tr><th>Line Item</th><th class="num">Cost/Month</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Hetzner CX22</td><td class="num">$3.90</td><td>Already running; shared with Hermes infra</td></tr>
+      <tr><td>Domain (e.g. auditlayer.com)</td><td class="num">$1.00</td><td>~$12/year</td></tr>
+      <tr><td>Cloudflare (Free tier)</td><td class="num">$0</td><td>TLS, Tunnel, Access (OAuth), WAF</td></tr>
+      <tr><td>Clerk Auth (Free tier)</td><td class="num">$0</td><td>Up to 10,000 MAU</td></tr>
+      <tr><td>Stripe</td><td class="num">$0 + 2.9%</td><td>Platform fee only on transactions</td></tr>
+      <tr class="highlight"><td><strong>Infrastructure Subtotal</strong></td><td class="num"><strong>$4.90</strong></td><td>Fixed costs, independent of user count</td></tr>
+      <tr><td>LLM API (per audit)</td><td class="num">$0.50–1.50</td><td>DeepSeek v4 / equivalent. 15–30K tokens per audit</td></tr>
+      <tr><td>Data APIs (per audit)</td><td class="num">$0.10–0.30</td><td>Social Blade, scraping, web search</td></tr>
+      <tr class="highlight"><td><strong>Variable cost per audit</strong></td><td class="num"><strong>$0.60–1.80</strong></td><td>Depends on depth + platforms audited</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Pricing Tiers</h3>
+
+  <table class="data-table">
+    <thead>
+      <tr><th>Tier</th><th class="num">Price/mo</th><th>Audits</th><th>Chat Refinement</th><th>Cost/User</th><th class="num">Margin</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Starter</strong></td>
+        <td class="num">$49</td>
+        <td>2/mo</td>
+        <td>5 messages</td>
+        <td>$1.20–3.60</td>
+        <td class="num"><span class="tag good">~93%</span></td>
+      </tr>
+      <tr>
+        <td><strong>Pro</strong></td>
+        <td class="num">$99</td>
+        <td>5/mo</td>
+        <td>Unlimited</td>
+        <td>$3.00–9.00</td>
+        <td class="num"><span class="tag good">~91%</span></td>
+      </tr>
+      <tr class="highlight">
+        <td><strong>Agency</strong></td>
+        <td class="num">$249</td>
+        <td>20/mo</td>
+        <td>Unlimited + white-label</td>
+        <td>$12.00–36.00</td>
+        <td class="num"><span class="tag good">~86%</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout info">
+    <p><strong>At 10 Pro users:</strong> $990/mo revenue on ~$10/mo variable cost + $5/mo infra. <strong>~98% gross margin.</strong> The business breaks even at <strong>1 user.</strong></p>
+  </div>
+
+  <h3>Token Budget & Quality Guardrails</h3>
+  <p>Each audit run is configured with sensible limits that preserve quality while preventing runaway costs:</p>
+  <ul>
+    <li><strong>Max agent iterations:</strong> 30 (typically uses 12–18 for a full audit)</li>
+    <li><strong>Max web searches:</strong> 15 per audit</li>
+    <li><strong>Per-section budget:</strong> ~2,000 tokens for analysis (sections auto-pruned if budget exceeded)</li>
+    <li><strong>Model tiering:</strong> DeepSeek v4 for analysis & writing; cheaper flash model for data extraction & formatting</li>
+    <li><strong>Hard cap:</strong> $3.00 per audit — if exceeded, the report is delivered as-is with a note</li>
+  </ul>
+  <p>These limits are configured in the API proxy, not exposed to clients. They can be relaxed for Agency tier or "Deep Audit" add-ons.</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- IMPLEMENTATION ROADMAP -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section>
+  <h2>Implementation Roadmap</h2>
+  <p class="section-desc">Four phases. Each delivers standalone value.</p>
+
+  <div class="phase">
+    <div class="phase-label">Phase 1 · Weeks 1–2</div>
+    <h4>Pilot Portal + Manual Delivery</h4>
+    <p>Build the thin portal (Next.js, ~500 LOC): login via Clerk/Cloudflare Access, "New Audit" form with guided questions, report viewer (renders existing HTML format), download button. Cloudflare Tunnel for public HTTPS. <strong>Hermes generates reports manually triggered</strong> (Ashesh or Narin approves). Stripe Payment Links for billing (no integration needed yet). Deliver to Narin's first 3–5 clients.</p>
+    <p style="font-size:0.82rem;color:var(--muted);">Deliverable: Portal live at a domain. First paying users.</p>
+  </div>
+
+  <div class="phase">
+    <div class="phase-label">Phase 2 · Weeks 3–4</div>
+    <h4>Self-Serve Generation</h4>
+    <p>Build the API proxy (Express, ~200 LOC): receives audit requests from the portal, queues them, calls Hermes API, tracks cost per audit, returns report URL. Add email notification ("Your audit is ready"). Stripe webhook integration: subscriptions auto-enable/disable accounts. Remove manual trigger requirement.</p>
+    <p style="font-size:0.82rem;color:var(--muted);">Deliverable: Client hits "Generate" → gets report without human in the loop.</p>
+  </div>
+
+  <div class="phase">
+    <div class="phase-label">Phase 3 · Weeks 5–6</div>
+    <h4>Chat Refinement + Quality Polish</h4>
+    <p>Add the in-report chat panel: client highlights a section and types a refinement. Chat messages route through the API proxy to the same Hermes session. Add "Compare" feature (Pro tier): side-by-side audit of two accounts. Skill tuning sprint with Narin: run 10 test audits on diverse account types, refine prompts until quality is consistently high without manual review.</p>
+    <p style="font-size:0.82rem;color:var(--muted);">Deliverable: Chat refinement works. Compare feature live. Skill quality is vetted.</p>
+  </div>
+
+  <div class="phase">
+    <div class="phase-label">Phase 4 · Weeks 7+</div>
+    <h4>Scale + Platform Expansion</h4>
+    <p>Add TikTok and YouTube audit support (reuse the same skill framework; different data sources). Multi-platform audits (single report covering Instagram + TikTok). PDF export (Hermes generates LaTeX → pdflatex; texlive already installed). White-label for Agency tier (client's logo on reports). If concurrency becomes a bottleneck, add a second CX22 node behind a load balancer.</p>
+    <p style="font-size:0.82rem;color:var(--muted);">Deliverable: Multi-platform. PDF. White-label. Ready for 50+ users.</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- RISK ANALYSIS -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section>
+  <h2>Risk Analysis</h2>
+  <p class="section-desc">What could break, and how we handle it.</p>
+
+  <table class="data-table">
+    <thead>
+      <tr><th>Risk</th><th>Severity</th><th>Likelihood</th><th>Mitigation</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Instagram API / scraping restrictions</strong></td>
+        <td><span class="tag bad">High</span></td>
+        <td><span class="tag warn">Medium</span></td>
+        <td>Diversify data sources from day 1 (TikTok API, YouTube API, Social Blade). Never depend on a single data pipeline. Flag reports with incomplete data transparently.</td>
+      </tr>
+      <tr>
+        <td><strong>Report quality inconsistency</strong></td>
+        <td><span class="tag bad">High</span></td>
+        <td><span class="tag warn">Medium</span></td>
+        <td>Version-lock skill prompts. Run quality checks post-generation. Offer "regenerate" if client rates &lt;3/5. Track quality scores per audit; intervene if trend declines.</td>
+      </tr>
+      <tr>
+        <td><strong>Narin becomes the bottleneck</strong></td>
+        <td><span class="tag warn">Medium</span></td>
+        <td><span class="tag bad">High</span></td>
+        <td>Phase 2 eliminates manual trigger. Phase 3 eliminates manual review. First 10 audits per client get Narin's eyes; after that, automated with quality monitoring.</td>
+      </tr>
+      <tr>
+        <td><strong>Cost overruns per audit</strong></td>
+        <td><span class="tag warn">Medium</span></td>
+        <td><span class="tag warn">Medium</span></td>
+        <td>Hard cap of $3.00/audit at the proxy level. Per-section token budgets. Model tiering (cheap for extraction, premium for analysis). Alert if any audit exceeds $2.00.</td>
+      </tr>
+      <tr>
+        <td><strong>Concurrency bottleneck on CX22</strong></td>
+        <td><span class="tag info">Low</span></td>
+        <td><span class="tag info">Low</span></td>
+        <td>Hermes sessions are independent. CX22 handles ~10 concurrent audits fine. For Phase 4 (50+ concurrent), add a second node. Queue + email notification means users don't wait synchronously.</td>
+      </tr>
+      <tr>
+        <td><strong>Prompt injection / skill leakage</strong></td>
+        <td><span class="tag info">Low</span></td>
+        <td><span class="tag warn">Medium</span></td>
+        <td>Chat refinement is scoped to the report session, not the system prompt. The API proxy strips anything that looks like configuration leakage before returning to the client.</td>
+      </tr>
+      <tr>
+        <td><strong>"Same report, worse this month"</strong></td>
+        <td><span class="tag warn">Medium</span></td>
+        <td><span class="tag warn">Medium</span></td>
+        <td>Version-locked prompts. Offer "compare to previous" as a feature — turns a bug into a product capability. Track audit quality with post-delivery 1–5 rating.</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- COMPETITIVE MOAT -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section>
+  <h2>Competitive Moat</h2>
+  <p class="section-desc">Why this is defensible, not just another LLM wrapper.</p>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-label">Moat 1</div>
+      <p style="font-weight:600;margin-bottom:4px;font-size:0.9rem;">Self-Improving Skill</p>
+      <p style="font-size:0.8rem;color:var(--muted);">Every audit makes the skill better. After 50 audits, it's materially superior to a fresh install. A competitor starting from scratch gets the generic version — and takes 50 audits to catch up to where we are today.</p>
+    </div>
+    <div class="card">
+      <div class="card-label">Moat 2</div>
+      <p style="font-weight:600;margin-bottom:4px;font-size:0.9rem;">Domain Calibration</p>
+      <p style="font-size:0.8rem;color:var(--muted);">Narin knows what a "good" audit looks like for med-tech/wellness/creator audiences. The skill encodes that. Generic competitors don't know that a UCSD professor's audit should prioritize credibility signals over engagement hacks.</p>
+    </div>
+    <div class="card">
+      <div class="card-label">Moat 3</div>
+      <p style="font-weight:600;margin-bottom:4px;font-size:0.9rem;">Structured Consistency</p>
+      <p style="font-size:0.8rem;color:var(--muted);">The 15-section framework produces consistent, comparable output. Clients know what they're getting. Generic LLM audits vary wildly in structure and depth. Consistency builds trust; trust builds retention.</p>
+    </div>
+    <div class="card">
+      <div class="card-label">Moat 4</div>
+      <p style="font-weight:600;margin-bottom:4px;font-size:0.9rem;">Sticky Refinement History</p>
+      <p style="font-size:0.8rem;color:var(--muted);">When a client iterates on a report through chat, those refinements live in their session history. Switching providers means starting over — and losing the accumulated context their agent has about their brand.</p>
+    </div>
+  </div>
+
+  <div class="callout info">
+    <p><strong>Why "just use ChatGPT for this" doesn't work:</strong> ChatGPT cannot run a 15-section audit pipeline with web search, Social Blade data extraction, benchmark comparison, competitive analysis, and structured HTML generation in a single pass. It can write a social media tip. It cannot produce an @hemalpatelphd-level report. The skill's accumulated structure, scoring framework, and domain calibration are the product — not the LLM underneath.</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ARTIFACTS REFERENCE -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section>
+  <h2>Artifacts Reference</h2>
+  <p class="section-desc">Everything that already exists and is referenced by this plan.</p>
+
+  <table class="data-table">
+    <thead>
+      <tr><th>Artifact</th><th>Location</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>@hemalpatelphd Audit</strong></td>
+        <td class="num"><code>~/projects/narin/hemalpatelphd-instagram-audit.html</code></td>
+        <td>Proven 15-section Instagram audit. The template for all future reports. Generated May 2026. Scored 62/100.</td>
+      </tr>
+      <tr>
+        <td><strong>social-media-audit skill</strong></td>
+        <td class="num"><code>~/.hermes/skills/productivity/social-media-audit/</code></td>
+        <td>Complete audit pipeline: research, analysis, scoring, report assembly. Includes creator-strategy knowledge base (15 principles).</td>
+      </tr>
+      <tr>
+        <td><strong>Creator Strategy Principles</strong></td>
+        <td class="num"><code>social-media-audit/references/creator-strategy-principles.md</code></td>
+        <td>15 deep answers on creator growth, audience psychology, algorithmic signals, trust compounding. Powers the strategic depth of every audit.</td>
+      </tr>
+      <tr>
+        <td><strong>Hermes Dual Setup</strong></td>
+        <td class="num"><code>~/.hermes/skills/hermes-dual-setup/</code></td>
+        <td>Complete reference for the laptop + CX22 architecture with Syncthing parity.</td>
+      </tr>
+      <tr>
+        <td><strong>Hermes Workspace</strong></td>
+        <td class="num"><code>~/hermes-workspace/</code> · :3000</td>
+        <td>Admin web UI for internal management (not client-facing). Running as systemd service.</td>
+      </tr>
+      <tr>
+        <td><strong>AMCAS Strategy Guide</strong></td>
+        <td class="num"><code>~/projects/narin/amcas-strategy-guide.html</code></td>
+        <td>Additional Narin artifact demonstrating report generation capability.</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- NEXT STEPS -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section>
+  <h2>Immediate Next Steps</h2>
+
+  <ol>
+    <li><strong>Register a domain.</strong> (~$12/year). Something clean — <code>auditlayer.com</code>, <code>socialaudit.io</code>, etc. This anchors the project with a real URL.</li>
+    <li><strong>Set up Cloudflare Tunnel + Access.</strong> (20 minutes). Point the domain at the CX22. Enable Google OAuth gating. Zero open ports.</li>
+    <li><strong>Scaffold the portal.</strong> (1–2 evenings). Next.js app with Clerk auth, "New Audit" form, and a report viewer page. Start with a static mock of the @hemalpatelphd report as the viewer template.</li>
+    <li><strong>Run 3 pilot audits through the portal flow.</strong> Manual trigger via Hermes. Narin reviews quality before delivery. This validates the end-to-end experience before automating generation.</li>
+    <li><strong>Set up Stripe.</strong> Create products for Starter/Pro/Agency. Use Payment Links for now (no integration needed). Share links with pilot clients.</li>
+    <li><strong>Discuss pricing with Narin.</strong> Validate $49/$99/$249 against her network's willingness to pay. Adjust before launch.</li>
+  </ol>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- FOUNDERS -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section>
+  <h2>Founding Team</h2>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-label">Technical</div>
+      <p style="font-weight:600;font-size:1rem;">Ashesh Kaji</p>
+      <p style="font-size:0.8rem;color:var(--muted);">Hermes infrastructure, portal development, API proxy, deployment, scaling. Built the dual-Hermes architecture, the social-media-audit skill pipeline, and the existing report generation workflow.</p>
+    </div>
+    <div class="card">
+      <div class="card-label">Domain</div>
+      <p style="font-weight:600;font-size:1rem;">Narin</p>
+      <p style="font-size:0.8rem;color:var(--muted);">Social media strategy, client relationships, audit quality calibration, pricing, go-to-market. Ran the pilot audit for @hemalpatelphd. Network of med-tech marketing teams actively requesting this service.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- FOOTER -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<footer class="report-footer">
+  <p><strong>AuditLayer Viability Plan v1.0</strong> · Prepared May 13, 2026 · By Ashesh Kaji with Hermes Agent</p>
+  <p>This is a living document. Iterate on it. Reference it. Build from it.</p>
+  <p style="margin-top:8px;">Artifact location: <code>~/projects/narin/viability-plan.html</code> · Synced to laptop via Syncthing</p>
+</footer>
+
+</div>
+
+</body>
+</html>
