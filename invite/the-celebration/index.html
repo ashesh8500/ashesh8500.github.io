@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Silver Linings — The Celebration</title>
-  <meta name="description" content="Trupti & Sailav Kaji — Silver Anniversary Celebration. Sunday, 31 May 2026 at Imperial Hall, The St. Regis, Mumbai.">
+  <meta name="description" content="Trupti & Sailav Kaji — Silver Anniversary Celebration. Sunday, 31 May 2026 at Imperial Hall, The St. Regis, Mumbai. Party Wear.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Cinzel:wght@400;500;600&family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Tangerine:wght@400;700&display=swap" rel="stylesheet">
@@ -211,6 +211,27 @@
       font-size: 0.7em; color: var(--gold-dim);
     }
 
+    /* RSVP */
+    .rsvp {
+      margin-top: 18px;
+    }
+    .rsvp a {
+      display: inline-block;
+      font-family: 'Cinzel', serif;
+      font-weight: 400; font-size: clamp(11px, 2vw, 14px);
+      letter-spacing: 0.2em; color: var(--gold);
+      text-transform: uppercase; text-decoration: none;
+      border: 1px solid var(--gold-dim);
+      padding: 10px 32px;
+      border-radius: 2px;
+      transition: all 0.3s ease;
+    }
+    .rsvp a:hover {
+      background: var(--gold);
+      color: #06080c;
+      border-color: var(--gold);
+    }
+
     @media (max-width: 480px) {
       body { padding: 8px; }
       .card { max-width: 100%; max-height: none; aspect-ratio: auto; min-height: 100vh; }
@@ -266,6 +287,10 @@
       <div class="attire-section">
         <div class="attire-label">The Attire</div>
         <div class="attire-text">Party Wear</div>
+      </div>
+
+      <div class="rsvp">
+        <a href="mailto:rsvp@asheshkaji.com?subject=RSVP%20—%20Silver%20Linings%20Celebration">Kindly RSVP</a>
       </div>
     </div>
   </div>
