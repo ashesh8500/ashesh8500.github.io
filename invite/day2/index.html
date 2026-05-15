@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Silver Linings — The Celebration</title>
+  <meta name="description" content="Trupti & Sailav Kaji — Silver Anniversary Celebration. Sunday, 31 May 2026 at Imperial Hall, The St. Regis, Mumbai.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Cinzel:wght@400;500;600&family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Tangerine:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --gold: #c9a84c;
+      --gold-dim: rgba(201, 168, 76, 0.5);
+      --silver: #d4d4e0;
+      --white: #e8dcc8;
+      --white-dim: rgba(232, 220, 200, 0.7);
+    }
+
+    html, body {
+      width: 100%; min-height: 100vh;
+      background: #06080c;
+      font-family: 'Cormorant Garamond', serif;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    body {
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+    }
+
+    .card {
+      position: relative;
+      width: 100%; max-width: 520px;
+      aspect-ratio: 9 / 16;
+      max-height: 95vh;
+      overflow: hidden;
+      border-radius: 2px;
+    }
+
+    .bg {
+      position: absolute; inset: 0; z-index: 0;
+    }
+    .bg img {
+      width: 100%; height: 100%; object-fit: cover;
+    }
+    .bg::after {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 50% 45%, rgba(6,8,12,0) 30%, rgba(6,8,12,0.40) 65%, rgba(6,8,12,0.70) 100%);
+    }
+
+    .border-frame {
+      position: absolute; inset: 16px; z-index: 10; pointer-events: none;
+      border: 1.5px solid var(--gold-dim);
+    }
+    .border-inner {
+      position: absolute; inset: 22px; z-index: 10; pointer-events: none;
+      border: 0.5px solid rgba(201, 168, 76, 0.25);
+    }
+    .corner {
+      position: absolute; width: 36px; height: 36px; z-index: 11; pointer-events: none;
+    }
+    .corner::before, .corner::after {
+      content: ''; position: absolute; background: var(--gold-dim);
+    }
+    .corner::before { width: 28px; height: 1px; top: 0; left: 0; }
+    .corner::after  { width: 1px; height: 28px; top: 0; left: 0; }
+    .corner-tl { top: 10px; left: 10px; }
+    .corner-tr { top: 10px; right: 10px; }
+    .corner-bl { bottom: 10px; left: 10px; }
+    .corner-br { bottom: 10px; right: 10px; }
+    .corner-tr::before { left: auto; right: 0; }
+    .corner-tr::after  { left: auto; right: 0; }
+    .corner-bl::before { top: auto; bottom: 0; }
+    .corner-bl::after  { top: auto; bottom: 0; }
+    .corner-br::before { top: auto; bottom: 0; left: auto; right: 0; }
+    .corner-br::after  { top: auto; bottom: 0; left: auto; right: 0; }
+
+    .content {
+      position: relative; z-index: 5;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      height: 100%; padding: 12% 10%;
+      text-align: center;
+    }
+
+    h1 {
+      font-family: 'Cinzel', serif;
+      font-weight: 500; font-size: clamp(20px, 5vw, 38px);
+      letter-spacing: 0.16em; color: var(--gold);
+      text-transform: uppercase; margin-bottom: 4px;
+    }
+    .subtitle {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic; font-weight: 300;
+      font-size: clamp(13px, 2.6vw, 19px);
+      color: var(--white); letter-spacing: 0.06em;
+    }
+    .diamond {
+      width: 6px; height: 6px; background: var(--gold);
+      transform: rotate(45deg); margin: 14px auto;
+    }
+    .years {
+      font-weight: 400; font-size: clamp(11px, 2vw, 14px);
+      letter-spacing: 0.22em; color: var(--gold);
+      text-transform: uppercase;
+    }
+    .names {
+      font-family: 'Tangerine', cursive;
+      font-weight: 700; font-size: clamp(36px, 8vw, 64px);
+      color: var(--white); line-height: 1; margin: 16px 0 6px;
+    }
+    .request {
+      font-weight: 300; font-size: clamp(10px, 1.8vw, 13px);
+      letter-spacing: 0.22em; color: var(--gold);
+      text-transform: uppercase;
+    }
+
+    .rule {
+      width: 50px; height: 1px;
+      background: var(--gold-dim); margin: 18px auto;
+    }
+    .rule-wide {
+      width: 100px; height: 0.5px;
+      background: var(--gold-dim); margin: 14px auto;
+    }
+
+    .section-header {
+      font-weight: 500; font-size: clamp(12px, 2.2vw, 16px);
+      letter-spacing: 0.2em; color: var(--gold);
+      text-transform: uppercase; margin-bottom: 6px;
+    }
+    .body-text {
+      font-weight: 300; font-size: clamp(12px, 2.2vw, 16px);
+      color: var(--white); line-height: 1.7;
+      letter-spacing: 0.03em;
+      max-width: 90%;
+    }
+
+    .two-col {
+      display: flex; width: 100%; gap: 16px; margin: 16px 0;
+    }
+    .col {
+      flex: 1; display: flex; flex-direction: column; align-items: center;
+    }
+    .col-label {
+      font-weight: 500; font-size: clamp(10px, 1.8vw, 12px);
+      letter-spacing: 0.28em; color: var(--gold);
+      text-transform: uppercase; margin-bottom: 6px;
+    }
+    .col-text {
+      font-family: 'Playfair Display', serif;
+      font-weight: 500; font-size: clamp(13px, 2.4vw, 17px);
+      color: var(--white); line-height: 1.6;
+      letter-spacing: 0.04em;
+    }
+    .col-text-sm {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic; font-weight: 300;
+      font-size: clamp(11px, 2vw, 14px);
+      color: var(--white-dim); letter-spacing: 0.05em;
+    }
+    .col-vline {
+      width: 0.5px;
+      background: linear-gradient(180deg, transparent, var(--gold-dim), transparent);
+    }
+
+    .desc {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic; font-weight: 300;
+      font-size: clamp(12px, 2.2vw, 16px);
+      color: var(--white-dim); letter-spacing: 0.04em;
+    }
+
+    .attire-section { margin-top: auto; padding-top: 8px; }
+    .attire-label {
+      font-weight: 500; font-size: clamp(10px, 1.8vw, 12px);
+      letter-spacing: 0.28em; color: var(--gold);
+      text-transform: uppercase; margin-bottom: 2px;
+    }
+    .attire-text {
+      font-weight: 300; font-size: clamp(11px, 2vw, 14px);
+      color: var(--white); letter-spacing: 0.06em;
+    }
+
+    a.venue {
+      color: var(--white); text-decoration: none;
+    }
+    a.venue:hover {
+      color: var(--gold);
+      text-decoration: underline;
+      text-underline-offset: 4px;
+      text-decoration-thickness: 0.5px;
+    }
+    a.venue::after {
+      content: ' ↗';
+      font-size: 0.7em; color: var(--gold-dim);
+    }
+
+    @media (max-width: 480px) {
+      body { padding: 8px; }
+      .card { max-width: 100%; max-height: none; aspect-ratio: auto; min-height: 100vh; }
+      .content { padding: 15% 8%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="bg"><img src="bg.jpg" alt="" loading="eager"></div>
+    <div class="border-frame"></div>
+    <div class="border-inner"></div>
+    <div class="corner corner-tl"></div>
+    <div class="corner corner-tr"></div>
+    <div class="corner corner-bl"></div>
+    <div class="corner corner-br"></div>
+
+    <div class="content">
+      <h1>Silver Linings</h1>
+      <div class="subtitle">A Silver Anniversary Celebration</div>
+      <div class="diamond"></div>
+      <div class="years">Twenty-Five Years &nbsp;·&nbsp; 2001 – 2026</div>
+      <div class="names">Trupti &amp; Sailav Kaji</div>
+      <div class="request">request the pleasure of your company</div>
+      <div class="rule"></div>
+      <div class="section-header">An Evening of Love, Laughter, and Forever</div>
+      <div class="rule-wide"></div>
+      <p class="body-text">Twenty-five years of beautiful moments deserve a celebration to remember. Join us for an evening of fine dining, music, and dancing as we celebrate the journey that brought us here — and the love that keeps us going.</p>
+      <div class="rule-wide"></div>
+
+      <div class="two-col">
+        <div class="col">
+          <div class="col-label">The Evening</div>
+          <div class="col-text">
+            Sunday<br>
+            31 May 2026
+          </div>
+          <div class="col-text-sm">from six o'clock in the evening</div>
+        </div>
+        <div class="col-vline"></div>
+        <div class="col">
+          <div class="col-label">The Setting</div>
+          <div class="col-text">Imperial Hall</div>
+          <div class="col-text-sm">
+            <a class="venue" href="https://maps.google.com/?q=The+St.+Regis+Mumbai" target="_blank" rel="noopener">The St. Regis, Mumbai</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="desc">An evening of dinner, music, and dancing</div>
+
+      <div class="attire-section">
+        <div class="attire-label">The Attire</div>
+        <div class="attire-text">Party Wear</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
