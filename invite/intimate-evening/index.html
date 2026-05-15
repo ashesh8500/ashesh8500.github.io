@@ -3,79 +3,88 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>Silver Linings — An Intimate Evening</title>
   <meta name="description" content="Trupti & Sailav Kaji — Silver Anniversary Celebration. Saturday, 30 May 2026 at Zenith Hall, The St. Regis, Mumbai. Black Tie.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Cinzel:wght@400;500;600&family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Tangerine:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Cinzel:wght@400;500;600;700&family=Playfair+Display:wght@600;700&family=Tangerine:wght@700&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
-      --gold: #c9a84c;
-      --gold-dim: rgba(201, 168, 76, 0.5);
-      --white: #e8dcc8;
-      --white-dim: rgba(232, 220, 200, 0.7);
+      --gold: #d7b85f;
+      --gold-bright: #f3dc92;
+      --gold-dim: rgba(215, 184, 95, 0.55);
+      --cream: #fff3df;
+      --cream-soft: #eadcc6;
+      --cream-muted: #d3c2a7;
+      --black: #070504;
+      --panel: rgba(8, 6, 5, 0.68);
+      --panel-strong: rgba(8, 6, 5, 0.82);
     }
 
     html, body {
       width: 100%; min-height: 100vh;
-      background: #0a0806;
-      font-family: 'Cormorant Garamond', serif;
+      background: var(--black);
+      font-family: 'Cormorant Garamond', Georgia, serif;
       -webkit-font-smoothing: antialiased;
       overflow-x: hidden;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
     body {
-      display: flex; align-items: center; justify-content: center;
-      padding: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(8px, 2vw, 20px);
     }
 
     .card {
       position: relative;
-      width: 100%; max-width: 520px;
+      width: min(100%, 540px);
+      min-height: min(960px, calc(100vh - 16px));
       aspect-ratio: 9 / 16;
-      max-height: 95vh;
       overflow: hidden;
-      border-radius: 2px;
+      border-radius: 4px;
+      box-shadow: 0 28px 90px rgba(0, 0, 0, 0.65);
+      isolation: isolate;
     }
 
-    /* Background image */
-    .bg {
-      position: absolute; inset: 0; z-index: 0;
-    }
-    .bg img {
-      width: 100%; height: 100%; object-fit: cover;
-    }
+    .bg { position: absolute; inset: 0; z-index: 0; }
+    .bg img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.02); }
     .bg::after {
       content: ''; position: absolute; inset: 0;
-      background: radial-gradient(ellipse at 50% 45%, rgba(10,8,6,0.20) 15%, rgba(10,8,6,0.55) 50%, rgba(10,8,6,0.88) 100%);
+      background:
+        linear-gradient(180deg, rgba(5,4,3,0.72) 0%, rgba(5,4,3,0.34) 20%, rgba(5,4,3,0.35) 52%, rgba(5,4,3,0.78) 100%),
+        radial-gradient(ellipse at 50% 44%, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0.40) 44%, rgba(0,0,0,0.84) 100%);
     }
 
-    /* Extra content backdrop for readability */
     .content-backdrop {
-      position: absolute; z-index: 3; pointer-events: none;
-      top: 10%; left: 8%; right: 8%; bottom: 10%;
-      background: radial-gradient(ellipse at 50% 45%, rgba(0,0,0,0.30) 0%, rgba(0,0,0,0.12) 60%, transparent 100%);
+      position: absolute; z-index: 2; pointer-events: none;
+      inset: 7.8% 7.5%;
+      border-radius: 20px;
+      background: linear-gradient(180deg, rgba(0,0,0,0.58), rgba(0,0,0,0.40));
+      border: 1px solid rgba(255, 235, 174, 0.13);
+      box-shadow: inset 0 0 90px rgba(0,0,0,0.58), 0 0 70px rgba(0,0,0,0.28);
+      backdrop-filter: blur(2.5px);
     }
 
-    /* Gold filigree border */
     .border-frame {
-      position: absolute; inset: 16px; z-index: 10; pointer-events: none;
+      position: absolute; inset: 14px; z-index: 10; pointer-events: none;
       border: 1.5px solid var(--gold-dim);
     }
     .border-inner {
-      position: absolute; inset: 22px; z-index: 10; pointer-events: none;
-      border: 0.5px solid rgba(201, 168, 76, 0.25);
+      position: absolute; inset: 21px; z-index: 10; pointer-events: none;
+      border: 0.5px solid rgba(243, 220, 146, 0.28);
     }
-    .corner {
-      position: absolute; width: 36px; height: 36px; z-index: 11; pointer-events: none;
-    }
-    .corner::before, .corner::after {
-      content: ''; position: absolute; background: var(--gold-dim);
-    }
-    .corner::before { width: 28px; height: 1px; top: 0; left: 0; }
-    .corner::after  { width: 1px; height: 28px; top: 0; left: 0; }
+    .corner { position: absolute; width: 38px; height: 38px; z-index: 11; pointer-events: none; }
+    .corner::before, .corner::after { content: ''; position: absolute; background: var(--gold-dim); }
+    .corner::before { width: 30px; height: 1px; top: 0; left: 0; }
+    .corner::after  { width: 1px; height: 30px; top: 0; left: 0; }
     .corner-tl { top: 10px; left: 10px; }
     .corner-tr { top: 10px; right: 10px; }
     .corner-bl { bottom: 10px; left: 10px; }
@@ -87,170 +96,245 @@
     .corner-br::before { top: auto; bottom: 0; left: auto; right: 0; }
     .corner-br::after  { top: auto; bottom: 0; left: auto; right: 0; }
 
-    /* Content overlay */
     .content {
       position: relative; z-index: 5;
+      min-height: 100%;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
-      height: 100%; padding: 12% 10%;
+      gap: clamp(8px, 1.35vh, 14px);
+      padding: clamp(62px, 11%, 86px) clamp(38px, 9%, 54px);
       text-align: center;
+      color: var(--cream);
     }
 
     h1 {
       font-family: 'Cinzel', serif;
-      font-weight: 500; font-size: clamp(26px, 6vw, 48px);
-      letter-spacing: 0.16em; color: var(--gold);
-      text-transform: uppercase; margin-bottom: 6px;
+      font-weight: 600;
+      font-size: clamp(29px, 6.3vw, 50px);
+      letter-spacing: 0.135em;
+      color: var(--gold-bright);
+      text-transform: uppercase;
+      line-height: 1.05;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.9), 0 0 22px rgba(80,50,10,0.35);
     }
     .subtitle {
-      font-family: 'Cormorant Garamond', serif;
-      font-style: italic; font-weight: 300;
-      font-size: clamp(16px, 3.2vw, 24px);
-      color: var(--white); letter-spacing: 0.06em;
+      font-style: italic; font-weight: 500;
+      font-size: clamp(17px, 3.4vw, 24px);
+      color: var(--cream);
+      letter-spacing: 0.055em;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.85);
     }
     .diamond {
-      width: 8px; height: 8px; background: var(--gold);
-      transform: rotate(45deg); margin: 16px auto;
+      width: 8px; height: 8px; background: var(--gold-bright);
+      transform: rotate(45deg);
+      margin: 2px auto;
+      box-shadow: 0 0 14px rgba(215,184,95,0.45);
     }
     .years {
-      font-weight: 400; font-size: clamp(13px, 2.4vw, 17px);
-      letter-spacing: 0.22em; color: var(--gold);
+      font-family: 'Cinzel', serif;
+      font-weight: 500;
+      font-size: clamp(12px, 2.45vw, 17px);
+      letter-spacing: 0.18em;
+      color: var(--gold-bright);
       text-transform: uppercase;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.8);
     }
     .names {
       font-family: 'Tangerine', cursive;
-      font-weight: 700; font-size: clamp(44px, 10vw, 80px);
-      color: var(--white); line-height: 1; margin: 20px 0 8px;
+      font-weight: 700;
+      font-size: clamp(54px, 11.5vw, 86px);
+      color: var(--cream);
+      line-height: 0.88;
+      margin: 4px 0 0;
+      text-shadow: 0 3px 14px rgba(0,0,0,0.94);
     }
     .request {
-      font-weight: 300; font-size: clamp(12px, 2.2vw, 16px);
-      letter-spacing: 0.22em; color: var(--gold);
+      font-family: 'Cinzel', serif;
+      font-weight: 500;
+      font-size: clamp(11px, 2.05vw, 15px);
+      letter-spacing: 0.19em;
+      color: var(--gold-bright);
       text-transform: uppercase;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.8);
     }
 
-    .rule {
-      width: 60px; height: 1px;
-      background: var(--gold-dim); margin: 20px auto;
+    .rule, .rule-wide {
+      flex: none;
+      background: linear-gradient(90deg, transparent, var(--gold-bright), transparent);
+      opacity: 0.72;
     }
-    .rule-wide {
-      width: 120px; height: 0.5px;
-      background: var(--gold-dim); margin: 16px auto;
-    }
+    .rule { width: 72px; height: 1px; }
+    .rule-wide { width: min(78%, 260px); height: 0.5px; }
 
+    .event-panel {
+      width: 100%;
+      padding: clamp(10px, 1.55vh, 15px) clamp(12px, 4vw, 18px);
+      border: 1px solid rgba(243, 220, 146, 0.24);
+      background: linear-gradient(180deg, rgba(9,7,5,0.70), rgba(9,7,5,0.48));
+      box-shadow: inset 0 0 34px rgba(0,0,0,0.34);
+    }
     .section-header {
-      font-weight: 500; font-size: clamp(15px, 2.8vw, 20px);
-      letter-spacing: 0.2em; color: var(--gold);
-      text-transform: uppercase; margin-bottom: 8px;
+      font-family: 'Cinzel', serif;
+      font-weight: 600;
+      font-size: clamp(15px, 3vw, 21px);
+      letter-spacing: 0.15em;
+      color: var(--gold-bright);
+      text-transform: uppercase;
+      line-height: 1.35;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.85);
     }
     .body-text {
-      font-weight: 500; font-size: clamp(15px, 2.8vw, 20px);
-      color: var(--white); line-height: 1.7;
-      letter-spacing: 0.03em;
-      max-width: 90%;
-      text-shadow: 0 1px 4px rgba(0,0,0,0.7);
+      margin: 8px auto 0;
+      font-weight: 600;
+      font-size: clamp(15px, 2.75vw, 19px);
+      color: var(--cream);
+      line-height: 1.46;
+      letter-spacing: 0.018em;
+      max-width: 94%;
+      text-shadow: 0 2px 7px rgba(0,0,0,0.9);
     }
 
-    .two-col {
-      display: flex; width: 100%; gap: 20px; margin: 20px 0;
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(9px, 2vw, 14px);
+      width: 100%;
     }
-    .col {
-      flex: 1; display: flex; flex-direction: column; align-items: center;
+    .detail-card {
+      min-height: 132px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 8px;
+      border: 1px solid rgba(243, 220, 146, 0.24);
+      background: rgba(5, 4, 3, 0.56);
+      box-shadow: inset 0 0 26px rgba(0,0,0,0.25);
     }
-    .col-label {
-      font-weight: 500; font-size: clamp(12px, 2.2vw, 15px);
-      letter-spacing: 0.28em; color: var(--gold);
-      text-transform: uppercase; margin-bottom: 8px;
+    .detail-label {
+      font-family: 'Cinzel', serif;
+      font-weight: 600;
+      font-size: clamp(10px, 1.95vw, 14px);
+      letter-spacing: 0.22em;
+      color: var(--gold-bright);
+      text-transform: uppercase;
+      margin-bottom: 7px;
     }
-    .col-text {
-      font-family: 'Playfair Display', serif;
-      font-weight: 500; font-size: clamp(16px, 3vw, 22px);
-      color: var(--white); line-height: 1.6;
-      letter-spacing: 0.04em;
-      text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+    .detail-main {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-weight: 700;
+      font-size: clamp(17px, 3.15vw, 23px);
+      color: var(--cream);
+      line-height: 1.34;
+      letter-spacing: 0.025em;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.88);
     }
-    .col-text-sm {
-      font-family: 'Cormorant Garamond', serif;
-      font-style: italic; font-weight: 400;
-      font-size: clamp(14px, 2.6vw, 18px);
-      color: var(--white); letter-spacing: 0.05em;
-      text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    .detail-sub {
+      margin-top: 5px;
+      font-style: italic;
+      font-weight: 500;
+      font-size: clamp(15px, 2.65vw, 19px);
+      color: var(--cream-soft);
+      line-height: 1.28;
+      text-shadow: 0 2px 7px rgba(0,0,0,0.86);
     }
-    .col-vline {
-      width: 0.5px;
-      background: linear-gradient(180deg, transparent, var(--gold-dim), transparent);
+    .venue {
+      color: var(--cream-soft);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(215,184,95,0.45);
+      text-underline-offset: 4px;
     }
+    .venue:hover { color: var(--gold-bright); border-bottom-color: var(--gold-bright); }
+    .venue::after { content: ' ↗'; font-size: 0.75em; color: var(--gold-bright); }
 
     .desc {
-      font-family: 'Cormorant Garamond', serif;
-      font-style: italic; font-weight: 400;
+      font-style: italic;
+      font-weight: 600;
       font-size: clamp(15px, 2.8vw, 20px);
-      color: var(--white-dim); letter-spacing: 0.04em;
-      text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+      color: var(--cream-soft);
+      letter-spacing: 0.025em;
+      text-shadow: 0 2px 7px rgba(0,0,0,0.86);
     }
 
-    .attire-section { margin-top: auto; padding-top: 10px; }
+    .attire-line {
+      width: 100%;
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 9px;
+      flex-wrap: wrap;
+      padding: 9px 10px;
+      border-top: 1px solid rgba(243, 220, 146, 0.20);
+      border-bottom: 1px solid rgba(243, 220, 146, 0.20);
+      background: rgba(5, 4, 3, 0.32);
+    }
     .attire-label {
-      font-weight: 500; font-size: clamp(12px, 2.2vw, 15px);
-      letter-spacing: 0.28em; color: var(--gold);
-      text-transform: uppercase; margin-bottom: 4px;
+      font-family: 'Cinzel', serif;
+      font-weight: 600;
+      font-size: clamp(10px, 2vw, 14px);
+      letter-spacing: 0.22em;
+      color: var(--gold-bright);
+      text-transform: uppercase;
     }
     .attire-text {
-      font-weight: 400; font-size: clamp(14px, 2.6vw, 18px);
-      color: var(--white); letter-spacing: 0.06em;
-      text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+      font-weight: 600;
+      font-size: clamp(15px, 2.65vw, 19px);
+      color: var(--cream);
+      letter-spacing: 0.045em;
+      text-shadow: 0 2px 7px rgba(0,0,0,0.82);
     }
 
-    /* Venue link */
-    a.venue {
-      color: var(--white); text-decoration: none;
-    }
-    a.venue:hover {
-      color: var(--gold);
-      text-decoration: underline;
-      text-underline-offset: 4px;
-      text-decoration-thickness: 0.5px;
-    }
-    a.venue::after {
-      content: ' ↗';
-      font-size: 0.7em; color: var(--gold-dim);
-    }
-
-    /* Dance illustration */
-    .dance-icon {
-      margin-top: 10px; opacity: 0.4;
-    }
-    .dance-icon svg { width: 40px; height: 40px; }
-
-    /* RSVP */
-    .rsvp {
-      margin-top: 18px;
-    }
+    .rsvp { width: 100%; max-width: 350px; }
     .rsvp a {
-      display: inline-block;
+      display: block;
       font-family: 'Cinzel', serif;
-      font-weight: 400; font-size: clamp(11px, 2vw, 14px);
-      letter-spacing: 0.2em; color: var(--gold);
-      text-transform: uppercase; text-decoration: none;
-      border: 1px solid var(--gold-dim);
-      padding: 10px 32px;
-      border-radius: 2px;
-      transition: all 0.3s ease;
+      font-weight: 700;
+      font-size: clamp(12px, 2.2vw, 15px);
+      letter-spacing: 0.22em;
+      color: #120d06;
+      text-transform: uppercase;
+      text-decoration: none;
+      border: 1px solid var(--gold-bright);
+      padding: 12px 18px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #f1d98b, #c9a84c);
+      box-shadow: 0 7px 22px rgba(0,0,0,0.33), inset 0 1px 0 rgba(255,255,255,0.35);
+      transition: transform 0.2s ease, filter 0.2s ease;
     }
-    .rsvp a:hover {
-      background: var(--gold);
-      color: #0a0806;
-      border-color: var(--gold);
+    .rsvp a:hover { transform: translateY(-1px); filter: brightness(1.08); }
+    .rsvp-note {
+      margin-top: 7px;
+      font-size: clamp(13px, 2.25vw, 16px);
+      font-style: italic;
+      font-weight: 500;
+      color: var(--cream-muted);
+      text-shadow: 0 2px 6px rgba(0,0,0,0.85);
     }
 
     @media (max-width: 480px) {
-      body { padding: 8px; }
-      .card { max-width: 100%; max-height: none; aspect-ratio: auto; min-height: 100vh; }
-      .content { padding: 15% 8%; }
+      body { align-items: flex-start; padding: 0; }
+      .card { width: 100%; min-height: 100vh; max-height: none; aspect-ratio: auto; border-radius: 0; }
+      .border-frame { inset: 10px; }
+      .border-inner { inset: 17px; }
+      .content-backdrop { inset: 6.2% 5.5%; }
+      .content { padding: 62px 31px 54px; gap: 10px; }
+      .detail-grid { gap: 8px; }
+      .detail-card { min-height: 124px; padding: 10px 7px; }
+      .body-text { line-height: 1.42; max-width: 100%; }
     }
+
+    @media (max-height: 760px) and (min-width: 481px) {
+      .card { max-width: 465px; }
+      .content { gap: 7px; padding-top: 54px; padding-bottom: 54px; }
+      .names { font-size: clamp(48px, 9.2vw, 70px); }
+      .detail-card { min-height: 112px; }
+      .body-text { line-height: 1.34; }
+    }
+
   </style>
 </head>
 <body>
-  <div class="card">
-    <div class="bg"><img src="bg.jpg" alt="" loading="eager"></div>
+  <main class="card" aria-label="Silver Linings invitation">
+    <div class="bg"><img src="bg.jpg" alt="Candlelit banquet hall with lush floral arrangements" loading="eager"></div>
     <div class="content-backdrop"></div>
     <div class="border-frame"></div>
     <div class="border-inner"></div>
@@ -259,62 +343,45 @@
     <div class="corner corner-bl"></div>
     <div class="corner corner-br"></div>
 
-    <div class="content">
+    <section class="content">
       <h1>Silver Linings</h1>
       <div class="subtitle">A Silver Anniversary Celebration</div>
-      <div class="diamond"></div>
-      <div class="years">Twenty-Five Years &nbsp;·&nbsp; 2001 – 2026</div>
+      <div class="diamond" aria-hidden="true"></div>
+      <div class="years">Twenty-Five Years · 2001 – 2026</div>
       <div class="names">Trupti &amp; Sailav Kaji</div>
       <div class="request">request the pleasure of your company</div>
-      <div class="rule"></div>
-      <div class="section-header">An Intimate Evening</div>
-      <div class="rule-wide"></div>
-      <p class="body-text">Join us for an intimate night of candlelight, blooms, and celebration as we honor twenty-five years of love and laughter.</p>
-      <div class="rule-wide"></div>
+      <div class="rule" aria-hidden="true"></div>
 
-      <div class="two-col">
-        <div class="col">
-          <div class="col-label">The Evening</div>
-          <div class="col-text">
-            Saturday<br>
-            30 May 2026
-          </div>
-          <div class="col-text-sm">from six o'clock in the evening</div>
-          <div class="dance-icon">
-            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="16" cy="12" r="3" stroke="#c9a84c" stroke-width="0.7" fill="none"/>
-              <circle cx="34" cy="13" r="3" stroke="#c9a84c" stroke-width="0.7" fill="none"/>
-              <path d="M13 28c-2 4 0 10 3 14" stroke="#c9a84c" stroke-width="0.8" fill="none" stroke-linecap="round"/>
-              <path d="M19 28c2 4 0 10-3 14" stroke="#c9a84c" stroke-width="0.8" fill="none" stroke-linecap="round"/>
-              <path d="M16 15v13" stroke="#c9a84c" stroke-width="0.7" fill="none" stroke-linecap="round"/>
-              <path d="M31 28c-2 5 0 11 3 15" stroke="#c9a84c" stroke-width="0.8" fill="none" stroke-linecap="round"/>
-              <path d="M37 28c2 5 0 11-3 15" stroke="#c9a84c" stroke-width="0.8" fill="none" stroke-linecap="round"/>
-              <path d="M34 16v12" stroke="#c9a84c" stroke-width="0.7" fill="none" stroke-linecap="round"/>
-              <path d="M22 20c3-1 5-1 8 0" stroke="#c9a84c" stroke-width="0.5" fill="none" stroke-linecap="round" opacity="0.5"/>
-            </svg>
-          </div>
+      <div class="event-panel">
+        <div class="section-header">An Intimate Evening</div>
+        <p class="body-text">Join us for an intimate night of candlelight, blooms, and celebration as we honor twenty-five years of love and laughter.</p>
+      </div>
+
+      <div class="detail-grid">
+        <div class="detail-card">
+          <div class="detail-label">When</div>
+          <div class="detail-main">Saturday<br>30 May 2026</div>
+          <div class="detail-sub">from six o'clock in the evening</div>
         </div>
-        <div class="col-vline"></div>
-        <div class="col">
-          <div class="col-label">The Setting</div>
-          <div class="col-text">Zenith Hall</div>
-          <div class="col-text-sm">
-            <a class="venue" href="https://maps.google.com/?q=The+St.+Regis+Mumbai" target="_blank" rel="noopener">The St. Regis, Mumbai</a>
-          </div>
+        <div class="detail-card">
+          <div class="detail-label">Where</div>
+          <div class="detail-main">Zenith Hall</div>
+          <div class="detail-sub"><a class="venue" href="https://maps.google.com/?q=The+St.+Regis+Mumbai" target="_blank" rel="noopener">The St. Regis, Mumbai</a></div>
         </div>
       </div>
 
       <div class="desc">An evening of dinner, ballroom dancing, and celebration</div>
 
-      <div class="attire-section">
-        <div class="attire-label">The Attire</div>
-        <div class="attire-text">Black Tie — Gowns and tuxedos</div>
+      <div class="attire-line">
+        <span class="attire-label">Attire</span>
+        <span class="attire-text">Black Tie — Gowns and tuxedos</span>
       </div>
 
       <div class="rsvp">
-        <a href="mailto:rsvp@asheshkaji.com?subject=RSVP%20—%20Silver%20Linings%20Intimate%20Evening">Kindly RSVP</a>
+        <a href="mailto:rsvp@asheshkaji.com?subject=RSVP%20%E2%80%94%20Silver%20Linings%20Intimate%20Evening&body=Hello%2C%0A%0ARSVP%20for%20the%20Intimate%20Evening%20on%20Saturday%2C%2030%20May%202026%3A%0A%0AName%3A%0AAttendance%3A%20Accepts%20with%20pleasure%20/%20Regretfully%20declines%0ANumber%20of%20guests%3A%0ADietary%20notes%3A%0AMessage%3A%0A%0AThank%20you.">Kindly RSVP</a>
+        <div class="rsvp-note">Opens a pre-filled email so responses stay private.</div>
       </div>
-    </div>
-  </div>
+    </section>
+  </main>
 </body>
 </html>
