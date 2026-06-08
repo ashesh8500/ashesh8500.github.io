@@ -365,11 +365,14 @@ body{
     <div class="badge">Now in Pilot</div>
     <h1>Social media audits<br>that <span>actually mean something.</span></h1>
     <p class="subtitle">Enter a handle. Answer a few questions. Get a 15-section competitive intelligence report — growth strategy, content gaps, audience psychology, monetization levers. In 8 minutes.</p>
-    <button class="btn btn-lg btn-primary" onclick="showScreen('signup')">Start Your First Audit →</button>
-    <p style="font-size:0.82rem;color:var(--muted);margin-top:12px">Free trial · No credit card required</p>
+    <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
+      <button class="btn btn-primary" style="padding:18px 36px;font-size:1.05rem;border-radius:var(--radius-lg)" onclick="showScreen('signup')">Start Your Free Audit</button>
+      <button class="btn btn-outline" style="padding:18px 36px;font-size:1.05rem;border-radius:var(--radius-lg);border-width:2px" onclick="document.getElementById('pricingSection').scrollIntoView({behavior:'smooth'})">See Pricing</button>
+    </div>
+    <p style="font-size:0.82rem;color:var(--muted);margin-top:16px">Free trial · No credit card required</p>
   </div>
 
-  <div class="container" style="padding:60px 0">
+  <div class="container" style="padding:60px 0" id="pricingSection">
     <div class="pricing-grid">
       <div class="pricing-card">
         <div class="plan">Starter</div>
