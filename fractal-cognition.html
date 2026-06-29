@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fractal Cognition — A Cognitive Finance System</title>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<style>
+@font-face{font-family:'CMU Serif';src:url('https://raw.githubusercontent.com/nicow-7/CMU-Serif/refs/heads/main/cmunrm.ttf')format('truetype');font-weight:normal;font-style:normal}
+@font-face{font-family:'CMU Serif';src:url('https://raw.githubusercontent.com/nicow-7/CMU-Serif/refs/heads/main/cmunbx.ttf')format('truetype');font-weight:bold;font-style:normal}
+@font-face{font-family:'CMU Typewriter';src:url('https://raw.githubusercontent.com/nicow-7/CMU-Serif/refs/heads/main/cmuntt.ttf')format('truetype')}
+:root{--bg:#faf8f5;--panel:#f0ede8;--card:#fff;--line:#d4d0c8;--text:#2d2a26;--muted:#59544f;--blue:#2563eb;--green:#176b3a;--red:#9f2f2f;--amber:#9a5a00;--violet:#7c3aed;--teal:#0d9488;--orange:#d97706}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'CMU Serif','Latin Modern Roman',Georgia,serif;background:var(--bg);color:var(--text);line-height:1.6;font-size:11pt}
+#topbar{position:fixed;top:0;left:0;right:0;height:48px;background:rgba(250,248,245,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 24px;z-index:100;font-size:10pt}
+#topbar .logo{font-weight:bold;color:var(--blue);margin-right:auto}
+#topbar .nav{display:flex;gap:4px}
+#topbar .nav a{padding:4px 12px;border-radius:4px;color:var(--muted);text-decoration:none;font-size:9pt}
+#topbar .nav a:hover,#topbar .nav a.active{background:var(--blue);color:white}
+#sidebar{position:fixed;left:max(24px,calc((100vw - 720px)/2 - 200px));top:72px;width:160px;font-size:9pt}
+#sidebar a{display:block;padding:3px 8px;color:var(--muted);text-decoration:none;border-left:2px solid transparent}
+#sidebar a:hover,#sidebar a.active{color:var(--blue);border-left-color:var(--blue)}
+main{max-width:36em;margin:0 auto;padding:72px 24px 120px}
+h1{font-size:1.8rem;font-weight:bold;margin:.8em 0 .3em}
+h2{font-size:1.35rem;font-weight:bold;margin:2em 0 .5em;padding-top:.5em;border-top:.5pt solid var(--line)}
+h3{font-size:1.1rem;font-weight:bold;margin:1.2em 0 .3em}
+p{margin:.5em 0;text-align:justify;hyphens:auto}
+a{color:var(--blue);text-decoration:none}
+code,pre{font-family:'CMU Typewriter',monospace;font-size:9pt;background:var(--panel);padding:1px 4px;border-radius:3px}
+pre{padding:12px 16px;overflow-x:auto;margin:.8em 0;border:1px solid var(--line)}
+pre code{background:none;padding:0}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid var(--line);margin:1em 0}
+.stat{padding:12px 16px;text-align:center;border-right:1px solid var(--line)}
+.stat:last-child{border-right:none}
+.stat .val{font-size:1.4rem;font-weight:bold}
+.stat .lbl{font-size:8pt;color:var(--muted);margin-top:2px}
+table{width:100%;border-collapse:collapse;margin:1em 0;font-size:9.5pt}
+th{text-align:left;padding:6px 10px;border-bottom:1.5pt solid var(--text);font-weight:bold}
+td{padding:5px 10px;border-bottom:.5pt solid var(--line)}
+tr:hover td{background:var(--panel)}
+.callout{padding:12px 16px;margin:1em 0;border-left:3px solid var(--blue);background:rgba(37,99,235,.04);font-size:10pt}
+.callout.good{border-left-color:var(--green);background:rgba(23,107,58,.04)}
+.callout.warn{border-left-color:var(--amber);background:rgba(154,90,0,.04)}
+.callout.bad{border-left-color:var(--red);background:rgba(159,47,47,.04)}
+figure{margin:1.5em 0}
+figure svg,figure .mermaid-container{display:block;max-width:100%}
+figcaption{font-size:9pt;color:var(--muted);margin-top:6px}
+figcaption strong{color:var(--text)}
+.diagram-box{fill:#f0ede8;stroke:#59544f;stroke-width:1.2}
+.diagram-box.core{stroke:var(--blue);stroke-width:1.5;fill:#eef4ff}
+.diagram-box.cog{stroke:var(--violet);stroke-width:1.5;fill:#f5f0ff}
+.diagram-box.data{stroke:var(--teal);stroke-width:1.5;fill:#f0fdfa}
+.diagram-box.exec{stroke:var(--orange);stroke-width:1.5;fill:#fff8f0}
+.diagram-box.infra{stroke:var(--green);stroke-width:1.5;fill:#f0fdf5}
+.diagram-box.ext{stroke:var(--muted);stroke-width:1.2;stroke-dasharray:4 3;fill:#faf8f5}
+.diagram-text{font-family:'CMU Serif',serif;font-size:8.5pt;fill:var(--text);text-anchor:middle}
+.diagram-text.tiny{font-size:7pt;fill:var(--muted)}
+.diagram-text.left{text-anchor:start}
+.diagram-text.bold{font-weight:bold;font-size:9pt}
+.tabs{display:flex;gap:2px;margin:1em 0;border-bottom:1.5pt solid var(--line)}
+.tab-btn{padding:6px 14px;background:none;border:none;cursor:pointer;font-family:inherit;font-size:9pt;color:var(--muted);border-bottom:2px solid transparent}
+.tab-btn.active{color:var(--blue);border-bottom-color:var(--blue)}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+.live-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin:.5em 0;font-size:8pt}
+.legend-item{display:flex;align-items:center;gap:4px}
+.legend-swatch{width:12px;height:12px;border-radius:2px;border:1px solid rgba(0,0,0,.2)}
+footer{text-align:center;padding:40px 24px;color:var(--muted);font-size:8pt;border-top:1px solid var(--line);margin-top:60px}
+footer a{color:var(--muted)}
+@media(max-width:768px){#sidebar{display:none}main{padding:60px 16px 80px}.stats{grid-template-columns:repeat(2,1fr)}}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>
+mermaid.initialize({startOnLoad:false,theme:"neutral",themeVariables:{fontFamily:'"CMU Serif",Georgia,serif',fontSize:"13px",primaryColor:"#fbfaf7",primaryBorderColor:"#888",lineColor:"#59544f",secondaryColor:"#eef4ff"}});
+document.addEventListener("DOMContentLoaded",async function(){await mermaid.run({querySelector:".mermaid"})});
+function switchTab(pid,btn){document.querySelectorAll(".tab-panel").forEach(function(p){p.classList.remove("active")});document.querySelectorAll(".tab-btn").forEach(function(b){b.classList.remove("active")});document.getElementById(pid).classList.add("active");btn.classList.add("active")}
+window.addEventListener("scroll",function(){var s=document.querySelectorAll("h2[id]");var l=document.querySelectorAll("#sidebar a");var c="";s.forEach(function(e){if(e.getBoundingClientRect().top<100)c=e.id});l.forEach(function(a){a.classList.toggle("active",a.getAttribute("href")==="#"+c)})});
+</script>
+</head>
+<body>
+<div id="topbar"><span class="logo">Fractal Cognition</span><div class="nav"><a href="#overview">Overview</a><a href="#architecture">Architecture</a><a href="#pipeline">Pipeline</a><a href="#execution">Execution</a><a href="#autonomous">Autonomous</a><a href="#live">Live State</a></div></div>
+<nav id="sidebar"><a href="#overview">Overview</a><a href="#architecture">Architecture</a><a href="#workspace">Cognitive Workspace</a><a href="#tui">The TUI Cockpit</a><a href="#pipeline">Cognition Pipeline</a><a href="#gateway">Gateway Abstraction</a><a href="#execution">Meta-Controller</a><a href="#autonomous">Autonomous Loop</a><a href="#rl">RL Attention Layer</a><a href="#journal">Decision Journal</a><a href="#live">Live State</a></nav>
+<main>
+<h1>Fractal Cognition</h1>
+<p style="font-size:1.05rem;color:var(--muted)">A composed cognitive finance agent. Not an LLM + trading library — a full agent framework built on Hermes, wrapping model intelligence with curated skills, persistent memory, tool access, a cognitive pipeline, and a decision journal.</p>
+<div class="stats">
+<div class="stat"><div class="val" style="color:var(--blue)">6</div><div class="lbl">TUI Tabs</div></div>
+<div class="stat"><div class="val" style="color:var(--violet)">4438</div><div class="lbl">Active Beliefs</div></div>
+<div class="stat"><div class="val" style="color:var(--teal)">$646</div><div class="lbl">Thesis Deployed</div></div>
+<div class="stat"><div class="val" style="color:var(--red)">+0.0%</div><div class="lbl">Portfolio P&amp;L</div></div>
+</div>
+
+<h2 id="overview">1&#8202; What is Fractal Cognition?</h2>
+<p>Fractal is a <strong>composed cognitive agent for investing</strong>. It doesn't wrap a model API — it wraps <em>Hermes Agent</em>, which itself turns a raw LLM into an actionable, iterable, memory-persistent agent. Fractal layers its own cognitive framework on top: a thesis allocator, a perception-to-decision pipeline, interchangeable execution gateways, a continuous attention loop, and a full audit trail.</p>
+
+<div class="callout">
+<strong>Philosophical anchor:</strong> The LLM is the <em>inference engine</em> — not the agent. The agent is the entire composed framework: skills, memory, tools, decision journal, gateway, provider, cognition pipeline, and TUI cockpit.
+</div>
+
+<h2 id="architecture">2&#8202; System Architecture</h2>
+<figure>
+<svg viewBox="0 0 700 520" xmlns="http://www.w3.org/2000/svg">
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#59544f"/></marker></defs>
+  <rect class="diagram-box ext" x="30" y="20" width="250" height="28" rx="4"/>
+  <text class="diagram-text bold" x="155" y="39">IBKR / CP Gateway, yfinance, News</text>
+  <rect class="diagram-box infra" x="30" y="64" width="250" height="28" rx="4"/>
+  <text class="diagram-text bold" x="155" y="83">Provider Snapshot (TUI Cockpit)</text>
+  <rect class="diagram-box data" x="330" y="36" width="140" height="20" rx="3"/>
+  <text class="diagram-text tiny" x="400" y="50">live_experiment.db</text>
+  <rect class="diagram-box data" x="330" y="60" width="140" height="20" rx="3"/>
+  <text class="diagram-text tiny" x="400" y="74">cognition_store.db</text>
+  <rect class="diagram-box data" x="330" y="84" width="140" height="20" rx="3"/>
+  <text class="diagram-text tiny" x="400" y="98">decision_journal.db</text>
+  <rect class="diagram-box core" x="30" y="118" width="640" height="88" rx="6"/>
+  <text class="diagram-text bold" x="350" y="140">Cognitive Workspace (shared state, always active)</text>
+  <rect fill="#eef4ff" stroke="#2563eb" stroke-width="1" x="50" y="152" width="130" height="36" rx="3"/>
+  <text class="diagram-text" x="115" y="168"><tspan font-weight="bold">Price Lens</tspan><tspan class="tiny" x="115" dy="10">surprise, momentum, 52w</tspan></text>
+  <rect fill="#eef4ff" stroke="#2563eb" stroke-width="1" x="200" y="152" width="130" height="36" rx="3"/>
+  <text class="diagram-text" x="265" y="168"><tspan font-weight="bold">Thesis Lens</tspan><tspan class="tiny" x="265" dy="10">conviction, evidence, drift</tspan></text>
+  <rect fill="#eef4ff" stroke="#2563eb" stroke-width="1" x="350" y="152" width="130" height="36" rx="3"/>
+  <text class="diagram-text" x="415" y="168"><tspan font-weight="bold">Risk Lens</tspan><tspan class="tiny" x="415" dy="10">stop proximity, volatility</tspan></text>
+  <rect fill="#eef4ff" stroke="#2563eb" stroke-width="1" x="500" y="152" width="150" height="36" rx="3"/>
+  <text class="diagram-text" x="575" y="168"><tspan font-weight="bold">Budget Lens</tspan><tspan class="tiny" x="575" dy="10">deployment %, overshoot</tspan></text>
+  <rect class="diagram-box cog" x="30" y="222" width="310" height="28" rx="4"/>
+  <text class="diagram-text bold" x="185" y="241">Attention = sum of weighted lens outputs</text>
+  <rect class="diagram-box cog" x="360" y="222" width="150" height="28" rx="4"/>
+  <text class="diagram-text bold" x="435" y="241">Score > threshold?</text>
+  <rect class="diagram-box" x="530" y="218" width="120" height="36" rx="4"/>
+  <text class="diagram-text" x="590" y="233">ESCALATE</text>
+  <text class="diagram-text tiny" x="590" y="245">&rarr; Meta-Controller</text>
+  <rect class="diagram-box" x="360" y="258" width="150" height="20" rx="4"/>
+  <text class="diagram-text tiny" x="435" y="272">ACCUMULATE (silent)</text>
+  <rect class="diagram-box exec" x="30" y="290" width="310" height="52" rx="4"/>
+  <text class="diagram-text bold" x="185" y="308">Meta-Controller (LLM-as-Judge)</text>
+  <text class="diagram-text tiny" x="185" y="322">DISMISS &middot; WATCH &middot; ACT</text>
+  <text class="diagram-text tiny" x="185" y="334">Structured output &rarr; Decision Journal</text>
+  <rect class="diagram-box exec" x="360" y="290" width="310" height="52" rx="4"/>
+  <text class="diagram-text bold" x="515" y="308">Execution Layer</text>
+  <text class="diagram-text tiny" x="515" y="322">Gateway &rarr; BudgetGovernor &rarr; place_order</text>
+  <rect class="diagram-box core" x="30" y="372" width="310" height="30" rx="4"/>
+  <text class="diagram-text bold" x="185" y="392">TUI Cockpit (6 tabs)</text>
+  <rect class="diagram-box" x="360" y="372" width="310" height="30" rx="4"/>
+  <text class="diagram-text bold" x="515" y="392">Decision Journal</text>
+  <text class="diagram-text tiny" x="350" y="440">All state flows continuously — no hard gates between layers.</text>
+  <text class="diagram-text tiny" x="350" y="456">Lens weights and threshold are learnable (RL policy).</text>
+  <text class="diagram-text tiny" x="350" y="472">LLM enters as judge AFTER attention flags (CALM pattern).</text>
+  <text class="diagram-text tiny" x="350" y="488">Soft blending from Soft MoE — all lenses always active.</text>
+</svg>
+<figcaption><strong>Figure 1:</strong> Fractal cognitive architecture. Four lenses contribute continuously to a shared workspace. Attention emerges from their weighted combination. The meta-controller (LLM) acts as judge only when attention crosses a dynamic threshold.</figcaption>
+</figure>
+
+<h2 id="workspace">3&#8202; The Cognitive Workspace</h2>
+<p>Unlike a pipeline with hard gates, the workspace model keeps <strong>all lenses active simultaneously</strong>. Each lens independently computes its contribution; attention emerges from their weighted combination. This mirrors the human cognitive architecture described by Global Workspace Theory — specialized processors broadcast into a shared space, and consciousness is whichever coalition currently dominates.</p>
+<div class="callout good"><strong>From Soft MoE (ICLR 2024):</strong> Hard gating loses information at routing boundaries. Soft differentiable blending preserves all signals.</div>
+<div class="legend">
+<div class="legend-item"><div class="legend-swatch" style="background:var(--blue)"></div> Core / Workspace</div>
+<div class="legend-item"><div class="legend-swatch" style="background:var(--violet)"></div> Cognition / Attention</div>
+<div class="legend-item"><div class="legend-swatch" style="background:var(--teal)"></div> Data Stores</div>
+<div class="legend-item"><div class="legend-swatch" style="background:var(--orange)"></div> Execution / Orders</div>
+<div class="legend-item"><div class="legend-swatch" style="background:var(--green)"></div> Infrastructure</div>
+<div class="legend-item"><div class="legend-swatch" style="background:var(--muted)"></div> External</div>
+</div>
+<h2 id="tui">4&#8202; The TUI Cockpit</h2>
+<p>A 6-tab Ratatui terminal interface — the operator's window into the cognitive workspace. Dark-themed, async (background thread + mpsc channel), candlestick charts via chandelier crate. Keyboard and mouse navigation.</p>
+<figure>
+<svg viewBox="0 0 660 220" xmlns="http://www.w3.org/2000/svg">
+  <rect class="diagram-box" x="0" y="0" width="660" height="24" rx="3"/><text class="diagram-text bold" x="330" y="17">Fractal | value $387 | P/L $+0 (+0.0%) | src: cp_rest</text>
+  <rect class="diagram-box" x="0" y="30" width="110" height="18" rx="2"/><text class="diagram-text tiny" x="55" y="43">1 Aggregate</text>
+  <rect class="diagram-box" x="112" y="30" width="110" height="18" rx="2"/><text class="diagram-text tiny" x="167" y="43">2 Cognition</text>
+  <rect class="diagram-box" x="224" y="30" width="110" height="18" rx="2"/><text class="diagram-text tiny" x="279" y="43">3 Pipeline</text>
+  <rect class="diagram-box" x="336" y="30" width="108" height="18" rx="2"/><text class="diagram-text tiny" x="390" y="43">4 Thesis</text>
+  <rect class="diagram-box" x="446" y="30" width="106" height="18" rx="2"/><text class="diagram-text tiny" x="499" y="43">5 Human</text>
+  <rect class="diagram-box cog" x="554" y="30" width="106" height="18" rx="2"/><text class="diagram-text tiny" x="607" y="43">6 Chat</text>
+  <rect class="diagram-box" x="0" y="56" width="660" height="25" rx="3"/><text class="diagram-text" x="330" y="73">Thesis cash: $646 | seed: $500 | overshoot $146</text>
+  <rect class="diagram-box" x="0" y="88" width="400" height="70" rx="3"/><text class="diagram-text tiny" x="10" y="108">Portfolio + cognition overlay</text>
+  <text class="diagram-text tiny left" x="10" y="124">Sym | Qty | Last | P/L | Wt | 52w | Route | Hint</text>
+  <rect fill="#eef4ff" stroke="#2563eb" stroke-width="0.5" x="8" y="130" width="384" height="22" rx="2"/>
+  <text class="diagram-text left" x="14" y="146">NVDA  2.000  $232.69  +14.2%  62.1%  advisor  HOLD</text>
+  <rect class="diagram-box" x="410" y="88" width="250" height="68" rx="3"/><text class="diagram-text tiny" x="535" y="105">Detail panel + Chart</text>
+  <text class="diagram-text tiny" x="535" y="122">NVDA  2026-03-28 &rarr; 2026-06-26</text>
+  <text class="diagram-text tiny" x="535" y="138">Candlestick (chandelier crate)</text>
+  <rect class="diagram-box" x="0" y="164" width="660" height="30" rx="3"/><text class="diagram-text tiny" x="330" y="180">Attention tape</text>
+  <text class="diagram-text tiny" x="330" y="208">q quit | r refresh | c start CP | x restart | l login | 1-6 tabs</text>
+</svg>
+<figcaption><strong>Figure 2:</strong> TUI cockpit Tab 1 (Aggregate). Built in Rust (Ratatui 0.30 + chandelier crate).</figcaption>
+</figure>
+
+<h2 id="pipeline">5&#8202; The Cognition Pipeline</h2>
+<figure>
+<div class="mermaid-container"><div class="mermaid">
+flowchart LR
+  P["Perception
+price, news, 52w"] --> H["Hypothesis
+formation, lens scores"]
+  H --> B["Belief State
+conviction, evidence"]
+  B --> A["Attention Decision
+route, posture"]
+  A --> T["Trade Proposal
+symbol, side, notional"]
+  T --> R["Risk Decision
+approved? reasoning"]
+  R --> E["Execution
+gateway place_order()"]
+  E --> J["Decision Journal"]
+  B -.->|feedback| H
+  R -.->|outcome| B
+</div></div>
+<figcaption><strong>Figure 3:</strong> Five-stage cognition pipeline with feedback loops (CALM pattern).</figcaption>
+</figure>
+<div class="stats">
+<div class="stat"><div class="val">13311</div><div class="lbl">Perceptions</div></div>
+<div class="stat"><div class="val">8024</div><div class="lbl">Hypotheses</div></div>
+<div class="stat"><div class="val">4438</div><div class="lbl">Beliefs</div></div>
+<div class="stat"><div class="val">20</div><div class="lbl">Trade Proposals</div></div>
+</div>
+<h3>Active Beliefs</h3>
+<table><tr><th>Symbol</th><th>Route</th><th>Posture</th><th>P+</th><th>Evidence</th></tr>
+<tr><td><strong>VRT</strong></td><td>monitor</td><td>monitor</td><td>0%</td><td>0.80</td></tr>
+<tr><td><strong>TSLA</strong></td><td>monitor</td><td>monitor</td><td>0%</td><td>0.79</td></tr>
+<tr><td><strong>PLTR</strong></td><td>monitor</td><td>monitor</td><td>0%</td><td>0.80</td></tr>
+<tr><td><strong>AMD</strong></td><td>monitor</td><td>monitor</td><td>33%</td><td>0.80</td></tr>
+<tr><td><strong>AVGO</strong></td><td>monitor</td><td>monitor</td><td>0%</td><td>0.79</td></tr>
+<tr><td><strong>NVDA</strong></td><td>monitor</td><td>monitor</td><td>0%</td><td>0.80</td></tr>
+<tr><td><strong>META</strong></td><td>monitor</td><td>monitor</td><td>0%</td><td>0.80</td></tr>
+<tr><td><strong>AMZN</strong></td><td>monitor</td><td>monitor</td><td>0%</td><td>0.78</td></tr>
+</table>
+
+<h2 id="gateway">6&#8202; Gateway Abstraction</h2>
+<figure>
+<svg viewBox="0 0 660 110" xmlns="http://www.w3.org/2000/svg">
+  <rect class="diagram-box core" x="150" y="8" width="360" height="24" rx="3"/><text class="diagram-text bold" x="330" y="25">get_executor(account_id, prefer="cp")</text>
+  <rect class="diagram-box infra" x="20" y="50" width="180" height="40" rx="4"/><text class="diagram-text bold" x="110" y="65">IB Gateway</text><text class="diagram-text tiny" x="110" y="80">ibapi, port 4001, whole shares</text>
+  <rect class="diagram-box exec" x="240" y="50" width="180" height="40" rx="4"/><text class="diagram-text bold" x="330" y="65">CP Gateway</text><text class="diagram-text tiny" x="330" y="80">REST API, port 5000, fractional</text>
+  <rect class="diagram-box ext" x="460" y="50" width="180" height="40" rx="4"/><text class="diagram-text bold" x="550" y="65">OrderRequest</text><text class="diagram-text tiny" x="550" y="80">symbol, side, qty or cash_qty</text>
+  <text class="diagram-text tiny" x="330" y="105">Protocol: connect() &middot; place_order() &middot; get_positions() &middot; disconnect()</text>
+</svg>
+<figcaption><strong>Figure 4:</strong> Gateway abstraction. Two interchangeable backends, factory auto-detection, common OrderRequest protocol.</figcaption>
+</figure>
+
+<h2 id="execution">7&#8202; Meta-Controller</h2>
+<p>The meta-controller drives thesis-based allocation and rebalancing. AI allocator &rarr; BudgetGovernor &rarr; TradeIntent &rarr; RiskDecision &rarr; gateway execution &rarr; decision journal.</p>
+<p><em>AI is the future</em> &middot; generated: 2026-06-26T14:09:57+00:00</p>
+<h3>Allocator Rankings</h3>
+<table><tr><th>Symbol</th><th>Score</th><th>Target Wt</th><th>Why</th></tr>
+<tr><td><strong>GOOGL</strong></td><td>0.92</td><td>8%</td><td style="font-size:8.5pt">GOOGL final=0.92; overlap=3; lenses=(beneficiary:0.72, compute_provider:0.70, enabler:0.51); financi</td></tr>
+<tr><td><strong>NVDA</strong></td><td>0.92</td><td>8%</td><td style="font-size:8.5pt">NVDA final=0.92; overlap=3; lenses=(beneficiary:0.72, compute_provider:0.58, enabler:0.76); financin</td></tr>
+<tr><td><strong>MSFT</strong></td><td>0.90</td><td>8%</td><td style="font-size:8.5pt">MSFT final=0.90; overlap=2; lenses=(beneficiary:0.76, compute_provider:0.76); financing=0.98.</td></tr>
+<tr><td><strong>AVGO</strong></td><td>0.86</td><td>8%</td><td style="font-size:8.5pt">AVGO final=0.86; overlap=3; lenses=(beneficiary:0.56, compute_provider:0.47, enabler:0.67); financin</td></tr>
+<tr><td><strong>AMZN</strong></td><td>0.83</td><td>7%</td><td style="font-size:8.5pt">AMZN final=0.83; overlap=2; lenses=(beneficiary:0.67, compute_provider:0.70); financing=0.92.</td></tr>
+<tr><td><strong>META</strong></td><td>0.81</td><td>7%</td><td style="font-size:8.5pt">META final=0.81; overlap=2; lenses=(beneficiary:0.70, compute_provider:0.61); financing=0.94.</td></tr>
+<tr><td><strong>TSM</strong></td><td>0.73</td><td>7%</td><td style="font-size:8.5pt">TSM final=0.73; overlap=1; lenses=(enabler:0.69); financing=0.86.</td></tr>
+<tr><td><strong>ASML</strong></td><td>0.71</td><td>6%</td><td style="font-size:8.5pt">ASML final=0.71; overlap=1; lenses=(enabler:0.67); financing=0.88.</td></tr>
+</table>
+<h3>Recent Pipeline Activity</h3>
+<table><tr><th>Time</th><th>Decision</th><th>Reason</th></tr>
+<tr><td>2026-06-11T19:13:07</td><td style="color:var(--green)">&#10003;</td><td style="font-size:8.5pt">approved_inside_burn_budget</td></tr>
+<tr><td>2026-06-11T19:13:06</td><td style="color:var(--green)">&#10003;</td><td style="font-size:8.5pt">approved_inside_burn_budget</td></tr>
+<tr><td>2026-06-11T19:13:06</td><td style="color:var(--green)">&#10003;</td><td style="font-size:8.5pt">approved_inside_burn_budget</td></tr>
+<tr><td>2026-06-11T19:13:05</td><td style="color:var(--green)">&#10003;</td><td style="font-size:8.5pt">approved_inside_burn_budget</td></tr>
+<tr><td>2026-06-11T19:13:05</td><td style="color:var(--green)">&#10003;</td><td style="font-size:8.5pt">approved_inside_burn_budget</td></tr>
+<tr><td>2026-06-11T19:13:05</td><td style="color:var(--green)">&#10003;</td><td style="font-size:8.5pt">approved_inside_burn_budget</td></tr>
+<tr><td>2026-06-11T19:13:04</td><td style="color:var(--green)">&#10003;</td><td style="font-size:8.5pt">approved_inside_burn_budget</td></tr>
+<tr><td>2026-06-11T19:13:04</td><td style="color:var(--green)">&#10003;</td><td style="font-size:8.5pt">approved_inside_burn_budget</td></tr>
+</table>
+
+<h2 id="autonomous">8&#8202; Autonomous Meta-Decision Loop</h2>
+<p>The cognitive workspace continuously evaluates attention scores. When scores cross a dynamic threshold, the meta-controller (LLM-as-Judge) receives the structured escalation and produces DISMISS / WATCH / ACT. Between escalations, the system accumulates silently — updating predictions and thresholds.</p>
+<div class="callout good"><strong>From CALM (Aug 2025):</strong> LLM enters <em>after</em> detection, not as the detector. Closed-loop improvement from LLM judgments.</div>
+<figure>
+<div class="mermaid-container"><div class="mermaid">
+flowchart TD
+  S["Snapshot every 2 min"] --> W["All lenses compute attention scores"]
+  W --> T{"Score > dynamic threshold?"}
+  T -->|No| A["ACCUMULATE
+Update predictions
+Stay silent"]
+  T -->|Yes| E["ESCALATE
+Full workspace context"]
+  E --> M["Meta-Controller LLM-as-Judge"]
+  M --> D["DISMISS: noise"]
+  M --> W2["WATCH: monitor closer"]
+  M --> ACT["ACT: adjust portfolio"]
+  D -->|feedback| T
+  W2 -->|feedback| T
+  ACT -->|execute| GW["Gateway"]
+  ACT -->|journal| J["Decision Journal"]
+</div></div>
+<figcaption><strong>Figure 5:</strong> Autonomous loop. Communicates only when attention warrants it.</figcaption>
+</figure>
+
+<h2 id="rl">9&#8202; RL Attention Layer</h2>
+<p>A 149K-parameter PyTorch network trained via PPO. Learns: <em>when</em> to escalate, <em>which thresholds</em> to adjust per symbol, <em>how to weight</em> lenses by regime.</p>
+<figure>
+<svg viewBox="0 0 660 120" xmlns="http://www.w3.org/2000/svg">
+  <rect class="diagram-box core" x="10" y="10" width="200" height="30" rx="3"/><text class="diagram-text bold" x="110" y="30">38-dim Observation</text>
+  <rect class="diagram-box cog" x="230" y="10" width="200" height="30" rx="3"/><text class="diagram-text bold" x="330" y="30">Encoder (38&rarr;256&rarr;256)</text>
+  <rect class="diagram-box exec" x="10" y="55" width="200" height="30" rx="4"/><text class="diagram-text bold" x="110" y="75">Reward = P&amp;L + efficiency</text>
+  <rect class="diagram-box" x="450" y="0" width="200" height="24" rx="3"/><text class="diagram-text tiny" x="550" y="16">Threshold heads &times; 8</text>
+  <rect class="diagram-box" x="450" y="28" width="200" height="24" rx="3"/><text class="diagram-text tiny" x="550" y="44">Comm head (5-way)</text>
+  <rect class="diagram-box" x="450" y="56" width="200" height="24" rx="3"/><text class="diagram-text tiny" x="550" y="72">Value head</text>
+  <rect fill="none" stroke="#59544f" stroke-width="1" stroke-dasharray="3 2" x="10" y="98" width="640" height="18" rx="3"/>
+  <text class="diagram-text tiny" x="330" y="111">PufferLib-ready: flat tensors, multi-discrete actions, PPO with GAE</text>
+</svg>
+<figcaption><strong>Figure 6:</strong> RL policy. Shared encoder (Soft MoE pattern), trained on simulated market regimes.</figcaption>
+</figure>
+<div class="stats">
+<div class="stat"><div class="val">149K</div><div class="lbl">Parameters</div></div>
+<div class="stat"><div class="val">38</div><div class="lbl">Obs Dims</div></div>
+<div class="stat"><div class="val">9</div><div class="lbl">Heads</div></div>
+<div class="stat"><div class="val">&sim;90%</div><div class="lbl">Silent Cycles</div></div>
+</div>
+
+<h2 id="journal">10&#8202; Decision Journal</h2>
+<p>Every allocation decision — executed, rejected, or held — recorded with full provenance: thesis version, rationale, confidence, price context, linked TradeIntent IDs, fill reconciliation. The system's memory across sessions.</p>
+<h2 id="live">11&#8202; Live State</h2>
+<p><span class="live-dot"></span> <span style="color:var(--muted);font-size:9pt">Snapshot: 2026-06-29T01:59:39+00:00 &middot; Source: live_ledger_fallback &middot; Account: U11765195</span></p>
+<h3>Portfolio Positions</h3>
+<table><tr><th>Symbol</th><th>Quantity</th><th>Last</th><th>P&amp;L</th><th>Weight</th></tr>
+<tr><td><strong>NVDA</strong></td><td>2.0000</td><td>$193.44</td><td style="color:#59544f">+0.0%</td><td>100.0%</td></tr>
+</table>
+<div class="stats">
+<div class="stat"><div class="val">$387</div><div class="lbl">Total Value</div></div>
+<div class="stat"><div class="val" style="color:var(--red)">$+0</div><div class="lbl">Total P&amp;L</div></div>
+<div class="stat"><div class="val">$646 / $500</div><div class="lbl">Thesis Deployed / Seed</div></div>
+<div class="stat"><div class="val" style="color:var(--red)">129%</div><div class="lbl">Utilization</div></div>
+</div>
+<div class="callout neutral">[neutral] <strong>NVDA:</strong> NVDA: +0.0% · upper quartile · monitor &mdash; Held name overlaps current allocator thesis/lenses.</div>
+
+<h3>Research Foundation</h3>
+<div class="callout"><strong>Soft Mixture of Experts</strong> (Puigcerver et al., ICLR 2024) — Soft differentiable blending replaces hard gating.</div>
+<div class="callout"><strong>CALM: Continuous, Adaptive, LLM-Mediated</strong> (Devireddy &amp; Huang, Aug 2025) — LLM-as-Judge with closed-loop improvement.</div>
+<div class="callout"><strong>PufferLib 2.0</strong> (Su&aacute;rez, RLC 2025) — RL at 1M steps/s, flat tensors, vectorized envs.</div>
+
+</main>
+<footer>Fractal Cognition &middot; <a href="https://github.com/ashesh8500/fractal">github.com/ashesh8500/fractal</a> &middot; Built on <a href="https://hermes-agent.nousresearch.com">Hermes Agent</a> &middot; Paper-preprint aesthetic (CMU Serif)</footer>
+</body></html>
