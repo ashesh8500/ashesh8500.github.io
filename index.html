@@ -1,382 +1,422 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ashesh Kaji</title>
-    <meta name="description" content="Ashesh Kaji - computer engineering graduate student at NYU Tandon. Cognitive science, machine learning, systems, and research projects.">
-    <meta property="og:title" content="Ashesh Kaji">
-    <meta property="og:description" content="Computer engineering graduate student at NYU Tandon. Cognitive science, machine learning, systems, and research projects.">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://asheshkaji.com">
-    <meta name="theme-color" content="#061111">
-    <link rel="icon" href="assets/favicon.ico">
-    <link rel="stylesheet" href="assets/css/style.css?v=13">
-    <script src="assets/js/ascii-bg.js?v=13"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ashesh Kaji — Cognitive Systems, Agent Infrastructure</title>
+<meta name="description" content="Ashesh Kaji — MS Computer Engineering at NYU Tandon, BS Cognitive Science ML & Neural Computation at UC San Diego. Building Fractal, AuditLayer, and research in spatial intelligence.">
+<meta property="og:title" content="Ashesh Kaji">
+<meta property="og:description" content="Cognitive systems, agent infrastructure, and machine intelligence across software, research, and hardware.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://asheshkaji.com">
+<meta name="theme-color" content="#080C0A">
+<link rel="icon" href="assets/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400;1,9..144,500&family=Syne:wght@600;700;800&family=Sora:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css?v=16">
 </head>
 <body>
 
-<div class="companion" id="companion">
-  <div class="companion-avatar state-idle" id="companionAvatar" title="Open site assistant - press Cmd K">
-    <canvas class="orb-canvas" id="orbCanvas" width="144" height="144" aria-label="Ashesh assistant orb"></canvas>
-    <span class="orb-core"></span>
-    <span class="orb-ring"></span>
-  </div>
-  <div class="companion-glow"></div>
-  <div class="companion-speech" id="companionSpeech" hidden>
-    <p>Ask from site context.</p>
-  </div>
-</div>
+<script src="assets/js/ascii-bg.js?v=16"></script>
 
-<div class="chat-panel" id="chatPanel" hidden>
-  <div class="chat-panel-header">
-    <div class="cp-title-area">
-      <span class="cp-status-dot deepseek" id="cpStatusDot"></span>
-      <span class="cp-status-line" id="cpStatusLine">site context</span>
-      <span class="cp-model-badge deepseek" id="cpModelBadge">remote</span>
+<nav class="topbar" id="topbar">
+  <div class="topbar-inner">
+    <a class="topbar-mark" href="#" id="topbarMark">
+      <span class="mark-main" id="markMain">ASHESH KAJI</span>
+      <span class="mark-chapter" id="markChapter" aria-live="polite"></span>
+      <span class="mark-dot"></span>
+    </a>
+    <div class="topbar-mid" id="topbarMid">
+      <span class="topbar-now"><i class="live-dot"></i><span id="localTime">—:—</span> NYC · <em id="currentFocus">thesis</em></span>
     </div>
-    <div class="inference-toggle">
-      <span class="toggle-label" data-mode="bonsai">local</span>
-      <button class="toggle-switch" id="inferenceToggle" aria-label="Toggle inference mode">
-        <span class="toggle-thumb deepseek" id="toggleThumb"></span>
+    <div class="topbar-right">
+      <button class="topbar-cmd" id="cmdTrigger" aria-label="Open command palette">
+        <span class="cmd-kbd">⌘K</span><span class="cmd-label">command</span>
       </button>
-      <span class="toggle-label active" data-mode="deepseek">remote</span>
-    </div>
-    <button class="chat-panel-close" id="chatPanelClose" aria-label="Close chat">x</button>
-  </div>
-
-  <div class="cp-messages" id="cpMessages">
-    <div class="cp-message system">
-      <div class="cp-avatar system">AK</div>
-      <div class="cp-bubble system">
-        Site assistant. Answers as Ashesh from published site context.
-      </div>
     </div>
   </div>
-
-  <div class="cp-suggestions" id="cpSuggestions" aria-label="Suggested prompts">
-    <button type="button" data-suggest="What are you studying?">study</button>
-    <button type="button" data-suggest="List your main projects.">projects</button>
-    <button type="button" data-suggest="What is your research background?">research</button>
-    <button type="button" data-suggest="What tools do you use?">tools</button>
-  </div>
-
-  <div class="cp-input-area">
-    <input type="text" class="cp-input" id="cpInput"
-           placeholder="Ask from site context..."
-           aria-label="Chat message">
-    <button class="cp-send-btn" id="cpSendBtn" type="button">send</button>
-  </div>
-</div>
-
-<nav class="nav" id="nav">
-    <div class="nav-inner">
-        <a href="#" class="nav-logo">ashesh/kaji <span>personal site</span></a>
-        <ul class="nav-links" id="navLinks">
-            <li><a href="#about" class="active">about</a></li>
-            <li><a href="#experience">experience</a></li>
-            <li><a href="#education">education</a></li>
-            <li><a href="#projects">projects</a></li>
-            <li><a href="#skills">skills</a></li>
-            <li><a href="#ask">assistant</a></li>
-            <li><a href="/archive">archive</a></li>
-        </ul>
-        <button class="nav-mobile-toggle" id="navToggle" aria-label="Toggle menu" onclick="document.getElementById('navLinks')?.classList.toggle('open'); this.textContent = document.getElementById('navLinks')?.classList.contains('open') ? 'close' : 'menu';">menu</button>
-    </div>
+  <div class="topbar-progress"><div class="topbar-progress-fill" id="progressFill"></div></div>
 </nav>
 
-<main>
-  <section class="hero" id="hero">
-      <div class="hero-inner">
-          <p class="hero-kicker">computer engineering / machine learning / systems</p>
-          <h1 class="hero-name">Ashesh Kaji</h1>
-          <p class="hero-subtitle">
-              <span id="typewriter"></span><span class="cursor"></span>
-          </p>
-          <p class="hero-copy">
-              Computer engineering graduate student at NYU Tandon. Background in
-              cognitive science, machine learning, neuroimaging research, and applied ML systems.
-          </p>
-          <div class="hero-cta">
-              <a href="#about" class="btn btn-accent">profile</a>
-              <a href="/archive" class="btn btn-outline">archive</a>
-              <button class="btn btn-outline" type="button" onclick="window.companionOpenPanel?.()">assistant</button>
-          </div>
-      </div>
-      <div class="hero-ledger" aria-hidden="true">
-          <span>COGS</span>
-          <span>ML</span>
-          <span>RUST</span>
-          <span>FPGA</span>
-          <span>RESEARCH</span>
-      </div>
-  </section>
-
-  <section class="section" id="about">
-      <div class="section-inner about-layout">
-          <div class="section-header">
-              <div class="section-label">01 / profile</div>
-              <h2 class="section-title">Profile</h2>
-          </div>
-          <div class="about-text">
-              <p>
-                  I am Ashesh Kaji. I study Computer Engineering at NYU Tandon and completed
-                  a BS with Honors in Cognitive Science at UC San Diego, specializing in
-                  Machine Learning and Neural Computation.
-              </p>
-              <p>
-                  My work includes ML systems, RAG pipelines, neuroimaging research,
-                  local-first media tooling, portfolio optimization research, and hardware-aware
-                  acceleration.
-              </p>
-              <p>
-                  This site contains public project links, research materials, coursework,
-                  archive entries, and a browser-based assistant interface.
-              </p>
-          </div>
-          <div class="life-notes" aria-label="Profile details">
-              <div>
-                  <span>graduate study</span>
-                  <strong>NYU Tandon / computer engineering</strong>
-              </div>
-              <div>
-                  <span>undergraduate study</span>
-                  <strong>UCSD / cognitive science, ML and neural computation</strong>
-              </div>
-              <div>
-                  <span>areas</span>
-                  <strong>Rust, Python, neuroimaging, quantized models, hardware</strong>
-              </div>
-              <div>
-                  <span>languages</span>
-                  <strong>English, Gujarati, Hindi</strong>
-              </div>
-          </div>
-      </div>
-  </section>
-
-  <section class="section" id="experience">
-      <div class="section-inner">
-          <div class="section-header">
-              <div class="section-label">02 / experience</div>
-              <h2 class="section-title">Experience</h2>
-          </div>
-          <div class="timeline">
-              <article class="timeline-item fade-in">
-                  <div class="timeline-dot"></div>
-                  <time class="timeline-date">01/2026 - present</time>
-                  <h3 class="timeline-role">Consulting AI Engineer</h3>
-                  <p class="timeline-company">SageX Global / remote</p>
-                  <p class="timeline-desc">
-                      Consulting on AI tooling pipelines for LLM deployment, data transformation,
-                      and production MLOps.
-                  </p>
-              </article>
-
-              <article class="timeline-item fade-in">
-                  <div class="timeline-dot"></div>
-                  <time class="timeline-date">09/2024 - 01/2026</time>
-                  <h3 class="timeline-role">Artificial Intelligence Engineer</h3>
-                  <p class="timeline-company">SageX Global / remote</p>
-                  <p class="timeline-desc">
-                      Built LLM and SLM workflows, semantic memory retrieval systems,
-                      statistical mapping models, and multimodal data pipelines.
-                  </p>
-              </article>
-
-              <article class="timeline-item fade-in">
-                  <div class="timeline-dot"></div>
-                  <time class="timeline-date">09/2023 - 07/2024</time>
-                  <h3 class="timeline-role">Machine Learning Intern</h3>
-                  <p class="timeline-company">UniQreate / remote</p>
-                  <p class="timeline-desc">
-                      Designed extraction pipelines and chat interfaces with LLMs and vector
-                      databases, including a production RAG product with Azure integration and
-                      serverless local-model deployment.
-                  </p>
-              </article>
-
-              <article class="timeline-item fade-in">
-                  <div class="timeline-dot"></div>
-                  <time class="timeline-date">10/2022 - 06/2025</time>
-                  <h3 class="timeline-role">Undergraduate Research Assistant</h3>
-                  <p class="timeline-company">UC San Diego / Dr. Mary Boyle's Lab</p>
-                  <p class="timeline-desc">
-                      Worked with UK BioBank and ABCD study data on peripheral iron, NAFLD,
-                      neurodegeneration, vape-related metal exposure, and MRI-derived measures.
-                  </p>
-              </article>
-          </div>
-      </div>
-  </section>
-
-  <section class="section" id="education">
-      <div class="section-inner">
-          <div class="section-header">
-              <div class="section-label">03 / education</div>
-              <h2 class="section-title">Education</h2>
-          </div>
-          <div class="edu-grid">
-              <article class="edu-card fade-in">
-                  <h3 class="edu-degree">MS in Computer Engineering</h3>
-                  <p class="edu-school">NYU Tandon School of Engineering</p>
-                  <p class="edu-date">01/2026 - 12/2027 expected</p>
-                  <p class="edu-detail">Graduate coursework in systems, ML infrastructure, and hardware-software co-design.</p>
-              </article>
-              <article class="edu-card fade-in">
-                  <h3 class="edu-degree">BS with Honors in Cognitive Science</h3>
-                  <p class="edu-school">UC San Diego</p>
-                  <p class="edu-date">09/2021 - 06/2025</p>
-                  <p class="edu-detail">Specialization in Machine Learning and Neural Computation, with honors work around metal exposure and brain imaging.</p>
-              </article>
-              <article class="edu-card fade-in">
-                  <h3 class="edu-degree">International Baccalaureate Diploma</h3>
-                  <p class="edu-school">SVKM's JV Parekh International School</p>
-                  <p class="edu-date">2019 - 2021 / 39 of 45</p>
-                  <p class="edu-detail">Pre-university coursework across science, mathematics, and humanities.</p>
-              </article>
-          </div>
-      </div>
-  </section>
-
-  <section class="section" id="projects">
-      <div class="section-inner">
-          <div class="section-header project-heading">
-              <div>
-                <div class="section-label">04 / projects</div>
-                <h2 class="section-title">Projects</h2>
-              </div>
-              <p>
-                Selected repositories, research writeups, and project pages.
-              </p>
-          </div>
-          <div class="projects-grid" id="projectsGrid">
-              <div class="project-loading">
-                  <span>loading repositories...</span>
-              </div>
-          </div>
-      </div>
-  </section>
-
-  <section class="section" id="skills">
-      <div class="section-inner tools-layout">
-          <div class="section-header">
-              <div class="section-label">05 / skills</div>
-              <h2 class="section-title">Skills</h2>
-          </div>
-          <div class="tool-groups">
-              <div class="tool-group">
-                  <span>language</span>
-                  <p>Python, Rust, C++, JavaScript, TypeScript, shell</p>
-              </div>
-              <div class="tool-group">
-                  <span>machine learning</span>
-                  <p>PyTorch, NumPy, Pandas, Scikit-Learn, RAG, NLP, vector databases</p>
-              </div>
-              <div class="tool-group">
-                  <span>infrastructure</span>
-                  <p>Linux, Docker, Git, Azure, AWS, serverless workers, WebGPU experiments</p>
-              </div>
-              <div class="tool-group">
-                  <span>specialized</span>
-                  <p>FPGA and hardware design, ZKP acceleration, statsmodels, neuroimaging workflows</p>
-              </div>
-          </div>
-      </div>
-  </section>
-
-  <section class="section ask-section" id="ask">
-      <div class="section-inner ask-container">
-          <div class="section-header">
-              <div class="section-label">06 / assistant</div>
-              <h2 class="section-title">Site assistant</h2>
-          </div>
-          <div class="ask-info">
-              <p>
-                  The assistant uses published site context. It does not have access to private
-                  information. Local Bonsai can be loaded below when the browser supports WebGPU.
-              </p>
-              <div class="ask-badges">
-                  <span class="ask-badge teal">site context</span>
-                  <span class="ask-badge">local WebGPU option</span>
-                  <span class="ask-badge">remote API option</span>
-              </div>
-          </div>
-
-          <div class="chat-container">
-              <div class="chat-header">
-                  <div class="chat-header-left">
-                      <span class="chat-status-dot" id="chatStatusDot"></span>
-                      <div>
-                          <div class="chat-title">Local Bonsai interface</div>
-                          <div class="chat-subtitle" id="chatStatusText">local model not loaded</div>
-                      </div>
-                  </div>
-                  <div class="chat-model-info" id="chatModelInfo">not loaded</div>
-              </div>
-              <div class="chat-progress" id="chatProgress" hidden>
-                  <div class="chat-progress-fill" id="chatProgressFill"></div>
-              </div>
-              <div class="chat-diagnostics" id="chatDiagnostics">Local model has not been loaded.</div>
-              <div class="chat-messages" id="chatMessages">
-                  <div class="chat-message">
-                      <div class="chat-avatar assistant">AK</div>
-                      <div class="chat-bubble assistant">
-                          <p>Local Bonsai interface. Requires WebGPU. Loads the q1 ONNX model in the browser.</p>
-                      </div>
-                  </div>
-              </div>
-              <div class="chat-input-area">
-                  <input type="text" class="chat-input" id="chatInput"
-                         placeholder="Load local Bonsai first..." disabled
-                         aria-label="Chat message">
-                  <button class="chat-send" id="chatLoadBtn" type="button">
-                      load local Bonsai
-                  </button>
-              </div>
-              <div class="agent-test-row">
-                  <button class="agent-test" id="chatSmokeBtn" type="button">run smoke test</button>
-                  <span>Pass condition: WebGPU ready plus a real model generation event.</span>
-              </div>
-              <div class="openrouter-fallback" id="openrouterFallback" hidden>
-                  <div class="or-status">
-                      <span class="or-dot" id="orStatusDot"></span>
-                      <span id="orStatusText">OpenRouter fallback is disconnected</span>
-                  </div>
-                  <div class="or-input-row">
-                      <input type="password" class="chat-input or-key-input" id="orApiKey"
-                             placeholder="Paste OpenRouter API key"
-                             autocomplete="off"
-                             aria-label="OpenRouter API key">
-                      <button class="agent-test or-connect-btn" id="orConnectBtn" type="button">
-                          connect
-                      </button>
-                  </div>
-                  <div class="or-model-row" id="orModelRow" hidden>
-                      <label class="or-label">model:</label>
-                      <select class="or-model-select" id="orModelSelect">
-                          <option value="google/gemini-2.0-flash-001">Gemini 2.0 Flash (free)</option>
-                          <option value="meta-llama/llama-3.2-3b-instruct:free">Llama 3.2 3B (free)</option>
-                      </select>
-                  </div>
-              </div>
-          </div>
-      </div>
-  </section>
-</main>
-
-<footer class="footer">
-    <div class="footer-links">
-        <a href="https://github.com/ashesh8500" target="_blank" rel="noopener" class="footer-link">GitHub</a>
-        <a href="mailto:ashesh8500@gmail.com" class="footer-link">Email</a>
-        <a href="/archive" class="footer-link">Archive</a>
-        <a href="resume.html" class="footer-link">Resume</a>
+<div class="palette-backdrop" id="paletteBackdrop" hidden></div>
+<div class="palette" id="palette" hidden role="dialog" aria-modal="true" aria-label="Command palette">
+  <div class="palette-header">
+    <span class="palette-eye">◈</span>
+    <input type="text" id="paletteInput" class="palette-input" placeholder="ask from site context, or jump to..." autocomplete="off" spellcheck="false">
+    <span class="palette-hint">ESC</span>
+  </div>
+  <div class="palette-body">
+    <div class="palette-section" id="paletteQuick">
+      <div class="palette-label">jump</div>
+      <button type="button" data-jump="selected">→ selected systems</button>
+      <button type="button" data-jump="signal">→ now</button>
+      <button type="button" data-jump="trajectory">→ trajectory</button>
+      <button type="button" data-jump="archive">→ archive</button>
     </div>
-    <p class="footer-copy">Ashesh Kaji / personal site / pure HTML, CSS, and JS</p>
+    <div class="palette-section" id="paletteContext">
+      <div class="palette-label">ask from site context</div>
+      <div class="palette-suggestions">
+        <button type="button" data-ask="What are you building right now?">what are you building right now?</button>
+        <button type="button" data-ask="What is Fractal?">what is Fractal?</button>
+        <button type="button" data-ask="What is AuditLayer?">what is AuditLayer?</button>
+        <button type="button" data-ask="What is your research background?">research background?</button>
+      </div>
+    </div>
+    <div class="palette-chat" id="paletteChat" hidden>
+      <div class="palette-chat-log" id="paletteChatLog"></div>
+      <div class="palette-chat-meta">
+        <span class="palette-model-badge" id="paletteModelBadge">remote</span>
+        <span class="palette-status" id="paletteStatus">site context · answers as Ashesh</span>
+      </div>
+    </div>
+  </div>
+  <div class="palette-footer">
+    <span class="pf-left"><span class="pf-dot" id="pfDot"></span><span id="pfModel">remote ready</span></span>
+    <span class="pf-right">
+      <button class="pf-action" id="pfLoadLocal">load local</button>
+      <button class="pf-action" id="pfUseRemote">use remote</button>
+    </span>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero" id="thesis">
+  <div class="hero-field-note" aria-hidden="true">
+    <span>COGNITIVE SYSTEMS · AGENT INFRA · SPATIAL INTELLIGENCE</span>
+  </div>
+
+  <div class="hero-grid">
+    <div class="hero-left">
+      <div class="hero-meta-top">
+        <span class="eyebrow"><i class="live-dot"></i>personal site — new york — 2026</span>
+      </div>
+
+      <h1 class="hero-title">
+        <span class="ht-line"><span class="ht-solid">A living</span></span>
+        <span class="ht-line"><span class="ht-italic">systems</span> <span class="ht-outline">atlas.</span></span>
+      </h1>
+
+      <div class="hero-thesis">
+        <p>
+          I build cognitive systems — agents with continuous awareness, memory, and action
+          across software, research, and hardware.
+        </p>
+        <p>
+          MS Computer Engineering at NYU Tandon. Previously BS with Honors in Cognitive
+          Science, Machine Learning and Neural Computation at UC San Diego.
+        </p>
+        <p class="hero-thesis-muted">
+          Four selected systems. Current focus. The rest lives in the archive.
+        </p>
+      </div>
+
+      <div class="hero-actions">
+        <a href="#selected" class="btn btn-solid magnetic" data-mag><span class="btn-text">selected systems ↓</span></a>
+        <a href="fractal-cognition.html" class="btn btn-ghost magnetic" data-mag><span class="btn-text">read Fractal thesis →</span></a>
+        <a href="resume.html" class="btn btn-ghost magnetic mono" data-mag><span class="btn-text">résumé</span></a>
+      </div>
+
+      <div class="hero-traits">
+        <div class="trait"><span>systems</span><strong>Fractal — continuous cognition for live markets</strong></div>
+        <div class="trait"><span>venture</span><strong>AuditLayer — agentic competitive intelligence</strong></div>
+        <div class="trait"><span>research</span><strong>Spatial reasoning at NYU WIRELESS</strong></div>
+        <div class="trait"><span>stack</span><strong>Rust · Python · PyTorch · RL · hardware</strong></div>
+      </div>
+    </div>
+
+    <div class="hero-right" aria-hidden="true">
+      <div class="hero-orb-wrap">
+        <div class="hero-orb">
+          <div class="orb-ring r1"></div>
+          <div class="orb-ring r2"></div>
+          <div class="orb-ring r3"></div>
+          <div class="orb-core"></div>
+          <div class="orb-labels">
+            <span style="--a:0">perception</span>
+            <span style="--a:72">workspace</span>
+            <span style="--a:144">allocation</span>
+            <span style="--a:216">execution</span>
+            <span style="--a:288">memory</span>
+          </div>
+        </div>
+      </div>
+      <div class="hero-side-note">
+        <span class="sn-k">field</span>
+        <span class="sn-v">flow particles · contour lines · cursor lens · resists low-res dither. respects reduced-motion.</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-bottom-rule">
+    <span>ASHESH KAJI — COGNITIVE SYSTEMS — NYU TANDON</span>
+    <span id="heroScrollAccum">0%</span>
+  </div>
+</section>
+
+<!-- SELECTED SYSTEMS -->
+<section class="chapter chapter-contrast" id="selected">
+  <div class="chapter-inner">
+    <div class="chapter-heading">
+      <div class="chapter-label-row">
+        <span class="chapter-num">01</span>
+        <span class="eyebrow">selected systems</span>
+      </div>
+      <h2 class="chapter-title">Four systems I stand behind.</h2>
+      <p class="chapter-lede">No auto-generated repository grid. Curated work with a thesis, a current state, and a direct artifact.</p>
+    </div>
+
+    <div class="systems-list" id="systemsList">
+
+      <article class="system-row" data-system="fractal" tabindex="0">
+        <div class="sys-num"><span>01</span><span class="sys-year">2025 →</span></div>
+        <div class="sys-main">
+          <h3 class="sys-title"><span class="sys-title-solid">Fractal</span> <span class="sys-title-italic">Cognition</span></h3>
+          <p class="sys-thesis">A continuous cognitive agent for live markets — perception, workspace, allocation, execution, and auditable memory. Built to behave like a junior employee with ongoing awareness, not a dashboard you poke.</p>
+          <div class="sys-tags"><span>flagship</span><span>live operator</span><span>RL-native</span><span>auditable</span></div>
+        </div>
+        <div class="sys-aperture">
+          <div class="ap-canvas" data-ap="fractal">
+            <svg class="ap-svg" viewBox="0 0 240 120" aria-hidden="true">
+              <circle cx="120" cy="60" r="40" fill="none" stroke="currentColor" stroke-opacity="0.2" stroke-dasharray="4 6"/>
+              <circle cx="120" cy="60" r="22" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+              <g class="ap-nodes"><circle cx="120" cy="14" r="3"/><circle cx="163" cy="43" r="3"/><circle cx="155" cy="92" r="3"/><circle cx="85" cy="92" r="3"/><circle cx="77" cy="43" r="3"/></g>
+            </svg>
+          </div>
+        </div>
+        <div class="sys-meta">
+          <span class="sys-status"><i></i>active · live</span>
+          <a href="fractal-cognition.html" class="sys-link magnetic" data-mag><span class="btn-text">open thesis ↗</span></a>
+        </div>
+      </article>
+
+      <article class="system-row" data-system="auditlayer" tabindex="0">
+        <div class="sys-num"><span>02</span><span class="sys-year">2024 →</span></div>
+        <div class="sys-main">
+          <h3 class="sys-title"><span class="sys-title-solid">Audit</span><span class="sys-title-italic">Layer</span></h3>
+          <p class="sys-thesis">Competitive intelligence as an agentic production system — research, synthesis, and client-ready reports. Designed end-to-end from data collection through to a polished portal.</p>
+          <div class="sys-tags"><span>venture</span><span>agents</span><span>production</span></div>
+        </div>
+        <div class="sys-aperture">
+          <div class="ap-canvas" data-ap="auditlayer">
+            <div class="ap-mock-report">
+              <span class="ap-bar" style="width:78%"></span>
+              <span class="ap-bar" style="width:46%"></span>
+              <span class="ap-bar" style="width:62%"></span>
+              <span class="ap-bar" style="width:91%"></span>
+            </div>
+          </div>
+        </div>
+        <div class="sys-meta">
+          <span class="sys-status">venture · in production</span>
+          <a href="https://auditlayer.media" target="_blank" rel="noopener" class="sys-link magnetic" data-mag><span class="btn-text">auditlayer.media ↗</span></a>
+        </div>
+      </article>
+
+      <article class="system-row" data-system="spatial" tabindex="0">
+        <div class="sys-num"><span>03</span><span class="sys-year">2025 →</span></div>
+        <div class="sys-main">
+          <h3 class="sys-title"><span class="sys-title-solid">Spatial</span> <span class="sys-title-italic">Intelligence</span></h3>
+          <p class="sys-thesis">Research on learned spatial reasoning and grounding across 3D environments — retrieval under viewpoint change, object matching, and how agents build persistent world models.</p>
+          <div class="sys-tags"><span>research</span><span>NYU WIRELESS</span><span>3D grounding</span></div>
+        </div>
+        <div class="sys-aperture">
+          <div class="ap-canvas" data-ap="spatial">
+            <svg class="ap-svg" viewBox="0 0 240 120" aria-hidden="true">
+              <g stroke="currentColor" fill="none" opacity="0.5">
+                <circle cx="70" cy="60" r="28" stroke-dasharray="2 5"/><circle cx="150" cy="55" r="34" stroke-opacity="0.3"/>
+                <rect x="95" y="35" width="48" height="48" rx="4" stroke-opacity="0.35"/>
+                <line x1="70" y1="60" x2="150" y2="55" stroke-dasharray="5 5"/>
+              </g>
+            </svg>
+          </div>
+        </div>
+        <div class="sys-meta">
+          <span class="sys-status">research · in progress</span>
+          <a href="https://github.com/ashesh8500" class="sys-link magnetic" data-mag><span class="btn-text">research shelf ↗</span></a>
+        </div>
+      </article>
+
+      <article class="system-row" data-system="zkphire" tabindex="0">
+        <div class="sys-num"><span>04</span><span class="sys-year">2024 →</span></div>
+        <div class="sys-main">
+          <h3 class="sys-title"><span class="sys-title-solid">Systems</span> <span class="sys-title-italic">Thesis</span></h3>
+          <p class="sys-thesis">Treating portfolio allocation as a layered optimization problem — walk-forward validation, regime detection, attractiveness scoring, and full provenance. Physics of decision-making under uncertainty.</p>
+          <div class="sys-tags"><span>research</span><span>optimization</span><span>quant</span></div>
+        </div>
+        <div class="sys-aperture">
+          <div class="ap-canvas" data-ap="thesis">
+            <svg class="ap-svg" viewBox="0 0 240 120" aria-hidden="true">
+              <polyline points="10,90 40,66 80,72 120,36 160,48 195,18 230,22" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" opacity="0.6"/>
+              <circle cx="120" cy="36" r="3" fill="currentColor" opacity="0.8"/>
+            </svg>
+          </div>
+        </div>
+        <div class="sys-meta">
+          <span class="sys-status">writing</span>
+          <a href="fractal-cognition-live-trader-explainer.html" class="sys-link magnetic" data-mag><span class="btn-text">live trader explainer ↗</span></a>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- NOW -->
+<section class="chapter" id="signal">
+  <div class="chapter-inner signal-grid">
+    <div class="signal-left">
+      <div class="chapter-label-row">
+        <span class="chapter-num">02</span>
+        <span class="eyebrow">now — july 2026</span>
+      </div>
+      <h2 class="chapter-title">What I'm<br><em>tuned</em> to.</h2>
+      <p class="signal-note">Current alignment, not a bio paragraph.</p>
+    </div>
+    <div class="signal-right">
+      <div class="signal-block">
+        <span class="signal-k">MS · NYU Tandon · Computer Engineering</span>
+        <p>Systems, ML infrastructure, and hardware–software co-design. Focused on environments for training continuous cognitive agents — moving beyond static classifiers toward sequential, reward-driven decision systems.</p>
+      </div>
+      <div class="signal-block">
+        <span class="signal-k">Fractal · continuous cognition</span>
+        <p>A live financial operator built around one gap: the difference between a daily LLM briefing and a junior employee with actual awareness. Perception, workspace, allocation, execution, and a decision journal you can audit. The interesting question isn't if it trades — it's whether continuous cognition can be observed as work.</p>
+        <a href="fractal-cognition.html" class="inline-link">open explainer →</a>
+      </div>
+      <div class="signal-block">
+        <span class="signal-k">Spatial Reasoning · NYU WIRELESS</span>
+        <p>With the wireless lab — retrieval and grounding when viewpoint drops, how landmarks survive severe change, and RAG object-matching trained with JEPA-style objectives. Embodied perception meets language.</p>
+      </div>
+      <div class="signal-block">
+        <span class="signal-k">AuditLayer · co-founder</span>
+        <p>Competitive intelligence for social brands. Agentic research → client reports that look like they were made by humans who care. The whole pipeline is the product.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRAJECTORY -->
+<section class="chapter chapter-contrast" id="trajectory">
+  <div class="chapter-inner">
+    <div class="chapter-label-row">
+      <span class="chapter-num">03</span>
+      <span class="eyebrow">trajectory</span>
+    </div>
+    <h2 class="chapter-title">Where this came from.</h2>
+
+    <div class="trajectory-table" role="list">
+      <div class="traj-row" role="listitem">
+        <span class="traj-date">2026 → present</span>
+        <span class="traj-role">Consulting AI Engineer — <em>SageX Global</em></span>
+        <span class="traj-desc">AI tooling, LLM deployment, data transformation, production MLOps.</span>
+      </div>
+      <div class="traj-row" role="listitem">
+        <span class="traj-date">2024 → 2026</span>
+        <span class="traj-role">AI Engineer — <em>SageX Global</em></span>
+        <span class="traj-desc">LLM and SLM workflows, semantic retrieval, multimodal pipelines.</span>
+      </div>
+      <div class="traj-row" role="listitem">
+        <span class="traj-date">2026 → 2027</span>
+        <span class="traj-role">MS Computer Engineering — <em>NYU Tandon</em></span>
+        <span class="traj-desc">Graduate focus in systems and ML infrastructure.</span>
+      </div>
+      <div class="traj-row" role="listitem">
+        <span class="traj-date">2022 → 2025</span>
+        <span class="traj-role">Undergraduate Research Assistant — <em>UC San Diego, Dr. Mary Boyle's Lab</em></span>
+        <span class="traj-desc">UK BioBank & ABCD — iron metabolism, NAFLD, neurodegeneration, metal exposure, MRI.</span>
+      </div>
+      <div class="traj-row" role="listitem">
+        <span class="traj-date">2023 → 2024</span>
+        <span class="traj-role">ML Intern — <em>UniQreate</em></span>
+        <span class="traj-desc">RAG in production, vector DBs, Azure, serverless local-model deployment.</span>
+      </div>
+      <div class="traj-row" role="listitem">
+        <span class="traj-date">2021 → 2025</span>
+        <span class="traj-role">BS with Honors, Cognitive Science — <em>UC San Diego</em></span>
+        <span class="traj-desc">ML and Neural Computation specialization. Honors around metal exposure & brain imaging.</span>
+      </div>
+    </div>
+
+    <div class="traj-stack">
+      <span class="traj-stack-label">stack</span>
+      <p>Python · Rust · PyTorch · TypeScript · Linux · Docker · Azure & AWS · WebGPU / ONNX · FPGA / Vitis HLS · Vector DBs · RAG · RL — Gymnasium, PufferLib · Language: English / Gujarati / Hindi</p>
+    </div>
+  </div>
+</section>
+
+<!-- ARCHIVE -->
+<section class="chapter" id="archive">
+  <div class="chapter-inner shelf-grid">
+    <div>
+      <div class="chapter-label-row">
+        <span class="chapter-num">04</span>
+        <span class="eyebrow">research shelf</span>
+      </div>
+      <h2 class="chapter-title">Archive,<br>papers, and<br>experiments.</h2>
+      <p class="chapter-lede">The homepage is the argument. The archive is the library — papers, explainers, invitations, résumé.</p>
+    </div>
+
+    <div class="shelf-links">
+      <a href="archive.html" class="shelf-card magnetic" data-mag>
+        <span class="shelf-card-k">/archive</span>
+        <span class="shelf-card-title">Full project shelf</span>
+        <span class="shelf-card-desc">Complete inventory. No curation filter.</span>
+      </a>
+      <a href="fractal-cognition.html" class="shelf-card magnetic" data-mag>
+        <span class="shelf-card-k">/fractal-cognition</span>
+        <span class="shelf-card-title">Fractal Cognition — explainer</span>
+        <span class="shelf-card-desc">11 sections, diagrams, live data.</span>
+      </a>
+      <a href="fractal-cognition-live-trader-explainer.html" class="shelf-card magnetic" data-mag>
+        <span class="shelf-card-k">/fractal-live</span>
+        <span class="shelf-card-title">Live trader walkthrough</span>
+        <span class="shelf-card-desc">Allocation thesis and decision ledger.</span>
+      </a>
+      <a href="resume.html" class="shelf-card magnetic" data-mag>
+        <span class="shelf-card-k">/résumé</span>
+        <span class="shelf-card-title">Résumé — printable</span>
+        <span class="shelf-card-desc">Single page. Print-ready.</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer class="colophon">
+  <div class="colophon-inner">
+    <div class="colophon-rule"></div>
+    <div class="colophon-grid">
+      <div class="colophon-brand">
+        <span class="colophon-name">ASHESH KAJI</span>
+        <span class="colophon-meta">personal internet world<br>pure HTML, CSS, JS<br>GitHub Pages<br>field: ascii-bg.js</span>
+      </div>
+      <div class="colophon-col">
+        <span class="colophon-k">reach</span>
+        <a href="mailto:ashesh8500@gmail.com">ashesh8500@gmail.com</a>
+        <a href="https://github.com/ashesh8500" target="_blank" rel="noopener">GitHub</a>
+      </div>
+      <div class="colophon-col">
+        <span class="colophon-k">surface</span>
+        <a href="#thesis">thesis</a>
+        <a href="#selected">selected</a>
+        <a href="#signal">now</a>
+        <a href="#trajectory">trajectory</a>
+        <a href="archive.html">archive</a>
+      </div>
+      <div class="colophon-col">
+        <span class="colophon-k">assistant</span>
+        <span class="colophon-assistant-note">Answers from site context as Ashesh. Local Bonsai or remote fallback. <kbd>⌘K</kbd> anywhere.</span>
+        <button class="colophon-cmd-btn" id="footerCmdBtn">open command ⌘K</button>
+      </div>
+    </div>
+    <div class="colophon-bottom">
+      <span>© 2026 Ashesh Kaji · Syne, Fraunces, Sora, JetBrains Mono · no trackers</span>
+      <span id="footerTime">—</span>
+    </div>
+  </div>
 </footer>
 
-<script src="assets/js/main.js?v=13"></script>
-<script type="module" src="assets/js/prisml-chat.js?v=13"></script>
-<script src="assets/js/companion.js?v=13"></script>
+<div id="legacyChatMount" hidden aria-hidden="true"></div>
+<script type="module" src="assets/js/main.js?v=16"></script>
+<script type="module" src="assets/js/prisml-chat.js?v=16"></script>
 </body>
 </html>
