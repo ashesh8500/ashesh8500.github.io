@@ -6,7 +6,7 @@
  * - local time
  * - hero reveal
  * - system-row → field hooks
- * - palette assistant: remote deepseek via CF worker + local Bonsai reuse
+ * - palette assistant: remote DeepSeek via Cloudflare Worker
  * - NO github repo fetch — curated selected systems only
  */
 
@@ -14,7 +14,8 @@ const DEEPSEEK_ENDPOINT = "https://deepseek-proxy.ashesh8500.workers.dev";
 const DEEPSEEK_MODEL = "deepseek-v4-flash";
 
 const PROFILE_CONTEXT = `
-You answer as Ashesh Kaji in first person on Ashesh Kaji's personal website asheshkaji.com.
+You are the project guide on Ashesh Kaji's personal website asheshkaji.com.
+Refer to Ashesh in the third person; do not impersonate him or claim to speak on his behalf.
 Answer only from the factual context below and from the visible website content.
 If asked about something not in this context, say clearly that you do not know from the published site.
 Do not invent roles, links, numbers, or private details. Keep answers concise.
@@ -37,7 +38,7 @@ Trajectory:
 `;
 
 const D = {};
-let inferenceMode = sessionStorage.getItem('hermes_inference_mode') || 'deepseek';
+const inferenceMode = 'deepseek';
 let generating = false;
 let bubbleEl = null;
 let accumText = '';
@@ -66,8 +67,7 @@ function boot() {
   D.paletteStatus = qs('#paletteStatus');
   D.pfDot = qs('#pfDot');
   D.pfModel = qs('#pfModel');
-  D.pfLoadLocal = qs('#pfLoadLocal');
-  D.pfUseRemote = qs('#pfUseRemote');
+
   D.cmdTrigger = qs('#cmdTrigger');
   D.footerCmdBtn = qs('#footerCmdBtn');
 
@@ -85,9 +85,7 @@ function boot() {
   window.companionOpenPanel = openPalette;
   window.__field?.clearSystem?.();
 
-  // listen for bonsai ready changes (prisml-chat.js fires window flags)
-  const iv = setInterval(() => { syncModeUI(); }, 1200);
-  D._bonsaiInterval = iv;
+
 }
 
 function initTime() {
@@ -243,24 +241,6 @@ function initPalette() {
     }
   });
 
-  D.pfLoadLocal?.addEventListener('click', () => {
-    setMode('bonsai');
-    // trigger existing bonsai loader if present
-    const btn = document.getElementById('chatLoadBtn');
-    if (btn) btn.click();
-    else {
-      // attempt to init via prisml-chat lazy load if model not present
-      // prisml-chat exposes open agent but model loads from ask section which we removed;
-      // so we still attempt to use window.__bonsaiReady
-      D.paletteInput.focus();
-      addPaletteMessage('system', 'Local Bonsai: loading from existing bundle. If this fails, the full local section lives at the old /archive chat path.');
-    }
-  });
-  D.pfUseRemote?.addEventListener('click', () => {
-    setMode('deepseek');
-    D.paletteInput.focus();
-  });
-
   D.paletteInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
       e.preventDefault();
@@ -327,7 +307,7 @@ function addPaletteMessage(role, text, returnBubble) {
   row.className = 'pc-msg ' + norm;
   const av = document.createElement('div');
   av.className = 'pc-av ' + norm;
-  av.textContent = norm === 'user' ? 'YOU' : 'AK';
+  av.textContent = norm === 'user' ? 'YOU' : 'SITE';
   const bub = document.createElement('div');
   bub.className = 'pc-bubble ' + norm;
   bub.innerHTML = norm === 'user' ? esc(text) : renderMd(text);
@@ -345,73 +325,14 @@ async function submitAsk(text) {
   const t = text.trim();
   addPaletteMessage('user', t);
   D.paletteInput.value = '';
-
-  if (inferenceMode === 'bonsai') {
-    return submitBonsai(t);
-  } else {
-    return submitRemote(t);
-  }
+  return submitRemote(t);
 }
 
 function syncModeUI() {
-  const bonsaiReady = !!window.__bonsaiReady;
-  if (D.pfDot) { D.pfDot.classList.toggle('on', bonsaiReady || inferenceMode === 'bonsai'); }
-  if (D.pfModel) {
-    if (bonsaiReady) D.pfModel.textContent = 'local Bonsai ready · ' + (window._bonsaiModelName || '1.7B q1');
-    else if (inferenceMode === 'bonsai') D.pfModel.textContent = 'local Bonsai loading...';
-    else D.pfModel.textContent = 'remote ready — ' + DEEPSEEK_MODEL;
-  }
+  if (D.pfDot) D.pfDot.classList.add('on');
+  if (D.pfModel) D.pfModel.textContent = 'remote ready — ' + DEEPSEEK_MODEL;
   if (D.paletteModelBadge) D.paletteModelBadge.textContent = inferenceMode;
-  if (D.paletteStatus) D.paletteStatus.textContent = inferenceMode === 'bonsai' ? 'local Bonsai · published project context' : 'remote · published project context';
-
-  // status dot
-  const dots = [D.pfDot, qs('#pfDot')].filter(Boolean);
-  dots.forEach(d => {
-    if (inferenceMode === 'bonsai' && !bonsaiReady) { d.style.background = '#C6A15B'; }
-    else if (inferenceMode === 'bonsai') { d.style.background = ''; }
-  });
-}
-
-function setMode(m) {
-  inferenceMode = m;
-  sessionStorage.setItem('hermes_inference_mode', m);
-  syncModeUI();
-}
-
-function submitBonsai(text) {
-  if (!window.__bonsaiReady || !window._bonsaiWorker) {
-    addPaletteMessage('system error', 'Local Bonsai model is not ready. Use "use remote" below or load it via the bundle. No simulated answer will be given.');
-    return Promise.resolve();
-  }
-  generating = true;
-  accumText = '';
-  bubbleEl = addPaletteMessage('assistant', '');
-  if (window.__field) window.__field.setIntensity(0.42);
-
-  return new Promise((resolve) => {
-    const cb = (data) => {
-      if (data.type === 'start') {
-        if (window.__field) window.__field.setIntensity(0.38);
-      } else if (data.type === 'update') {
-        if (bubbleEl) bubbleEl.innerHTML = renderMd(data.accumulated);
-        scrollChat();
-      } else if (data.type === 'complete') {
-        if (bubbleEl && !bubbleEl.textContent) bubbleEl.innerHTML = renderMd(data.text);
-        generating = false; bubbleEl = null;
-        window.__bonsaiTokenCallbacks = window.__bonsaiTokenCallbacks.filter(c => c !== cb);
-        if (window.__field) window.__field.setIntensity(1);
-        resolve();
-      } else if (data.type === 'error') {
-        addPaletteMessage('system error', 'Bonsai error: ' + esc(data.message || 'unknown'));
-        generating = false; bubbleEl = null;
-        window.__bonsaiTokenCallbacks = window.__bonsaiTokenCallbacks.filter(c => c !== cb);
-        if (window.__field) window.__field.setIntensity(1);
-        resolve();
-      }
-    };
-    window.__bonsaiTokenCallbacks.push(cb);
-    window._bonsaiWorker.postMessage({ type: 'generate', data: [{ role: 'system', content: PROFILE_CONTEXT }, { role: 'user', content: text }] });
-  });
+  if (D.paletteStatus) D.paletteStatus.textContent = 'remote · published project context';
 }
 
 async function submitRemote(text) {

@@ -14,11 +14,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400;1,9..144,500&family=Syne:wght@600;700;800&family=Sora:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/style.css?v=20">
+<link rel="stylesheet" href="assets/css/style.css?v=22">
 </head>
 <body>
 
-<script src="assets/js/ascii-bg.js?v=20"></script>
+<script src="assets/js/ascii-bg.js?v=22"></script>
 
 <nav class="topbar" id="topbar">
   <div class="topbar-inner">
@@ -31,54 +31,13 @@
       <span class="topbar-now"><i class="live-dot"></i><span id="localTime">—:—</span> NYC · <em id="currentFocus">thesis</em></span>
     </div>
     <div class="topbar-right">
-      <button class="topbar-cmd" id="cmdTrigger" aria-label="Open command palette">
-        <span class="cmd-kbd">⌘K</span><span class="cmd-label">command</span>
-      </button>
+      <a class="topbar-cmd" href="Ashesh_Kaji_Resume.pdf" aria-label="Open résumé PDF">
+        <span class="cmd-label">résumé</span><span class="cmd-kbd">↗</span>
+      </a>
     </div>
   </div>
   <div class="topbar-progress"><div class="topbar-progress-fill" id="progressFill"></div></div>
 </nav>
-
-<div class="palette-backdrop" id="paletteBackdrop" hidden></div>
-<div class="palette" id="palette" hidden role="dialog" aria-modal="true" aria-label="Command palette">
-  <div class="palette-header">
-    <span class="palette-eye">◈</span>
-    <input type="text" id="paletteInput" class="palette-input" placeholder="ask from site context, or jump to..." autocomplete="off" spellcheck="false">
-    <span class="palette-hint">ESC</span>
-  </div>
-  <div class="palette-body">
-    <div class="palette-section" id="paletteQuick">
-      <div class="palette-label">jump</div>
-      <button type="button" data-jump="selected">→ selected systems</button>
-      <button type="button" data-jump="signal">→ now</button>
-      <button type="button" data-jump="trajectory">→ trajectory</button>
-      <button type="button" data-jump="archive">→ archive</button>
-    </div>
-    <div class="palette-section" id="paletteContext">
-      <div class="palette-label">ask from site context</div>
-      <div class="palette-suggestions">
-        <button type="button" data-ask="What are you building right now?">what are you building right now?</button>
-        <button type="button" data-ask="What is Fractal?">what is Fractal?</button>
-        <button type="button" data-ask="What is AuditLayer?">what is AuditLayer?</button>
-        <button type="button" data-ask="What is your research background?">research background?</button>
-      </div>
-    </div>
-    <div class="palette-chat" id="paletteChat" hidden>
-      <div class="palette-chat-log" id="paletteChatLog"></div>
-      <div class="palette-chat-meta">
-        <span class="palette-model-badge" id="paletteModelBadge">remote</span>
-        <span class="palette-status" id="paletteStatus">site context · project Q&amp;A</span>
-      </div>
-    </div>
-  </div>
-  <div class="palette-footer">
-    <span class="pf-left"><span class="pf-dot" id="pfDot"></span><span id="pfModel">remote ready</span></span>
-    <span class="pf-right">
-      <button class="pf-action" id="pfLoadLocal">load local</button>
-      <button class="pf-action" id="pfUseRemote">use remote</button>
-    </span>
-  </div>
-</div>
 
 <!-- HERO -->
 <section class="hero" id="thesis">
@@ -403,9 +362,9 @@
         <a href="archive.html">archive</a>
       </div>
       <div class="colophon-col">
-        <span class="colophon-k">assistant</span>
-        <span class="colophon-assistant-note">Project Q&amp;A from published site context. Local Bonsai or remote fallback. <kbd>⌘K</kbd> anywhere.</span>
-        <button class="colophon-cmd-btn" id="footerCmdBtn">open command ⌘K</button>
+        <span class="colophon-k">materials</span>
+        <a href="Ashesh_Kaji_Resume.pdf">résumé PDF</a>
+        <a href="portfolio/systemopt/">quant research study</a>
       </div>
     </div>
     <div class="colophon-bottom">
@@ -415,8 +374,6 @@
   </div>
 </footer>
 
-<div id="legacyChatMount" hidden aria-hidden="true"></div>
-<script type="module" src="assets/js/main.js?v=20"></script>
-<script type="module" src="assets/js/prisml-chat.js?v=20"></script>
+<script type="module" src="assets/js/main.js?v=22"></script>
 </body>
 </html>
