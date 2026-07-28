@@ -1,399 +1,91 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resume — Ashesh Kaji</title>
-    <meta name="description" content="Ashesh Kaji — AI Engineer & MS Computer Engineering @ NYU. Quantitative research, portfolio optimization, RL, FPGA acceleration.">
-    <meta property="og:title" content="Resume — Ashesh Kaji">
-    <meta property="og:description" content="AI Engineer & MS Computer Engineering @ NYU. Portfolio optimization, RL, FPGA hardware, and production ML systems.">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://asheshkaji.com/resume.html">
-    <meta name="theme-color" content="#0d1117">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📄</text></svg>">
-    <link rel="stylesheet" href="assets/css/style.css">
-    <style>
-        .resume-page {
-            max-width: 850px;
-            margin: 0 auto;
-            padding: 80px 24px;
-        }
-        
-        .resume-header {
-            text-align: center;
-            margin-bottom: 48px;
-            padding-bottom: 32px;
-            border-bottom: 1px solid var(--border-subtle);
-        }
-        
-        .resume-header h1 {
-            font-family: var(--font-mono);
-            font-size: 28px;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 8px;
-        }
-        
-        .resume-header .contact {
-            font-family: var(--font-mono);
-            font-size: 13px;
-            color: var(--text-secondary);
-        }
-        
-        .resume-header .contact a {
-            color: var(--accent-teal);
-        }
-        
-        .resume-section {
-            margin-bottom: 36px;
-        }
-        
-        .resume-section-title {
-            font-family: var(--font-mono);
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--accent-teal);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 16px;
-            padding-bottom: 6px;
-            border-bottom: 1px solid var(--border-subtle);
-        }
-        
-        .resume-item {
-            margin-bottom: 22px;
-        }
-        
-        .resume-item-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 4px;
-        }
-        
-        .resume-item-title {
-            font-family: var(--font-mono);
-            font-size: 15px;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-        
-        .resume-item-subtitle {
-            font-size: 14px;
-            color: var(--accent-teal);
-        }
-        
-        .resume-item-date {
-            font-family: var(--font-mono);
-            font-size: 12px;
-            color: var(--text-muted);
-        }
-        
-        .resume-item-desc {
-            font-size: 14px;
-            color: var(--text-secondary);
-            line-height: 1.7;
-            margin-top: 4px;
-        }
-        
-        .resume-item-desc ul {
-            list-style: none;
-            padding: 0;
-        }
-        
-        .resume-item-desc li {
-            padding-left: 16px;
-            position: relative;
-            margin-bottom: 4px;
-        }
-        
-        .resume-item-desc li::before {
-            content: '›';
-            position: absolute;
-            left: 0;
-            color: var(--accent-teal);
-            font-weight: 700;
-        }
-        
-        .skills-bar {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-        
-        .skills-bar span {
-            font-family: var(--font-mono);
-            font-size: 12px;
-            padding: 4px 12px;
-            border-radius: 4px;
-            background: var(--bg-card);
-            border: 1px solid var(--border-subtle);
-            color: var(--text-secondary);
-        }
-        
-        .back-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            font-family: var(--font-mono);
-            font-size: 13px;
-            color: var(--text-muted);
-            margin-bottom: 40px;
-            transition: color var(--transition-fast);
-        }
-        
-        .back-link:hover { color: var(--accent-teal); }
-        
-        @media print {
-            body { background: white; color: black; font-size: 12px; }
-            .resume-section-title { color: #333; border-color: #ccc; }
-            .resume-item-title { color: #111; }
-            .resume-item-subtitle { color: #444; }
-            .resume-item-desc { color: #333; }
-            .resume-item-date { color: #666; }
-            .back-link { display: none; }
-            .nav { display: none; }
-            .resume-page { padding: 20px 0; }
-            .skills-bar span { border-color: #ccc; color: #333; }
-        }
-    </style>
+<meta charset="utf-8">
+<title>Ashesh Kaji — ML/AI Systems Resume</title>
+<style>
+@page { size: Letter; margin: 0.48in 0.55in; }
+* { box-sizing: border-box; }
+body { margin: 0; color: #111; font-family: Arial, Helvetica, sans-serif; font-size: 10pt; line-height: 1.22; }
+a { color: #111; text-decoration: none; }
+h1 { margin: 0; font-size: 21pt; line-height: 1; letter-spacing: -0.35px; }
+.header { text-align: center; margin-bottom: 7px; }
+.contact { margin-top: 3px; font-size: 9pt; }
+.tagline { margin-top: 4px; font-size: 10pt; font-weight: 700; }
+section { margin-top: 7px; }
+h2 { margin: 0 0 3px; border-bottom: 1.2px solid #111; font-size: 10.5pt; line-height: 1.15; letter-spacing: 0.7px; text-transform: uppercase; }
+.item { margin: 0 0 5px; break-inside: avoid; }
+.row { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; }
+.role { font-weight: 700; }
+.org { font-style: italic; }
+.date { flex: none; font-size: 8.7pt; }
+ul { margin: 1px 0 0 14px; padding: 0; }
+li { margin: 0 0 1px; padding-left: 1px; }
+.edu-line, .skills-line { margin: 1px 0; }
+.label { font-weight: 700; }
+.note { font-size: 8pt; color: #333; }
+</style>
 </head>
 <body>
+<header class="header">
+  <h1>Ashesh Kaji</h1>
+  <div class="tagline">ML/AI Systems Engineer &amp; Technical Founder</div>
+  <div class="contact">New York, NY · <a href="mailto:ashesh8500@gmail.com">ashesh8500@gmail.com</a> · +1 (858) 308-6586 · <a href="https://asheshkaji.com">asheshkaji.com</a> · <a href="https://github.com/ashesh8500">github.com/ashesh8500</a></div>
+</header>
 
-<nav class="nav" id="nav">
-    <div class="nav-inner">
-        <a href="/" class="nav-logo">~/ashesh <span>// resume</span></a>
-        <ul class="nav-links">
-            <li><a href="index.html">← back to portfolio</a></li>
-        </ul>
-    </div>
-</nav>
-
-<div class="resume-page">
-    <a href="index.html" class="back-link">← Back to portfolio</a>
-    
-    <div class="resume-header">
-        <h1>Ashesh Kaji</h1>
-        <div class="contact">
-            New York, NY · 
-            <a href="mailto:ashesh8500@gmail.com">ashesh8500@gmail.com</a> · 
-            <a href="mailto:ask9184@nyu.edu">ask9184@nyu.edu</a> · 
-            +1 (858) 308-6586 · 
-            <a href="https://asheshkaji.com">asheshkaji.com</a> ·
-            <a href="https://github.com/ashesh8500">github.com/ashesh8500</a>
-        </div>
-    </div>
-
-    <!-- EDUCATION -->
-    <div class="resume-section">
-        <div class="resume-section-title">Education</div>
-        
-        <div class="resume-item">
-            <div class="resume-item-header">
-                <div>
-                    <div class="resume-item-title">MS in Computer Engineering</div>
-                    <div class="resume-item-subtitle">NYU Tandon School of Engineering</div>
-                </div>
-                <div class="resume-item-date">01/2026 – 12/2027 (expected)</div>
-            </div>
-            <div class="resume-item-desc">
-                Coursework: System Optimization Methods, Computer Systems Architecture, Special Topics in Computer Engineering. Research focus: portfolio optimization as layered control, convex optimization, reinforcement learning for financial decision-making.
-            </div>
-        </div>
-        
-        <div class="resume-item">
-            <div class="resume-item-header">
-                <div>
-                    <div class="resume-item-title">BS with Honors in Cognitive Science</div>
-                    <div class="resume-item-subtitle">Specialization in Machine Learning and Neural Computation · UC San Diego</div>
-                </div>
-                <div class="resume-item-date">09/2021 – 06/2025</div>
-            </div>
-            <div class="resume-item-desc">
-                Honors thesis on statistical modeling of environmental exposures and neuroimaging data. Coursework: Deep Learning, Reinforcement Learning, Probability & Statistics, Linear Algebra, Algorithms.
-            </div>
-        </div>
-    </div>
-
-    <!-- WORK EXPERIENCE -->
-    <div class="resume-section">
-        <div class="resume-section-title">Work Experience</div>
-        
-        <div class="resume-item">
-            <div class="resume-item-header">
-                <div>
-                    <div class="resume-item-title">Consulting AI Engineer</div>
-                    <div class="resume-item-subtitle">SageX Global · Remote</div>
-                </div>
-                <div class="resume-item-date">01/2026 – Present</div>
-            </div>
-            <div class="resume-item-desc">
-                <ul>
-                    <li>Architect and deploy production AI infrastructure: LLM serving pipelines, MCP (Model Context Protocol) servers, and agent orchestration systems with LangChain and AI-SDK</li>
-                    <li>Design custom data transformation and fine-tuning strategies across multi-modal data lifecycle requirements</li>
-                    <li>Build and maintain ACP-compliant agent communication protocols for distributed AI systems</li>
-                </ul>
-                <div class="skills-bar" style="margin-top:8px;">
-                    <span>LangChain</span><span>AI-SDK</span><span>ACP</span><span>MCP Servers</span><span>Python</span><span>Rust</span><span>Docker</span><span>Cloudflare Workers</span><span>Azure</span><span>AWS</span>
-                </div>
-            </div>
-        </div>
-        
-        <div class="resume-item">
-            <div class="resume-item-header">
-                <div>
-                    <div class="resume-item-title">Artificial Intelligence Engineer</div>
-                    <div class="resume-item-subtitle">SageX Global · Remote</div>
-                </div>
-                <div class="resume-item-date">09/2024 – 01/2026 · 1 year full-time</div>
-            </div>
-            <div class="resume-item-desc">
-                <ul>
-                    <li>Led development of multiple production AI products: LLMs, small language models (SLMs), statistical mapping models, and semantic database memory retrieval systems</li>
-                    <li>Designed end-to-end data pipelines for fine-tuning and deploying models with rigorous evaluation methodology</li>
-                    <li>Built RAG systems integrating vector databases with serverless deployment on Azure and AWS</li>
-                </ul>
-                <div class="skills-bar" style="margin-top:8px;">
-                    <span>PyTorch</span><span>Scikit-Learn</span><span>Azure</span><span>AWS</span><span>MLOps</span><span>NLP</span><span>RAG</span><span>LLMs</span><span>Vector Databases</span>
-                </div>
-            </div>
-        </div>
-        
-        <div class="resume-item">
-            <div class="resume-item-header">
-                <div>
-                    <div class="resume-item-title">Machine Learning Intern</div>
-                    <div class="resume-item-subtitle">UniQreate · Remote</div>
-                </div>
-                <div class="resume-item-date">09/2023 – 07/2024</div>
-            </div>
-            <div class="resume-item-desc">
-                <ul>
-                    <li>Built and deployed a production RAG system for document intelligence using LLMs, vector databases, and serverless cloud infrastructure on Azure</li>
-                    <li>Designed data extraction pipelines with rapid versioning, architecture design, and production testing cycles</li>
-                </ul>
-                <div class="skills-bar" style="margin-top:8px;">
-                    <span>Python</span><span>PyTorch</span><span>Azure (Blob + Serverless)</span><span>RAG</span><span>LLMs</span><span>Vector DBs</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="resume-item">
-            <div class="resume-item-header">
-                <div>
-                    <div class="resume-item-title">Undergraduate Research Assistant</div>
-                    <div class="resume-item-subtitle">UC San Diego · Dr. Mary Boyle's Lab · San Diego, CA</div>
-                </div>
-                <div class="resume-item-date">10/2022 – 06/2025</div>
-            </div>
-            <div class="resume-item-desc">
-                <ul>
-                    <li>Applied statistical modeling (regression, causal inference) to analyze UK BioBank and ABCD Study datasets for relationships between biomarkers and neuroimaging outcomes</li>
-                    <li>Developed reproducible analysis pipelines in Python using NumPy, Pandas, and Statsmodels for epidemiology research</li>
-                </ul>
-                <div class="skills-bar" style="margin-top:8px;">
-                    <span>Python</span><span>NumPy</span><span>Pandas</span><span>Statsmodels</span><span>Statistical Modeling</span><span>Epidemiology</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- RESEARCH & PROJECTS -->
-    <div class="resume-section">
-        <div class="resume-section-title">Research & Projects</div>
-        
-        <div class="resume-item">
-            <div class="resume-item-title" style="font-size:14px;">Portfolio Allocation as Layered System Optimization</div>
-            <div class="resume-item-desc">
-                End-to-end quantitative research pipeline for portfolio construction. Designed a walk-forward backtesting engine with convex quadratic programming (Markowitz with ℓ₁ turnover penalty), regime detection via statistical jump models, and a policy-gradient reinforcement learning router for dynamic strategy selection. Modeled multi-agent competition for liquidity as a Nash equilibrium problem using iterative best-response with crowding penalties. Validated across top-100, top-250, and top-500 equity universes with provenance-ledger tracking to eliminate look-ahead bias.
-                <br><strong>Tech:</strong> Python, cvxpy, NumPy/SciPy, PyTorch, PufferLib, Nautilus Trader, D3.js
-                <br><a href="projects/system-optimization-methods.html">Research presentation ↗</a>
-                &nbsp;·&nbsp;
-                <a href="https://asheshkaji.com/system-optimization-portfolio-research/final_project/presentation/">Interactive D3 demo ↗</a>
-                &nbsp;·&nbsp;
-                <a href="https://github.com/ashesh8500/fractal" target="_blank" rel="noopener">github.com/ashesh8500/fractal ↗</a>
-            </div>
-        </div>
-        
-        <div class="resume-item">
-            <div class="resume-item-title" style="font-size:14px;">zkPHIRE: Zero-Knowledge Proof Accelerator on FPGA</div>
-            <div class="resume-item-desc">
-                Implemented a paper-parity hardware accelerator for the zkPHIRE SumCheck protocol on Xilinx PYNQ-Z2 (Zynq-7020). Designed Montgomery multiplier units to reduce DSP utilization from 200+ to 8-12 per multiplier. Built a fused update+extension pipeline with banked scratchpads for memory-efficient MLE evaluation. Optimized resource allocation to fit within 220 DSP and 280 BRAM constraints using Vitis HLS and SystemVerilog.
-                <br><strong>Tech:</strong> Vitis HLS, SystemVerilog, C++, Python, Vivado, FPGA (Xilinx Zynq-7020)
-                <br><em>Independent research project — paper reference: zkPHIRE (HPCA 2026)</em>
-            </div>
-        </div>
-        
-        <div class="resume-item">
-            <div class="resume-item-title" style="font-size:14px;">RL-Based Autonomous Driving</div>
-            <div class="resume-item-desc">
-                Deep reinforcement learning for autonomous driving using the CARLA simulator. Implemented and compared policy gradient methods, DQN variants, and sim-to-real transfer strategies with real-world sensor data integration.
-                <br><strong>Tech:</strong> Python, PyTorch, CARLA, OpenAI Gym
-                <br><a href="https://github.com/ashesh8500/fp185" target="_blank" rel="noopener">github.com/ashesh8500/fp185 ↗</a>
-            </div>
-        </div>
-        
-        <div class="resume-item">
-            <div class="resume-item-title" style="font-size:14px;">MediaSync — High-Performance Media Pipeline</div>
-            <div class="resume-item-desc">
-                Local-first media library pipeline: content-aware deduplication with SHA-256, hardware-accelerated transcoding to MP4, and batched cloud upload. Built in Rust with a terminal UI for large-scale photo/video library management.
-                <br><strong>Tech:</strong> Rust, FFmpeg, rclone, terminal UI
-                <br><a href="https://github.com/ashesh8500/mediasync" target="_blank" rel="noopener">github.com/ashesh8500/mediasync ↗</a>
-            </div>
-        </div>
-        
-        <div class="resume-item">
-            <div class="resume-item-title" style="font-size:14px;">Personal Website with On-Device AI Companion</div>
-            <div class="resume-item-desc">
-                Portfolio site with a browser-native AI assistant running a 1-bit quantized Bonsai-1.7B ONNX model on WebGPU. Built a Cloudflare Worker proxy for DeepSeek API with rate limiting and SSE streaming. Inference toggle between local WebGPU and cloud models.
-                <br><strong>Tech:</strong> JavaScript, ONNX Runtime Web, WebGPU, Cloudflare Workers, Transformers.js
-                <br><a href="https://asheshkaji.com">asheshkaji.com ↗</a>
-            </div>
-        </div>
-    </div>
-
-    <!-- TECHNICAL SKILLS -->
-    <div class="resume-section">
-        <div class="resume-section-title">Technical Skills</div>
-        
-        <div class="resume-item-desc" style="margin-bottom: 12px;"><strong>Languages:</strong></div>
-        <div class="skills-bar" style="margin-bottom: 16px;">
-            <span>Python</span><span>Rust</span><span>C/C++</span><span>SystemVerilog</span><span>JavaScript</span><span>SQL</span><span>Bash</span>
-        </div>
-        
-        <div class="resume-item-desc" style="margin-bottom: 12px;"><strong>ML & Quantitative Research:</strong></div>
-        <div class="skills-bar" style="margin-bottom: 16px;">
-            <span>PyTorch</span><span>Scikit-Learn</span><span>NumPy/SciPy</span><span>Pandas</span><span>cvxpy</span><span>Statsmodels</span>
-            <span>PufferLib (RL)</span><span>Nautilus Trader</span><span>Reinforcement Learning</span>
-            <span>Convex Optimization</span><span>Walk-Forward Backtesting</span><span>D3.js</span>
-        </div>
-        
-        <div class="resume-item-desc" style="margin-bottom: 12px;"><strong>FPGA & Hardware:</strong></div>
-        <div class="skills-bar" style="margin-bottom: 16px;">
-            <span>Vitis HLS</span><span>Vivado</span><span>Xilinx Zynq</span><span>FPGA Design</span><span>ONNX Runtime</span><span>WebGPU</span>
-        </div>
-        
-        <div class="resume-item-desc" style="margin-bottom: 12px;"><strong>Infrastructure & MLOps:</strong></div>
-        <div class="skills-bar" style="margin-bottom: 16px;">
-            <span>Docker</span><span>Git</span><span>AWS</span><span>Azure</span><span>Cloudflare Workers</span>
-            <span>LangChain</span><span>AI-SDK</span><span>MCP/ACP</span><span>RAG</span><span>Vector Databases</span>
-            <span>LLMs</span><span>GitHub Actions</span>
-        </div>
-    </div>
-
-    <!-- LANGUAGES -->
-    <div class="resume-section">
-        <div class="resume-section-title">Languages</div>
-        <div class="skills-bar">
-            <span>English — Native/Bilingual</span>
-            <span>Gujarati — Native/Bilingual</span>
-            <span>Hindi — Native/Bilingual</span>
-        </div>
-    </div>
+<section>
+<h2>Experience</h2>
+<div class="item">
+  <div class="row"><div><span class="role">Technical Cofounder</span> — <span class="org">AuditLayer</span></div><div class="date">2026–Present</div></div>
+  <ul>
+    <li>Own technical development of a competitive-intelligence product that turns public social and competitor data into evidence-backed audits for wellness creators.</li>
+    <li>Built the production Next.js, Supabase/Postgres, and Python worker architecture: authenticated intake, queued agent runs, event logs, private report storage, billing state, and founder review controls.</li>
+    <li>Separated deterministic orchestration from agentic research; implemented bounded execution, source provenance, account isolation, failure states, and reproducible report delivery.</li>
+  </ul>
 </div>
+<div class="item">
+  <div class="row"><div><span class="role">Consulting AI Engineer / Artificial Intelligence Engineer</span> — <span class="org">SageX Global</span></div><div class="date">Sep 2024–Present</div></div>
+  <ul>
+    <li>Built production-oriented LLM/SLM, semantic retrieval, and multimodal data workflows spanning data transformation, model adaptation, evaluation, and deployment.</li>
+    <li>Designed fine-tuning and data-lifecycle pipelines using Python, PyTorch/scikit-learn, vector databases, and Azure/AWS infrastructure.</li>
+    <li>Integrated RAG and semantic-memory systems into serverless product workflows while working across modeling, API, and operational constraints.</li>
+  </ul>
+</div>
+<div class="item">
+  <div class="row"><div><span class="role">Machine Learning Intern</span> — <span class="org">UniQreate</span></div><div class="date">Sep 2023–Jul 2024</div></div>
+  <ul><li>Built and deployed an LLM-powered document-intelligence and chat pipeline using retrieval, vector databases, Azure Blob Storage, and serverless infrastructure.</li></ul>
+</div>
+</section>
 
-<script src="assets/js/main.js"></script>
+<section>
+<h2>Selected Research &amp; Engineering</h2>
+<div class="item">
+  <div class="row"><div><span class="role">Runtime Object Association for Embodied Agents</span> — <span class="org">NYU WIRELESS</span></div><div class="date">2026</div></div>
+  <ul>
+    <li>Developed a leakage-controlled object-association experiment using runtime-available visual, geometric, and graph features; evaluated 2,400 train / 186 validation / 771 test candidates under clean and pose-noisy conditions.</li>
+    <li>Measured threshold F1 of 0.598 with clean pose and 0.484 with injected pose noise; documented class balance, strict-threshold coverage, pseudo-label precision, ablations, and failure modes.</li>
+  </ul>
+</div>
+<div class="item">
+  <div class="row"><div><span class="role">Undergraduate Research Assistant</span> — <span class="org">UC San Diego</span></div><div class="date">Oct 2022–Jun 2025</div></div>
+  <ul>
+    <li>Analyzed longitudinal biomedical and neuroimaging data with Python, NumPy/Pandas, Statsmodels, GEE, family clustering, and reproducible command-line workflows.</li>
+    <li>Completed an honors thesis studying adolescent nicotine use and impulsivity in ABCD Study data (N=9,562).</li>
+  </ul>
+</div>
+</section>
+
+<section>
+<h2>Education</h2>
+<div class="row edu-line"><div><span class="role">New York University, Tandon School of Engineering</span> — MS, Computer Engineering</div><div class="date">Expected Dec 2027</div></div>
+<div class="row edu-line"><div><span class="role">University of California San Diego</span> — BS with Honors, Cognitive Science; ML &amp; Neural Computation specialization</div><div class="date">Jun 2025</div></div>
+<div class="edu-line">GPA: 3.75/4.00 · Provost Honors · Honors thesis</div>
+</section>
+
+<section>
+<h2>Technical Skills</h2>
+<div class="skills-line"><span class="label">ML &amp; research:</span> Python, PyTorch, scikit-learn, NumPy/SciPy, Pandas, Statsmodels, LLMs, RAG, evaluation, reinforcement learning, statistical modeling</div>
+<div class="skills-line"><span class="label">Systems:</span> Rust, C/C++, TypeScript/JavaScript, SQL, Linux, Docker, Git, gRPC, Supabase/Postgres, Azure, AWS, Cloudflare</div>
+</section>
 </body>
 </html>

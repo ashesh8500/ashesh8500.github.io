@@ -32,10 +32,10 @@ Only use the context below and visible site content. If outside it, say you don'
 No invented roles, links, or private numbers. Keep answers concise.
 
 - MS Computer Engineering, NYU Tandon (2026–27). BS Honors Cognitive Science, ML & Neural Comp, UC San Diego (2021–25).
-- Selected: Fractal Cognition — continuous cognitive agent for live markets at /fractal-cognition.html; AuditLayer — agentic competitive intelligence at auditlayer.media; Spatial Intelligence — learned spatial reasoning at NYU WIRELESS; Systems Thesis — portfolio allocation as layered optimization.
+- Selected: Fractal Cognition — paper-trading research and decision infrastructure; AuditLayer — competitive intelligence for wellness creators at auditlayermedia.com; Spatial Intelligence — runtime object association under pose noise at NYU WIRELESS; Systems Thesis — portfolio allocation as layered optimization.
 - Work: SageX Global AI/Consulting AI Eng (2024→), UniQreate ML Intern (2023–24), UCSD neuroimaging RA (2022–25).
 - Stack: Python, Rust, PyTorch, TypeScript, Linux, Docker, WebGPU, FPGA.
-- Links: GitHub ashesh8500, email ashesh8500@gmail.com, résumé /resume.html, archive /archive.
+- Links: GitHub ashesh8500, email ashesh8500@gmail.com, résumé PDF /Ashesh_Kaji_Resume.pdf, archive /archive.
 `;
 
 const D = {};

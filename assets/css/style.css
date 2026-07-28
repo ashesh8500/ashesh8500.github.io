@@ -118,8 +118,8 @@ body::after{
 .ht-outline{color:transparent;-webkit-text-stroke:1.5px var(--bone);font-weight:800}
 .hero-title .ht-line span{transform:translateY(114%);transition:transform 980ms var(--ease-out)}
 .hero.reveal-in .ht-line:nth-child(1) span{transition-delay:60ms;transform:translateY(0)}
-.hero.reveal-in .ht-line:nth-child(2) span:first-child{transition-delay:160ms;transform:translateY(0)}
-.hero.reveal-in .ht-line:nth-child(2) span:last-child{transition-delay:260ms;transform:translateY(0)}
+.hero.reveal-in .ht-line:nth-child(2) span{transition-delay:160ms;transform:translateY(0)}
+.hero.reveal-in .ht-line:nth-child(3) span{transition-delay:260ms;transform:translateY(0)}
 .hero-thesis{max-width:580px;font-size:18px;line-height:1.64;letter-spacing:-.015em;color:var(--bone-dim)}
 .hero-thesis p + p{margin-top:16px}
 .hero-thesis em{font-family:var(--serif);font-style:italic;color:var(--bone);font-weight:400}
@@ -249,6 +249,8 @@ body::after{
 @media(max-width:640px){
   :root{--nav-h:52px}.topbar-inner{padding:0 14px}.hero{padding-top:calc(var(--nav-h) + 14px)}
   .hero-grid{padding-left:16px;padding-right:16px}.hero-field-note{display:none}
+  .hero-title{font-size:40px;line-height:.9;letter-spacing:-.05em;margin-bottom:24px}
+  .hero-title .ht-line span{transform:none!important;transition:none!important}
   .hero-bottom-rule{padding-left:16px;padding-right:16px;font-size:8px}
   .chapter{padding:72px 16px}.chapter-title{font-size:clamp(32px,9vw,44px)}
   .system-row{grid-template-columns:46px 1fr;gap:14px;padding:28px 0}.system-row:hover{transform:none}

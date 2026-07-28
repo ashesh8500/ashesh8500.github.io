@@ -3,7 +3,17 @@ import { setTimeout as delay } from 'node:timers/promises';
 import http from 'node:http';
 import fs from 'node:fs';
 
-const CHROME = process.env.CHROME_BIN || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
+const CHROME_CANDIDATES = [
+  process.env.CHROME_BIN,
+  '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+  '/usr/bin/google-chrome',
+  '/usr/bin/chromium',
+  '/snap/bin/chromium',
+].filter(Boolean);
+const CHROME = CHROME_CANDIDATES.find(candidate => fs.existsSync(candidate));
+if (!CHROME) {
+  throw new Error(`Chrome/Chromium not found; checked: ${CHROME_CANDIDATES.join(', ')}`);
+}
 const PORT = Number(process.env.CDP_PORT || 9337);
 const USER_DATA = process.env.CHROME_USER_DATA || '/tmp/ashesh-bonsai-chrome-profile';
 const URL = process.env.BONSAI_URL || 'http://127.0.0.1:8766/?bonsai-smoke=1';

@@ -23,16 +23,16 @@ Identity:
 - Ashesh Kaji — MS Computer Engineering, NYU Tandon (2026–27). BS with Honors in Cognitive Science, ML & Neural Computation, UC San Diego (2021–25).
 
 Selected work:
-- Fractal Cognition: a continuous cognitive agent for live markets — perception, workspace, allocation, execution, and an auditable decision journal. Built to behave like a junior employee with ongoing awareness, not a dashboard. Full writeup at /fractal-cognition.html
-- AuditLayer: competitive intelligence as an agentic production system — research → synthesis → client-ready reports. End-to-end product at auditlayer.media
-- Spatial Intelligence: research on learned spatial reasoning and grounding across 3D environments — how landmarks and object matches survive viewpoint change. NYU WIRELESS.
+- Fractal Cognition: a continuously running paper-trading research system with observations, allocation, risk gates, execution plumbing, and an auditable decision journal.
+- AuditLayer: competitive-intelligence software for wellness creators. Production product at auditlayermedia.com.
+- Spatial Intelligence: runtime object association across viewpoint and pose noise using visual, geometric, and graph features, with strict-threshold evaluation. NYU WIRELESS.
 - Systems Thesis: treating portfolio allocation as a layered optimization problem — walk-forward validation, regime detection, attractiveness, full provenance.
 
 Trajectory:
 - Consulting AI Engineer & AI Engineer at SageX Global (2024–present): LLM tooling, deployment, retrieval systems, MLOps.
 - ML Intern at UniQreate (2023–24): production RAG, vector DBs, Azure, serverless local-model deployment.
 - Undergrad Research Assistant at UC San Diego, Dr. Boyle's Lab (2022–25): neuroimaging, UK BioBank & ABCD.
-- Links: GitHub github.com/ashesh8500 · email ashesh8500@gmail.com · résumé /resume.html · archive /archive
+- Links: GitHub github.com/ashesh8500 · email ashesh8500@gmail.com · résumé PDF /Ashesh_Kaji_Resume.pdf · archive /archive
 - Stack: Python, Rust, PyTorch, TypeScript, Linux, Docker, WebGPU, FPGA, RL.
 `;
 
@@ -362,7 +362,7 @@ function syncModeUI() {
     else D.pfModel.textContent = 'remote ready — ' + DEEPSEEK_MODEL;
   }
   if (D.paletteModelBadge) D.paletteModelBadge.textContent = inferenceMode;
-  if (D.paletteStatus) D.paletteStatus.textContent = inferenceMode === 'bonsai' ? 'local Bonsai · site context · answers as Ashesh' : 'remote · site context · answers as Ashesh';
+  if (D.paletteStatus) D.paletteStatus.textContent = inferenceMode === 'bonsai' ? 'local Bonsai · published project context' : 'remote · published project context';
 
   // status dot
   const dots = [D.pfDot, qs('#pfDot')].filter(Boolean);
