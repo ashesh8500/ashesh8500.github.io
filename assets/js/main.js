@@ -92,10 +92,10 @@ function initChapters() {
 
       const labels = {
         thesis: 'thesis',
-        selected: 'selected systems',
+        selected: 'selected projects',
         signal: 'current work',
-        trajectory: 'trajectory',
-        archive: 'archive / research shelf'
+        trajectory: 'experience and education',
+        archive: 'research and materials'
       };
       const activeLabel = labels[activeId] || activeId;
       if (D.markChapter) D.markChapter.textContent = activeLabel;
