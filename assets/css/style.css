@@ -3,8 +3,6 @@
    Void #070A0A / Bone #F5F1E6 / Dust signal #9FB3A6 → much quieter
    ===================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300;1,9..144,400;1,9..144,500&family=JetBrains+Mono:wght@400;500;600&family=Sora:wght@300;400;500;600;700&family=Syne:wght@600;700;800&display=swap');
-
 :root {
   --void: #080C0A;
   --void-2: #101614;
@@ -154,15 +152,15 @@ body::after{
 .trait strong{font:500 12.8px/1.45 var(--mono);color:var(--bone-muted);font-weight:500}
 .hero-right{position:sticky;top:calc(var(--nav-h) + 28px);display:flex;flex-direction:column;gap:20px;align-items:flex-end}
 .hero-orb-wrap{width:min(100%,400px);aspect-ratio:1;position:relative}
-.hero-orb{position:absolute;inset:2%;border-radius:50%}
-.hero-orb .orb-ring{position:absolute;inset:0;border-radius:50%;border:1px dashed}
-.hero-orb .r1{inset:3%;border-color:rgba(163,184,168,.18);animation:orbit 48s linear infinite}
-.hero-orb .r2{inset:20%;border-color:rgba(245,241,230,.10);animation:orbit 32s linear reverse infinite}
-.hero-orb .r3{inset:38%;border-color:rgba(245,241,230,.06);animation:orbit 22s linear infinite}
-@keyframes orbit{to{transform:rotate(360deg)}}
-.hero-orb .orb-core{position:absolute;left:50%;top:50%;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;background:var(--signal);box-shadow:0 0 16px var(--signal-glow)}
-.hero-orb .orb-labels{position:absolute;inset:0}
-.hero-orb .orb-labels span{position:absolute;left:50%;top:50%;font:700 8px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--bone-faint);white-space:nowrap;transform:translate(-50%,-50%) rotate(calc(var(--a)*1deg)) translateY(-180px) rotate(calc(var(--a)*-1deg))}
+.hero-signal-card{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:28px 24px;border:1px solid var(--line);border-radius:16px;background:rgba(16,22,20,.72);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.hsc-header{display:flex;align-items:center;gap:8px;margin-bottom:18px}
+.hsc-dot{width:7px;height:7px;border-radius:50%;background:var(--signal);opacity:.8}.hsc-dot.active{animation:dot-pulse 2.2s ease-in-out infinite}
+@keyframes dot-pulse{0%,100%{opacity:.4}50%{opacity:1}}
+.hsc-label{font:700 9px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--bone-faint)}
+.hsc-list{display:grid;gap:10px}
+.hsc-row{display:flex;align-items:baseline;justify-content:space-between;gap:14px;padding:9px 0;border-bottom:1px solid var(--line)}.hsc-row:last-child{border-bottom:0}
+.hsc-name{font:600 14px/1.1 var(--sans);color:var(--bone);letter-spacing:-.01em}
+.hsc-meta{font:500 10.5px/1 var(--mono);color:var(--bone-faint);text-align:right;white-space:nowrap}
 .hero-side-note{display:grid;grid-template-columns:44px 1fr;gap:10px;max-width:380px;text-align:left;border-left:1px solid var(--line);padding-left:14px}
 .sn-k{font:700 10px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--signal)}
 .sn-v{font:500 11.2px/1.55 var(--mono);color:var(--bone-faint)}
@@ -278,7 +276,7 @@ body::after{
 }
 @media(prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}.hero-title .ht-line span{transform:none!important;transition:none!important}
-  .hero-orb .orb-ring{animation:none!important}.system-row,.sys-aperture,.btn,.shelf-card{transition:none!important;transform:none!important}
+  .hsc-dot{animation:none!important}.system-row,.sys-aperture,.btn,.shelf-card{transition:none!important;transform:none!important}
   .system-row:hover{transform:none!important}
   .site-cursor-dot,.site-cursor-ring{display:none!important}
 }
