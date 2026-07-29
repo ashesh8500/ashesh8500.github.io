@@ -4,390 +4,292 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Expires" content="0">
-<title>Ashesh Kaji | ML Systems Engineer & Technical Founder</title>
-<meta name="description" content="Ashesh Kaji is an ML systems engineer and technical founder working across production LLM systems, spatial reasoning, and empirical optimization research.">
+<title>Ashesh Kaji</title>
+<meta name="description" content="Ashesh Kaji — computer engineering at NYU Tandon. ML systems, spatial reasoning, and empirical research.">
 <meta property="og:title" content="Ashesh Kaji">
-<meta property="og:description" content="Production LLM systems, spatial reasoning under pose noise, and walk-forward optimization research.">
+<meta property="og:description" content="Computer engineering at NYU Tandon. ML systems, spatial reasoning, and empirical research.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://asheshkaji.com">
 <meta name="theme-color" content="#080C0A">
 <link rel="icon" href="assets/favicon.ico">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400;1,9..144,500&family=Syne:wght@600;700;800&family=Sora:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/style.css?v=24">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&family=Syne:wght@600;700;800&family=Sora:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css?v=30">
 </head>
 <body>
 
-<script src="assets/js/ascii-bg.js?v=24"></script>
+<script src="assets/js/ascii-bg.js?v=30"></script>
+
+<!-- Floating dither orb + chat -->
+<div class="companion" id="companion">
+  <div class="companion-speech" id="companionSpeech" hidden>
+    <p>Ask from published context.</p>
+  </div>
+  <div class="companion-stack">
+    <button type="button" class="companion-avatar state-idle" id="companionAvatar" title="Site assistant — ⌘K" aria-label="Open site assistant">
+      <canvas class="orb-canvas" id="orbCanvas" width="160" height="160" aria-hidden="true"></canvas>
+      <span class="orb-ring" aria-hidden="true"></span>
+    </button>
+    <div class="orb-meter" id="orbMeter" aria-hidden="true">
+      <span class="orb-meter-bar" id="orbMeterBar">░░░░░░░░░░</span>
+      <span class="orb-meter-label" id="orbMeterLabel">idle</span>
+    </div>
+  </div>
+</div>
+
+<div class="chat-panel" id="chatPanel" hidden>
+  <div class="chat-panel-header">
+    <div class="cp-title-area">
+      <span class="cp-live" aria-hidden="true"></span>
+      <span class="cp-status-line" id="cpStatusLine">site context</span>
+      <span class="cp-model-badge" id="cpModelBadge">remote</span>
+    </div>
+    <button type="button" class="chat-panel-close" id="chatPanelClose" aria-label="Close chat">✕</button>
+  </div>
+  <div class="cp-messages" id="cpMessages">
+    <div class="cp-message system">
+      <div class="cp-avatar system">AK</div>
+      <div class="cp-bubble system">Answers from published site context only. Unknown stays unknown.</div>
+    </div>
+  </div>
+  <div class="cp-suggestions" id="cpSuggestions" aria-label="Suggested prompts">
+    <button type="button" data-suggest="What are you studying?">study</button>
+    <button type="button" data-suggest="What are your main projects?">projects</button>
+    <button type="button" data-suggest="What is your research background?">research</button>
+    <button type="button" data-suggest="How do I reach you?">contact</button>
+  </div>
+  <div class="cp-input-area">
+    <input type="text" class="cp-input" id="cpInput" placeholder="Ask from site context…" aria-label="Chat message" autocomplete="off">
+    <button type="button" class="cp-send-btn" id="cpSendBtn">send</button>
+  </div>
+</div>
 
 <nav class="topbar" id="topbar">
   <div class="topbar-inner">
-    <a class="topbar-mark" href="#" id="topbarMark">
-      <span class="mark-main" id="markMain">ASHESH KAJI</span>
+    <a class="topbar-mark" href="#top" id="topbarMark">
+      <span class="mark-main">ASHESH KAJI</span>
       <span class="mark-chapter" id="markChapter" aria-live="polite"></span>
-      <span class="mark-dot"></span>
     </a>
-    <div class="topbar-mid" id="topbarMid">
-      <span class="topbar-now"><i class="live-dot"></i><span id="localTime">—:—</span> NYC · <em id="currentFocus">thesis</em></span>
+    <div class="topbar-mid">
+      <span class="live-dot" aria-hidden="true"></span>
+      <span id="localTime">—:—</span>
+      <span class="topbar-sep">·</span>
+      <span>NYC</span>
     </div>
     <div class="topbar-right">
-      <a class="topbar-cmd" href="Ashesh_Kaji_Resume.pdf" aria-label="Open résumé PDF">
-        <span class="cmd-label">résumé</span><span class="cmd-kbd">↗</span>
+      <button type="button" class="topbar-cmd" id="openAssistant" aria-label="Open assistant">
+        <span class="cmd-label">ask</span>
+        <span class="cmd-kbd">⌘K</span>
+      </button>
+      <a class="topbar-cmd" href="Ashesh_Kaji_Resume.pdf">
+        <span class="cmd-label">résumé</span>
+        <span class="cmd-kbd">↗</span>
       </a>
     </div>
   </div>
   <div class="topbar-progress"><div class="topbar-progress-fill" id="progressFill"></div></div>
 </nav>
 
-<!-- HERO -->
-<section class="hero" id="thesis">
-  <div class="hero-field-note" aria-hidden="true">
-    <span>ML/AI SYSTEMS · TECHNICAL FOUNDER · EMPIRICAL RESEARCH</span>
-  </div>
+<main id="top">
 
-  <div class="hero-grid">
-    <div class="hero-left">
-      <div class="hero-meta-top">
-        <span class="eyebrow"><i class="live-dot"></i>personal site · new york · 2026</span>
-      </div>
-
-      <h1 class="hero-title">
-        <span class="ht-line"><span class="ht-solid">ML</span></span>
-        <span class="ht-line"><span class="ht-solid">systems</span></span>
-        <span class="ht-line"><span class="ht-italic">engineer.</span></span>
+  <!-- HERO: brand first, one composition -->
+  <section class="hero" id="intro">
+    <div class="hero-inner">
+      <p class="hero-kicker eyebrow">NYU Tandon · computer engineering · 2026</p>
+      <h1 class="hero-name">
+        <span class="hn-line"><span>Ashesh</span></span>
+        <span class="hn-line"><span class="hn-italic">Kaji</span></span>
       </h1>
-
-      <div class="hero-thesis">
-        <p>
-          Computer engineering graduate student at NYU Tandon and technical cofounder of AuditLayer.
-          Work spans production LLM systems, spatial reasoning, empirical optimization, and hardware-aware computing.
-        </p>
-        <p>
-          BS with Honors in Cognitive Science, Machine Learning and Neural Computation from
-          UC San Diego, with prior research using UK Biobank and ABCD neuroimaging data.
-        </p>
-        <p class="hero-thesis-muted">
-          Selected projects, experience, education, and public technical materials are listed below.
-        </p>
-      </div>
-
+      <p class="hero-line">ML systems, spatial reasoning, and empirical research.</p>
+      <p class="hero-copy">
+        Graduate student at NYU Tandon. Previously cognitive science and neural computation at UC San Diego.
+        Building production software and research systems that stay inspectable.
+      </p>
       <div class="hero-actions">
-        <a href="#selected" class="btn btn-solid magnetic" data-mag><span class="btn-text">selected work ↓</span></a>
-        <a href="Ashesh_Kaji_Resume.pdf" class="btn btn-ghost magnetic" data-mag><span class="btn-text">résumé PDF →</span></a>
-        <a href="https://github.com/ashesh8500" class="btn btn-ghost magnetic mono" data-mag><span class="btn-text">GitHub</span></a>
-      </div>
-
-      <div class="hero-traits">
-        <div class="trait"><span>systems</span><strong>Fractal · paper-trading research and decision infrastructure</strong></div>
-        <div class="trait"><span>product</span><strong>AuditLayer · competitive-intelligence software for wellness creators</strong></div>
-        <div class="trait"><span>research</span><strong>Spatial reasoning at NYU WIRELESS</strong></div>
-        <div class="trait"><span>methods</span><strong>Python · Rust · PyTorch · optimization · hardware</strong></div>
+        <a href="#work" class="btn btn-solid magnetic" data-mag><span class="btn-text">selected work</span></a>
+        <a href="Ashesh_Kaji_Resume.pdf" class="btn btn-ghost magnetic" data-mag><span class="btn-text">résumé</span></a>
+        <button type="button" class="btn btn-ghost magnetic" data-mag id="heroAsk"><span class="btn-text">ask the orb</span></button>
       </div>
     </div>
+    <div class="hero-foot" aria-hidden="true">
+      <span>scroll</span>
+      <span class="hero-foot-bar">────────</span>
+    </div>
+  </section>
 
-    <div class="hero-right" aria-hidden="true">
-      <div class="hero-orb-wrap">
-        <div class="hero-signal-card">
-          <div class="hsc-header">
-            <span class="hsc-dot active"></span>
-            <span class="hsc-label">active systems</span>
+  <!-- WORK: clean list, no decorative diagrams -->
+  <section class="section" id="work">
+    <div class="section-inner">
+      <header class="section-head">
+        <span class="eyebrow">selected work</span>
+        <h2 class="section-title">Things I’m building.</h2>
+      </header>
+
+      <div class="work-list">
+        <article class="work-row">
+          <div class="work-meta">
+            <span class="work-year">2025 →</span>
+            <span class="work-status live">active</span>
           </div>
-          <div class="hsc-list">
-            <div class="hsc-row">
-              <span class="hsc-name">Fractal</span>
-              <span class="hsc-meta">paper trading · research</span>
-            </div>
-            <div class="hsc-row">
-              <span class="hsc-name">AuditLayer</span>
-              <span class="hsc-meta">production · venture</span>
-            </div>
-            <div class="hsc-row">
-              <span class="hsc-name">Spatial</span>
-              <span class="hsc-meta">pose-noise · NYU WIRELESS</span>
-            </div>
-            <div class="hsc-row">
-              <span class="hsc-name">Systems Thesis</span>
-              <span class="hsc-meta">60-arm study · complete</span>
-            </div>
+          <div class="work-body">
+            <h3 class="work-title">Fractal Cognition</h3>
+            <p class="work-desc">Paper-trading research infrastructure — observations, allocation, risk, and an auditable decision journal. Profitability is not claimed.</p>
           </div>
-        </div>
-      </div>
-      <div class="hero-side-note">
-        <span class="sn-k">focus</span>
-        <span class="sn-v">production ML systems · optimization research · spatial reasoning · hardware-aware computing</span>
-      </div>
-    </div>
-  </div>
+          <a class="work-link magnetic" data-mag href="#now"><span class="btn-text">notes →</span></a>
+        </article>
 
-  <div class="hero-bottom-rule">
-    <span>ASHESH KAJI · ML SYSTEMS · NYU TANDON</span>
-    <span id="heroScrollAccum">0%</span>
-  </div>
-</section>
-
-<!-- SELECTED SYSTEMS -->
-<section class="chapter chapter-contrast" id="selected">
-  <div class="chapter-inner">
-    <div class="chapter-heading">
-      <div class="chapter-label-row">
-        <span class="chapter-num">01</span>
-        <span class="eyebrow">selected projects</span>
-      </div>
-      <h2 class="chapter-title">Selected work.</h2>
-      <p class="chapter-lede">Four current projects with their scope, status, methods, and available artifacts.</p>
-    </div>
-
-    <div class="systems-list" id="systemsList">
-
-      <article class="system-row" data-system="fractal" tabindex="0">
-        <div class="sys-num"><span>01</span><span class="sys-year">2025 →</span></div>
-        <div class="sys-main">
-          <h3 class="sys-title"><span class="sys-title-solid">Fractal</span> <span class="sys-title-italic">Cognition</span></h3>
-          <p class="sys-thesis">A paper-trading research system that records market observations, allocation and risk decisions, simulated execution, and the reasoning behind each run.</p>
-          <div class="sys-tags"><span>flagship</span><span>paper trading</span><span>research</span><span>auditable</span></div>
-        </div>
-        <div class="sys-aperture">
-          <div class="ap-canvas" data-ap="fractal">
-            <svg class="ap-svg" viewBox="0 0 240 120" aria-hidden="true">
-              <circle cx="120" cy="60" r="40" fill="none" stroke="currentColor" stroke-opacity="0.2" stroke-dasharray="4 6"/>
-              <circle cx="120" cy="60" r="22" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
-              <g class="ap-nodes"><circle cx="120" cy="14" r="3"/><circle cx="163" cy="43" r="3"/><circle cx="155" cy="92" r="3"/><circle cx="85" cy="92" r="3"/><circle cx="77" cy="43" r="3"/></g>
-            </svg>
+        <article class="work-row">
+          <div class="work-meta">
+            <span class="work-year">2024 →</span>
+            <span class="work-status live">live</span>
           </div>
-        </div>
-        <div class="sys-meta">
-          <span class="sys-status"><i></i>active · research</span>
-          <a href="#signal" class="sys-link magnetic" data-mag><span class="btn-text">current state ↘</span></a>
-        </div>
-      </article>
-
-      <article class="system-row" data-system="auditlayer" tabindex="0">
-        <div class="sys-num"><span>02</span><span class="sys-year">2024 →</span></div>
-        <div class="sys-main">
-          <h3 class="sys-title"><span class="sys-title-solid">Audit</span><span class="sys-title-italic">Layer</span></h3>
-          <p class="sys-thesis">Production software that turns public social data into sourced competitive audits for wellness creators. The pipeline covers intake, agent runs, evidence review, billing state, and private delivery.</p>
-          <div class="sys-tags"><span>venture</span><span>agents</span><span>production</span></div>
-        </div>
-        <div class="sys-aperture">
-          <div class="ap-canvas" data-ap="auditlayer">
-            <div class="ap-mock-report">
-              <span class="ap-bar" style="width:78%"></span>
-              <span class="ap-bar" style="width:46%"></span>
-              <span class="ap-bar" style="width:62%"></span>
-              <span class="ap-bar" style="width:91%"></span>
-            </div>
+          <div class="work-body">
+            <h3 class="work-title">AuditLayer</h3>
+            <p class="work-desc">Competitive-intelligence software for wellness creators. Intake, agent runs, evidence review, billing, private delivery.</p>
           </div>
-        </div>
-        <div class="sys-meta">
-          <span class="sys-status">venture · in production</span>
-          <a href="https://auditlayermedia.com" target="_blank" rel="noopener" class="sys-link magnetic" data-mag><span class="btn-text">auditlayermedia.com ↗</span></a>
-        </div>
-      </article>
+          <a class="work-link magnetic" data-mag href="https://auditlayermedia.com" target="_blank" rel="noopener"><span class="btn-text">site ↗</span></a>
+        </article>
 
-      <article class="system-row" data-system="spatial" tabindex="0">
-        <div class="sys-num"><span>03</span><span class="sys-year">2025 →</span></div>
-        <div class="sys-main">
-          <h3 class="sys-title"><span class="sys-title-solid">Spatial</span> <span class="sys-title-italic">Intelligence</span></h3>
-          <p class="sys-thesis">Runtime object association across changes in viewpoint and camera pose. Evaluation reports clean-pose performance, injected pose noise, coverage, and pseudo-label quality separately.</p>
-          <div class="sys-tags"><span>research</span><span>NYU WIRELESS</span><span>3D grounding</span></div>
-        </div>
-        <div class="sys-aperture">
-          <div class="ap-canvas" data-ap="spatial">
-            <svg class="ap-svg" viewBox="0 0 240 120" aria-hidden="true">
-              <g stroke="currentColor" fill="none" opacity="0.5">
-                <circle cx="70" cy="60" r="28" stroke-dasharray="2 5"/><circle cx="150" cy="55" r="34" stroke-opacity="0.3"/>
-                <rect x="95" y="35" width="48" height="48" rx="4" stroke-opacity="0.35"/>
-                <line x1="70" y1="60" x2="150" y2="55" stroke-dasharray="5 5"/>
-              </g>
-            </svg>
+        <article class="work-row">
+          <div class="work-meta">
+            <span class="work-year">2025 →</span>
+            <span class="work-status">research</span>
           </div>
-        </div>
-        <div class="sys-meta">
-          <span class="sys-status">research · in progress</span>
-          <a href="https://github.com/ashesh8500/habitat" class="sys-link magnetic" data-mag><span class="btn-text">research repo ↗</span></a>
-        </div>
-      </article>
-
-      <article class="system-row" data-system="systems-thesis" tabindex="0">
-        <div class="sys-num"><span>04</span><span class="sys-year">2024 →</span></div>
-        <div class="sys-main">
-          <h3 class="sys-title"><span class="sys-title-solid">Systems</span> <span class="sys-title-italic">Thesis</span></h3>
-          <p class="sys-thesis">A 60-arm walk-forward study of screening, weighting, and turnover costs across three portfolio universes. The study includes ablations, negative results, and deployment limits.</p>
-          <div class="sys-tags"><span>research</span><span>optimization</span><span>quant</span></div>
-        </div>
-        <div class="sys-aperture">
-          <div class="ap-canvas" data-ap="thesis">
-            <svg class="ap-svg" viewBox="0 0 240 120" aria-hidden="true">
-              <polyline points="10,90 40,66 80,72 120,36 160,48 195,18 230,22" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" opacity="0.6"/>
-              <circle cx="120" cy="36" r="3" fill="currentColor" opacity="0.8"/>
-            </svg>
+          <div class="work-body">
+            <h3 class="work-title">Spatial Intelligence</h3>
+            <p class="work-desc">Object association across viewpoint and pose change at NYU WIRELESS. Clean pose and injected-noise results reported separately.</p>
           </div>
+          <a class="work-link magnetic" data-mag href="https://github.com/ashesh8500/habitat"><span class="btn-text">repo ↗</span></a>
+        </article>
+
+        <article class="work-row">
+          <div class="work-meta">
+            <span class="work-year">2024</span>
+            <span class="work-status">complete</span>
+          </div>
+          <div class="work-body">
+            <h3 class="work-title">Systems Thesis</h3>
+            <p class="work-desc">Sixty-arm walk-forward study of screening, weighting, and turnover across three portfolio universes — including negative results.</p>
+          </div>
+          <a class="work-link magnetic" data-mag href="portfolio/systemopt/"><span class="btn-text">study ↗</span></a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- NOW: one short signal, not a second project dump -->
+  <section class="section section-alt" id="now">
+    <div class="section-inner now-grid">
+      <header class="section-head">
+        <span class="eyebrow">now · july 2026</span>
+        <h2 class="section-title">Current focus.</h2>
+      </header>
+      <div class="now-copy">
+        <p>
+          Graduate coursework in systems and hardware/software co-design at NYU Tandon,
+          while shipping AuditLayer and iterating Fractal’s decision journal.
+          Spatial evaluation at NYU WIRELESS continues under strict thresholds.
+        </p>
+        <p class="now-aside">
+          Stack in daily use: Python, Rust, PyTorch, TypeScript, Docker, Azure / AWS.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PATH: experience + education, one table -->
+  <section class="section" id="path">
+    <div class="section-inner">
+      <header class="section-head">
+        <span class="eyebrow">path</span>
+        <h2 class="section-title">Experience &amp; education.</h2>
+      </header>
+
+      <div class="path-list">
+        <div class="path-row">
+          <span class="path-when">2026 →</span>
+          <span class="path-what">Consulting AI Engineer · <em>SageX Global</em></span>
+          <span class="path-note">Tooling, deployment, production MLOps</span>
         </div>
-        <div class="sys-meta">
-          <span class="sys-status">research · complete</span>
-          <a href="portfolio/systemopt/" class="sys-link magnetic" data-mag><span class="btn-text">open study ↗</span></a>
+        <div class="path-row">
+          <span class="path-when">2026 → 27</span>
+          <span class="path-what">MS Computer Engineering · <em>NYU Tandon</em></span>
+          <span class="path-note">Systems, ML infrastructure, hardware co-design</span>
         </div>
-      </article>
-
-    </div>
-  </div>
-</section>
-
-<!-- NOW -->
-<section class="chapter" id="signal">
-  <div class="chapter-inner signal-grid">
-    <div class="signal-left">
-      <div class="chapter-label-row">
-        <span class="chapter-num">02</span>
-        <span class="eyebrow">current work · july 2026</span>
-      </div>
-      <h2 class="chapter-title">Current<br><em>work.</em></h2>
-      <p class="signal-note">Academic, research, and product work.</p>
-    </div>
-    <div class="signal-right">
-      <div class="signal-block">
-        <span class="signal-k">MS · NYU Tandon · Computer Engineering</span>
-        <p>Graduate study in systems, optimization, ML infrastructure, and hardware/software co-design, with an emphasis on reproducible evaluation.</p>
-      </div>
-      <div class="signal-block">
-        <span class="signal-k">Fractal · decision infrastructure</span>
-        <p>Paper-trading research infrastructure for observations, hypotheses, allocation, risk gates, simulated execution, and an auditable decision journal. Profitability has not been established.</p>
-      </div>
-      <div class="signal-block">
-        <span class="signal-k">Spatial Reasoning · NYU WIRELESS</span>
-        <p>Strict-threshold F1 is 0.598 with clean pose and 0.484 under injected pose noise. Coverage and pseudo-label quality are reported separately.</p>
-      </div>
-      <div class="signal-block">
-        <span class="signal-k">AuditLayer · co-founder</span>
-        <p>Competitive-intelligence software for wellness creators. The production architecture covers intake, agent orchestration, evidence provenance, private report delivery, billing state, and founder review controls.</p>
+        <div class="path-row">
+          <span class="path-when">2024 → 26</span>
+          <span class="path-what">AI Engineer · <em>SageX Global</em></span>
+          <span class="path-note">LLM / SLM workflows, retrieval, multimodal pipelines</span>
+        </div>
+        <div class="path-row">
+          <span class="path-when">2022 → 25</span>
+          <span class="path-what">Research Assistant · <em>UC San Diego</em></span>
+          <span class="path-note">UK Biobank &amp; ABCD neuroimaging</span>
+        </div>
+        <div class="path-row">
+          <span class="path-when">2023 → 24</span>
+          <span class="path-what">ML Intern · <em>UniQreate</em></span>
+          <span class="path-note">Production RAG, vector DBs, Azure</span>
+        </div>
+        <div class="path-row">
+          <span class="path-when">2021 → 25</span>
+          <span class="path-what">BS with Honors, Cognitive Science · <em>UC San Diego</em></span>
+          <span class="path-note">ML &amp; Neural Computation</span>
+        </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- TRAJECTORY -->
-<section class="chapter chapter-contrast" id="trajectory">
-  <div class="chapter-inner">
-    <div class="chapter-label-row">
-      <span class="chapter-num">03</span>
-      <span class="eyebrow">experience and education</span>
-      </div>
-      <h2 class="chapter-title">Experience and education.</h2>
-
-    <div class="trajectory-table" role="list">
-      <div class="traj-row" role="listitem">
-        <span class="traj-date">2026 → present</span>
-        <span class="traj-role">Consulting AI Engineer · <em>SageX Global</em></span>
-        <span class="traj-desc">AI tooling, model deployment, data transformation, and production MLOps.</span>
-      </div>
-      <div class="traj-row" role="listitem">
-        <span class="traj-date">2024 → 2026</span>
-        <span class="traj-role">AI Engineer · <em>SageX Global</em></span>
-        <span class="traj-desc">Built LLM and SLM workflows, semantic retrieval systems, and multimodal pipelines.</span>
-      </div>
-      <div class="traj-row" role="listitem">
-        <span class="traj-date">2026 → 2027</span>
-        <span class="traj-role">MS Computer Engineering · <em>NYU Tandon</em></span>
-        <span class="traj-desc">Systems, ML infrastructure, optimization, and hardware/software co-design.</span>
-      </div>
-      <div class="traj-row" role="listitem">
-        <span class="traj-date">2022 → 2025</span>
-        <span class="traj-role">Undergraduate Research Assistant · <em>UC San Diego, Dr. Mary Boyle's Lab</em></span>
-        <span class="traj-desc">UK BioBank and ABCD research on iron metabolism, NAFLD, neurodegeneration, metal exposure, and MRI.</span>
-      </div>
-      <div class="traj-row" role="listitem">
-        <span class="traj-date">2023 → 2024</span>
-        <span class="traj-role">ML Intern · <em>UniQreate</em></span>
-        <span class="traj-desc">RAG in production, vector DBs, Azure, serverless local-model deployment.</span>
-      </div>
-      <div class="traj-row" role="listitem">
-        <span class="traj-date">2021 → 2025</span>
-        <span class="traj-role">BS with Honors, Cognitive Science · <em>UC San Diego</em></span>
-        <span class="traj-desc">ML and Neural Computation specialization. Honors around metal exposure & brain imaging.</span>
+  <!-- LINKS -->
+  <section class="section section-alt" id="links">
+    <div class="section-inner">
+      <header class="section-head">
+        <span class="eyebrow">elsewhere</span>
+        <h2 class="section-title">More.</h2>
+      </header>
+      <div class="link-row">
+        <a href="archive.html" class="link-item magnetic" data-mag>
+          <span class="link-k">/archive</span>
+          <span class="link-t">Research notebook</span>
+        </a>
+        <a href="https://github.com/ashesh8500" class="link-item magnetic" data-mag>
+          <span class="link-k">/github</span>
+          <span class="link-t">Public code</span>
+        </a>
+        <a href="Ashesh_Kaji_Resume.pdf" class="link-item magnetic" data-mag>
+          <span class="link-k">/résumé</span>
+          <span class="link-t">One-page PDF</span>
+        </a>
+        <a href="mailto:ashesh8500@gmail.com" class="link-item magnetic" data-mag>
+          <span class="link-k">/mail</span>
+          <span class="link-t">ashesh8500@gmail.com</span>
+        </a>
       </div>
     </div>
+  </section>
 
-    <div class="traj-stack">
-      <span class="traj-stack-label">stack</span>
-      <p>Python · Rust · PyTorch · TypeScript · Linux · Docker · Azure and AWS · WebGPU / ONNX · FPGA / Vitis HLS · Vector DBs · RAG · RL (Gymnasium, PufferLib) · English / Gujarati / Hindi</p>
-    </div>
-  </div>
-</section>
+</main>
 
-<!-- ARCHIVE -->
-<section class="chapter" id="archive">
-  <div class="chapter-inner shelf-grid">
-    <div>
-      <div class="chapter-label-row">
-        <span class="chapter-num">04</span>
-        <span class="eyebrow">research and materials</span>
-      </div>
-      <h2 class="chapter-title">Research,<br>coursework, and<br>archive.</h2>
-      <p class="chapter-lede">Additional project pages, coursework, research presentations, public code, and résumé.</p>
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <span class="footer-name">ASHESH KAJI</span>
+      <span class="footer-meta">asheshkaji.com · HTML / CSS / JS · no trackers</span>
     </div>
-
-    <div class="shelf-links">
-      <a href="archive.html" class="shelf-card magnetic" data-mag>
-        <span class="shelf-card-k">/archive</span>
-        <span class="shelf-card-title">Research notebook</span>
-        <span class="shelf-card-desc">Exploratory work, coursework, and archived projects.</span>
-      </a>
-      <a href="portfolio/systemopt/" class="shelf-card magnetic" data-mag>
-        <span class="shelf-card-k">/system-optimization</span>
-        <span class="shelf-card-title">Layered allocation study</span>
-        <span class="shelf-card-desc">60-arm walk-forward study, ablations, and limitations.</span>
-      </a>
-      <a href="https://github.com/ashesh8500" class="shelf-card magnetic" data-mag>
-        <span class="shelf-card-k">/github</span>
-        <span class="shelf-card-title">Code and active projects</span>
-        <span class="shelf-card-desc">Public repositories and implementation history.</span>
-      </a>
-      <a href="Ashesh_Kaji_Resume.pdf" class="shelf-card magnetic" data-mag>
-        <span class="shelf-card-k">/résumé</span>
-        <span class="shelf-card-title">Printable résumé</span>
-        <span class="shelf-card-desc">Single page. Print-ready.</span>
-      </a>
+    <div class="footer-links">
+      <a href="https://github.com/ashesh8500">GitHub</a>
+      <a href="https://linkedin.com/in/ashesh-kaji-b5a3161b9">LinkedIn</a>
+      <a href="mailto:ashesh8500@gmail.com">Email</a>
     </div>
-  </div>
-</section>
-
-<footer class="colophon">
-  <div class="colophon-inner">
-    <div class="colophon-rule"></div>
-    <div class="colophon-grid">
-      <div class="colophon-brand">
-        <span class="colophon-name">ASHESH KAJI</span>
-        <span class="colophon-meta">personal internet world<br>pure HTML, CSS, JS<br>GitHub Pages<br>custom canvas engine</span>
-      </div>
-      <div class="colophon-col">
-        <span class="colophon-k">reach</span>
-        <a href="mailto:ashesh8500@gmail.com">ashesh8500@gmail.com</a>
-        <a href="https://github.com/ashesh8500" target="_blank" rel="noopener">GitHub</a>
-      </div>
-      <div class="colophon-col">
-        <span class="colophon-k">surface</span>
-        <a href="#thesis">thesis</a>
-        <a href="#selected">selected</a>
-        <a href="#signal">now</a>
-        <a href="#trajectory">trajectory</a>
-        <a href="archive.html">archive</a>
-      </div>
-      <div class="colophon-col">
-        <span class="colophon-k">materials</span>
-        <a href="Ashesh_Kaji_Resume.pdf">résumé PDF</a>
-        <a href="portfolio/systemopt/">quant research study</a>
-      </div>
-    </div>
-    <div class="colophon-bottom">
-      <span>© 2026 Ashesh Kaji · Syne, Fraunces, Sora, JetBrains Mono · no trackers</span>
+    <div class="footer-bottom">
+      <span>© 2026</span>
       <span id="footerTime">—</span>
     </div>
   </div>
 </footer>
 
-<script type="module" src="assets/js/main.js?v=24"></script>
+<script src="assets/js/companion.js?v=30"></script>
+<script type="module" src="assets/js/main.js?v=30"></script>
 </body>
 </html>
