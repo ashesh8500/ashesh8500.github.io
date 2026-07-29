@@ -1,504 +1,232 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="robots" content="noindex, nofollow">
-  <title>Archive — Ashesh Kaji</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-  <style>
-    
-    :root {
-      --bg-deep: #08090d;
-      --bg-primary: #0d1117;
-      --bg-card: rgba(19, 24, 32, 0.78);
-      --bg-card-hover: rgba(26, 31, 43, 0.85);
-      --accent-teal: #00d4aa;
-      --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
-      --font-sans: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
-      --text-primary: #e6edf3;
-      --text-secondary: #b0b8c4;
-      --text-muted: #8b949e;
-      --border-subtle: rgba(255,255,255,0.06);
-      --border-card: rgba(255,255,255,0.08);
-      --radius-sm: 6px;
-      --radius-md: 10px;
-      --radius-lg: 16px;
-      --transition-fast: 150ms ease;
-      --transition-smooth: 300ms ease;
-    }
-
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
-    body {
-      background: transparent;
-      color: var(--text-primary);
-      font-family: var(--font-sans);
-      -webkit-font-smoothing: antialiased;
-      line-height: 1.6;
-      min-height: 100vh;
-    }
-
-    /* ── Header ── */
-    .archive-header {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 4rem 2rem 2rem;
-    }
-
-    .back-link {
-      font-family: var(--font-mono);
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      margin-bottom: 1.5rem;
-      transition: color var(--transition-fast);
-    }
-    .back-link:hover { color: var(--accent-teal); }
-
-    .archive-title {
-      font-family: var(--font-mono);
-      font-size: clamp(2rem, 5vw, 3.5rem);
-      font-weight: 500;
-      color: var(--text-primary);
-      margin-bottom: 0.3rem;
-    }
-
-    .archive-subtitle {
-      font-family: var(--font-mono);
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      margin-bottom: 2rem;
-    }
-
-    .archive-subtitle span {
-      color: var(--accent-teal);
-    }
-
-    /* ── Stats bar ── */
-    .stats-bar {
-      display: flex;
-      gap: 1.5rem;
-      flex-wrap: wrap;
-      margin-bottom: 2rem;
-    }
-
-    .stat-pill {
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      padding: 0.3rem 0.8rem;
-      border-radius: 20px;
-      background: var(--bg-card);
-      border: 1px solid var(--border-card);
-      color: var(--text-secondary);
-    }
-    .stat-pill strong { color: var(--text-primary); }
-
-    /* ── Filters ── */
-    .filter-bar {
-      display: flex;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-      margin-bottom: 2.5rem;
-    }
-
-    .filter-btn {
-      font-family: var(--font-mono);
-      font-size: 0.75rem;
-      padding: 0.5rem 1.2rem;
-      border-radius: 24px;
-      border: 1px solid var(--border-card);
-      background: transparent;
-      color: var(--text-muted);
-      cursor: pointer;
-      transition: all var(--transition-fast);
-      white-space: nowrap;
-    }
-    .filter-btn:hover {
-      border-color: var(--accent-teal);
-      color: var(--text-primary);
-    }
-    .filter-btn.active {
-      background: rgba(0,212,170,0.12);
-      border-color: var(--accent-teal);
-      color: var(--accent-teal);
-    }
-    .filter-btn .count {
-      font-size: 0.65rem;
-      opacity: 0.6;
-      margin-left: 0.3rem;
-    }
-
-    /* ── Search ── */
-    .search-wrap {
-      position: relative;
-      max-width: 400px;
-      margin-bottom: 2.5rem;
-    }
-    .search-input {
-      width: 100%;
-      padding: 0.6rem 1rem 0.6rem 2.5rem;
-      border-radius: var(--radius-md);
-      border: 1px solid var(--border-card);
-      background: var(--bg-card);
-      color: var(--text-primary);
-      font-family: var(--font-sans);
-      font-size: 0.9rem;
-      outline: none;
-      transition: border-color var(--transition-fast);
-    }
-    .search-input:focus {
-      border-color: var(--accent-teal);
-    }
-    .search-input::placeholder { color: var(--text-muted); }
-    .search-icon {
-      position: absolute;
-      left: 0.8rem;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--text-muted);
-      font-size: 0.85rem;
-      pointer-events: none;
-    }
-
-    /* ── Results info ── */
-    .results-info {
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      color: var(--text-muted);
-      margin-bottom: 1.5rem;
-    }
-
-    /* ── Card grid ── */
-    .card-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: 1.2rem;
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 2rem 4rem;
-    }
-
-    .card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-card);
-      border-radius: var(--radius-md);
-      padding: 1.4rem;
-      transition: all var(--transition-smooth);
-      cursor: default;
-      position: relative;
-      overflow: hidden;
-    }
-    .card:hover {
-      background: var(--bg-card-hover);
-      border-color: rgba(255,255,255,0.12);
-      transform: translateY(-2px);
-    }
-
-    .card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0;
-      width: 3px;
-      height: 100%;
-      transition: width var(--transition-smooth);
-    }
-    .card.cat-coursework::before { background: var(--accent-sky); }
-    .card.cat-research::before { background: var(--accent-teal); }
-    .card.cat-project::before { background: var(--accent-purple); }
-    .card.cat-ibdp::before { background: var(--accent-amber); }
-
-    .card-badge {
-      display: inline-block;
-      font-family: var(--font-mono);
-      font-size: 0.62rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      padding: 0.2rem 0.6rem;
-      border-radius: var(--radius-sm);
-      margin-bottom: 0.7rem;
-      font-weight: 500;
-    }
-    .badge-coursework { background: rgba(56,189,248,0.12); color: var(--accent-sky); }
-    .badge-research { background: rgba(0,212,170,0.12); color: var(--accent-teal); }
-    .badge-project { background: rgba(139,92,246,0.12); color: var(--accent-purple); }
-    .badge-ibdp { background: rgba(240,180,41,0.12); color: var(--accent-amber); }
-
-    .card-title {
-      font-family: var(--font-sans);
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--text-primary);
-      margin-bottom: 0.4rem;
-      line-height: 1.35;
-    }
-
-    .card-meta {
-      font-family: var(--font-mono);
-      font-size: 0.68rem;
-      color: var(--text-muted);
-      margin-bottom: 0.6rem;
-    }
-
-    .card-desc {
-      font-size: 0.82rem;
-      color: var(--text-secondary);
-      line-height: 1.5;
-      margin-bottom: 0.8rem;
-      display: -webkit-box;
-      -webkit-line-clamp: 3;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-
-    .card-skills {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.35rem;
-    }
-
-    .skill-tag {
-      font-family: var(--font-mono);
-      font-size: 0.62rem;
-      padding: 0.15rem 0.55rem;
-      border-radius: var(--radius-sm);
-      background: rgba(255,255,255,0.04);
-      color: var(--text-muted);
-      border: 1px solid rgba(255,255,255,0.05);
-    }
-
-    .card-links {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-top: 0.7rem;
-      padding-top: 0.7rem;
-      border-top: 1px solid rgba(255,255,255,0.05);
-    }
-
-    .card-link {
-      font-family: var(--font-mono);
-      font-size: 0.65rem;
-      padding: 0.2rem 0.7rem;
-      border-radius: var(--radius-sm);
-      text-decoration: none;
-      border: 1px solid var(--border-card);
-      color: var(--accent-teal);
-      transition: all var(--transition-fast);
-      display: inline-flex;
-      align-items: center;
-      gap: 0.3rem;
-    }
-    .card-link:hover {
-      background: rgba(0,212,170,0.1);
-      border-color: var(--accent-teal);
-    }
-
-    .card-empty {
-      grid-column: 1 / -1;
-      text-align: center;
-      padding: 4rem 2rem;
-      color: var(--text-muted);
-      font-family: var(--font-mono);
-      font-size: 0.9rem;
-    }
-
-    /* ── Footer ── */
-    .archive-footer {
-      text-align: center;
-      padding: 3rem 2rem;
-      font-family: var(--font-mono);
-      font-size: 0.7rem;
-      color: var(--text-muted);
-      border-top: 1px solid var(--border-subtle);
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    .archive-footer a {
-      color: var(--accent-teal);
-      text-decoration: none;
-    }
-
-    /* ── Responsive ── */
-    @media (max-width: 640px) {
-      .archive-header { padding: 2rem 1.2rem 1.5rem; }
-      .card-grid { padding: 0 1.2rem 3rem; grid-template-columns: 1fr; }
-      .filter-bar { gap: 0.35rem; }
-      .filter-btn { font-size: 0.7rem; padding: 0.4rem 0.9rem; }
-      .stats-bar { gap: 0.5rem; }
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Archive — Ashesh Kaji</title>
+<meta name="description" content="Searchable archive of coursework, research, and projects — plus public notes on selected work.">
+<meta name="theme-color" content="#080C0A">
+<link rel="icon" href="assets/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,400;1,9..144,300;1,9..144,400&family=Syne:wght@600;700;800&family=Sora:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css?v=31">
 </head>
 <body>
+<script src="assets/js/ascii-bg.js?v=31"></script>
 
-  <div class="archive-header">
-    <a href="/" class="back-link">← Back to asheshkaji.com</a>
-    <h1 class="archive-title">Archive</h1>
-    <p class="archive-subtitle">A complete index of <span id="total-count">—</span> works across coursework, research, projects, and IBDP.</p>
-
-    <div class="stats-bar" id="stats-bar"></div>
-
-    <div class="filter-bar" id="filter-bar"></div>
-
-    <div class="search-wrap">
-      <span class="search-icon">⌕</span>
-      <input type="text" class="search-input" id="search" placeholder="Search by title, skill, or description...">
+<nav class="topbar">
+  <div class="topbar-inner">
+    <a class="topbar-mark" href="./">
+      <span class="mark-main">ASHESH KAJI</span>
+      <span class="mark-chapter">archive</span>
+    </a>
+    <div class="topbar-right">
+      <a class="topbar-cmd" href="notes/"><span class="cmd-label">notes</span><span class="cmd-kbd">→</span></a>
+      <a class="topbar-cmd" href="Ashesh_Kaji_Resume.pdf"><span class="cmd-label">résumé</span><span class="cmd-kbd">↗</span></a>
     </div>
-
-    <div class="results-info" id="results-info"></div>
   </div>
+</nav>
 
-  <div class="card-grid" id="card-grid"></div>
+<main class="archive-shell">
+  <div class="archive-inner">
+    <a class="note-back" href="./">← home</a>
 
-  <div class="archive-footer">
-    Generated from <a href="https://github.com/ashesh8500/ashesh8500.github.io">ashesh8500/ashesh8500.github.io</a> · Index: 83 entries · Updated May 2026
+    <header class="archive-hero">
+      <p class="eyebrow">index</p>
+      <h1>Archive.</h1>
+      <p>
+        A practical index of coursework, research, and projects.
+        Start with the public notes if you want to peer into current work without private repos.
+      </p>
+    </header>
+
+    <section class="archive-featured" aria-label="Featured notes">
+      <div class="archive-featured-label">featured notes · peer into the work</div>
+      <div class="archive-featured-grid">
+        <a class="archive-feat" href="notes/fractal.html">
+          <span class="archive-feat-k">active · research</span>
+          <span class="archive-feat-t">Fractal Cognition</span>
+          <span class="archive-feat-d">Decision journal for paper-trading research. Profitability not claimed.</span>
+        </a>
+        <a class="archive-feat" href="notes/auditlayer.html">
+          <span class="archive-feat-k">live · venture</span>
+          <span class="archive-feat-t">AuditLayer</span>
+          <span class="archive-feat-d">Production competitive audits for wellness creators.</span>
+        </a>
+        <a class="archive-feat" href="notes/spatial.html">
+          <span class="archive-feat-k">research · private code</span>
+          <span class="archive-feat-t">Spatial Intelligence</span>
+          <span class="archive-feat-d">Pose-robust association at NYU WIRELESS. Public framing only.</span>
+        </a>
+        <a class="archive-feat" href="notes/systems-thesis.html">
+          <span class="archive-feat-k">complete · study</span>
+          <span class="archive-feat-t">Systems Thesis</span>
+          <span class="archive-feat-d">60-arm walk-forward optimization with negative results.</span>
+        </a>
+      </div>
+    </section>
+
+    <div class="archive-tools">
+      <input class="archive-search" id="search" type="search" placeholder="Search title, skill, course, or description…" aria-label="Search archive">
+    </div>
+    <div class="archive-filters" id="filters" role="tablist" aria-label="Filter by category"></div>
+    <div class="archive-count" id="count"></div>
+    <div class="archive-list" id="list"></div>
   </div>
+</main>
 
-  <script src="assets/js/archive-data.js"></script>
-  <script>
-    (function() {
-      const data = typeof ARCHIVE_DATA !== 'undefined' ? ARCHIVE_DATA : [];
-      const grid = document.getElementById('card-grid');
-      const filterBar = document.getElementById('filter-bar');
-      const statsBar = document.getElementById('stats-bar');
-      const resultsInfo = document.getElementById('results-info');
-      const searchInput = document.getElementById('search');
-      const totalCount = document.getElementById('total-count');
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-links">
+      <a href="./">Home</a>
+      <a href="notes/">Notes</a>
+      <a href="mailto:ashesh8500@gmail.com">Email</a>
+    </div>
+    <div class="footer-bottom">
+      <span>Indexed from published materials · no private repos linked</span>
+    </div>
+  </div>
+</footer>
 
-      let activeFilter = 'all';
-      let searchQuery = '';
+<script src="assets/js/archive-data.js"></script>
+<script>
+(function () {
+  var data = typeof ARCHIVE_DATA !== "undefined" ? ARCHIVE_DATA : [];
+  var filtersEl = document.getElementById("filters");
+  var listEl = document.getElementById("list");
+  var countEl = document.getElementById("count");
+  var searchEl = document.getElementById("search");
+  var active = "all";
+  var query = "";
 
-      // Category config
-      const categories = {
-        all: { label: 'All', badge: '', emoji: '' },
-        coursework: { label: 'Coursework', badge: 'badge-coursework', color: '#38bdf8' },
-        research: { label: 'Research', badge: 'badge-research', color: '#00d4aa' },
-        project: { label: 'Projects', badge: 'badge-project', color: '#8b5cf6' },
-        ibdp: { label: 'IBDP', badge: 'badge-ibdp', color: '#f0b429' },
-      };
+  var labels = {
+    all: "All",
+    project: "Projects",
+    research: "Research",
+    coursework: "Coursework",
+    ibdp: "Early work"
+  };
 
-      function getCatBadge(cat) {
-        const map = { coursework: 'badge-coursework', research: 'badge-research', project: 'badge-project', ibdp: 'badge-ibdp' };
-        return map[cat] || '';
-      }
+  var counts = { all: data.length };
+  data.forEach(function (e) {
+    counts[e.category] = (counts[e.category] || 0) + 1;
+  });
 
-      // Count by category
-      const counts = {};
-      data.forEach(e => { counts[e.category] = (counts[e.category] || 0) + 1; });
-      counts.all = data.length;
-      totalCount.textContent = data.length;
+  function escapeHtml(text) {
+    return String(text || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
 
-      // Stats bar
-      statsBar.innerHTML = Object.entries(categories).filter(([k]) => k !== 'all').map(([k, v]) => {
-        return `<div class="stat-pill"><strong>${counts[k] || 0}</strong> ${v.label}</div>`;
-      }).join('');
+  function cleanTitle(title) {
+    return String(title || "")
+      .replace(/\s*[—-]\s*\[[^\]]+\]/g, "")
+      .replace(/\s*\[[^\]]+\]/g, "")
+      .replace(/\s{2,}/g, " ")
+      .trim();
+  }
 
-      // Filter bar
-      function renderFilters() {
-        filterBar.innerHTML = Object.entries(categories).map(([k, v]) => {
-          const c = counts[k] || 0;
-          return `<button class="filter-btn${activeFilter === k ? ' active' : ''}" data-cat="${k}">${v.label}<span class="count">${c}</span></button>`;
-        }).join('');
+  function cleanDesc(desc) {
+    var t = String(desc || "").trim();
+    if (t.length > 220) t = t.slice(0, 217).replace(/\s+\S*$/, "") + "…";
+    return t;
+  }
 
-        filterBar.querySelectorAll('.filter-btn').forEach(btn => {
-          btn.addEventListener('click', () => {
-            activeFilter = btn.dataset.cat;
-            renderFilters();
-            renderCards();
-          });
-        });
-      }
+  function metaLine(e) {
+    var parts = [];
+    if (e.date) parts.push(e.date);
+    if (e.semester) parts.push(e.semester);
+    if (e.institution) parts.push(e.institution);
+    if (e.subject) parts.push(e.subject);
+    if (e.course_code) parts.push(e.course_code);
+    return parts.join(" · ");
+  }
 
-      // Render cards
-      function renderCards() {
-        let filtered = data;
+  function publicLinks(e) {
+    return (e.links || []).filter(function (l) {
+      if (!l || !l.url || l.url.indexOf("http") !== 0) return false;
+      // Never surface known-private habitat / spatial implementation links
+      if (/github\.com\/ashesh8500\/habitat/i.test(l.url)) return false;
+      return true;
+    });
+  }
 
-        if (activeFilter !== 'all') {
-          filtered = filtered.filter(e => e.category === activeFilter);
-        }
+  function renderFilters() {
+    filtersEl.innerHTML = Object.keys(labels).map(function (key) {
+      var on = active === key ? " is-on" : "";
+      return (
+        '<button type="button" class="archive-filter' + on + '" data-cat="' + key + '">' +
+        labels[key] +
+        "<span>" + (counts[key] || 0) + "</span></button>"
+      );
+    }).join("");
 
-        if (searchQuery.trim()) {
-          const q = searchQuery.toLowerCase();
-          filtered = filtered.filter(e => {
-            const haystack = [
-              e.title, e.description, e.significance,
-              e.subject, e.semester, e.course_code, e.language, e.type,
-              ...(e.skills || [])
-            ].join(' ').toLowerCase();
-            return haystack.includes(q);
-          });
-        }
-
-        resultsInfo.textContent = `Showing ${filtered.length} of ${data.length} entries`;
-
-        if (filtered.length === 0) {
-          grid.innerHTML = '<div class="card-empty">No entries match your filters. Try a different category or search term.</div>';
-          return;
-        }
-
-        grid.innerHTML = filtered.map(e => {
-          const badgeClass = getCatBadge(e.category);
-          const catLabel = categories[e.category]?.label || e.category;
-          const catClass = 'cat-' + e.category;
-
-          let meta = '';
-          if (e.semester) meta += e.semester;
-          if (e.institution && e.institution !== meta.trim()) {
-            meta += (meta ? ' · ' : '') + e.institution;
-          }
-          if (e.subject) meta += (meta ? ' · ' : '') + e.subject;
-          if (e.language) meta += (meta ? ' · ' : '') + e.language;
-          if (e.date) meta += (meta ? ' · ' : '') + e.date;
-
-          const skills = (e.skills || []).slice(0, 5).map(s =>
-            `<span class="skill-tag">${s}</span>`
-          ).join('');
-
-          // Web-accessible links only (skip file://)
-          const links = (e.links || []).filter(l => l.url && l.url.startsWith('http'));
-          const linksHtml = links.length ? `
-            <div class="card-links">
-              ${links.map(l => `<a class="card-link" href="${escapeHtml(l.url)}" target="_blank" rel="noopener">${l.label === 'GitHub' ? '⟶' : '↗'} ${escapeHtml(l.label)}</a>`).join('')}
-            </div>
-          ` : '';
-
-          return `
-            <div class="card ${catClass}">
-              <span class="card-badge ${badgeClass}">${catLabel}</span>
-              <div class="card-title">${escapeHtml(e.title)}</div>
-              ${meta ? `<div class="card-meta">${escapeHtml(meta)}</div>` : ''}
-              ${e.description ? `<div class="card-desc">${escapeHtml(e.description)}</div>` : ''}
-              ${skills ? `<div class="card-skills">${skills}</div>` : ''}
-              ${linksHtml}
-            </div>
-          `;
-        }).join('');
-      }
-
-      function escapeHtml(str) {
-        const div = document.createElement('div');
-        div.textContent = str;
-        return div.innerHTML;
-      }
-
-      // Search
-      searchInput.addEventListener('input', () => {
-        searchQuery = searchInput.value;
-        renderCards();
+    filtersEl.querySelectorAll(".archive-filter").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        active = btn.getAttribute("data-cat");
+        renderFilters();
+        renderList();
       });
+    });
+  }
 
-      // Init
-      renderFilters();
-      renderCards();
-    })();
-  </script>
+  function renderList() {
+    var filtered = data.filter(function (e) {
+      if (active !== "all" && e.category !== active) return false;
+      if (!query) return true;
+      var hay = [
+        e.title, e.description, e.subject, e.semester, e.course_code,
+        e.institution, e.language, e.type, (e.skills || []).join(" ")
+      ].join(" ").toLowerCase();
+      return hay.indexOf(query) !== -1;
+    });
 
-<script src="assets/js/ascii-bg.js?v=18"></script>
+    countEl.textContent = "Showing " + filtered.length + " of " + data.length;
+
+    if (!filtered.length) {
+      listEl.innerHTML = '<div class="archive-empty">Nothing matched. Try another category or a shorter search.</div>';
+      return;
+    }
+
+    listEl.innerHTML = filtered.map(function (e) {
+      var skills = (e.skills || []).slice(0, 5).map(function (s) {
+        return "<span>" + escapeHtml(s) + "</span>";
+      }).join("");
+      var links = publicLinks(e).map(function (l) {
+        return '<a href="' + escapeHtml(l.url) + '" target="_blank" rel="noopener">' + escapeHtml(l.label || "link") + " ↗</a>";
+      }).join("");
+      var meta = metaLine(e);
+
+      return (
+        '<article class="archive-item">' +
+          '<div class="archive-item-top">' +
+            '<span class="archive-badge">' + escapeHtml(labels[e.category] || e.category) + "</span>" +
+            (meta ? '<span class="archive-item-when">' + escapeHtml(meta) + "</span>" : "") +
+          "</div>" +
+          '<h2 class="archive-item-title">' + escapeHtml(cleanTitle(e.title)) + "</h2>" +
+          (e.description ? '<p class="archive-item-desc">' + escapeHtml(cleanDesc(e.description)) + "</p>" : "") +
+          (skills ? '<div class="archive-item-skills">' + skills + "</div>" : "") +
+          (links ? '<div class="archive-item-links">' + links + "</div>" : "") +
+        "</article>"
+      );
+    }).join("");
+  }
+
+  var searchTimer = null;
+  searchEl.addEventListener("input", function () {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(function () {
+      query = (searchEl.value || "").trim().toLowerCase();
+      renderList();
+    }, 120);
+  });
+
+  renderFilters();
+  renderList();
+})();
+</script>
 </body>
 </html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fractal Cognition — Ashesh Kaji</title>
+<meta name="description" content="Paper-trading research infrastructure with an auditable decision journal. Public notes on Fractal Cognition.">
+<meta name="theme-color" content="#080C0A">
+<link rel="icon" href="../assets/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,400;1,9..144,300;1,9..144,400&family=Syne:wght@600;700;800&family=Sora:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/style.css?v=31">
+</head>
+<body>
+<script src="../assets/js/ascii-bg.js?v=31"></script>
+
+<nav class="topbar">
+  <div class="topbar-inner">
+    <a class="topbar-mark" href="../">
+      <span class="mark-main">ASHESH KAJI</span>
+      <span class="mark-chapter">notes / fractal</span>
+    </a>
+    <div class="topbar-right">
+      <a class="topbar-cmd" href="./"><span class="cmd-label">all notes</span><span class="cmd-kbd">→</span></a>
+    </div>
+  </div>
+</nav>
+
+<article class="note-shell">
+  <div class="note-shell-inner">
+    <a class="note-back" href="./">← notes</a>
+    <p class="eyebrow note-kicker">selected work · active · research</p>
+    <h1 class="note-title">Fractal <em>Cognition</em></h1>
+    <p class="note-deck">A paper-trading research system that records why a decision happened — not just what it bought.</p>
+
+    <div class="note-meta">
+      <span><strong>status</strong> active · paper trading</span>
+      <span><strong>focus</strong> decision infrastructure</span>
+      <span><strong>claim</strong> profitability not established</span>
+    </div>
+
+    <div class="note-body">
+      <p>
+        Fractal is the system I use to study allocation as a <em>process</em>, not a one-shot optimizer output.
+        Markets generate noise; most “strategies” collapse under honest logging. Fractal’s job is to make the
+        path from observation → hypothesis → risk gate → simulated fill inspectable after the fact.
+      </p>
+
+      <div class="note-callout">
+        <strong>What this is not</strong>
+        Not a live brokerage product. Not a performance claim. Paper trading only. If someone asks whether it
+        “beats the market,” the honest answer from published context is: that has not been established.
+      </div>
+
+      <h2>What you can peer into</h2>
+      <p>At a high level the loop looks like this:</p>
+      <ul>
+        <li><strong>Perception</strong> — market and context observations enter a workspace.</li>
+        <li><strong>Hypothesis</strong> — a thesis / lens proposes what might matter next.</li>
+        <li><strong>Allocation</strong> — a controller turns that into intended weights or trades.</li>
+        <li><strong>Risk</strong> — gates can reject, shrink, or hold before anything is simulated.</li>
+        <li><strong>Journal</strong> — every path (executed, rejected, held) is written with provenance.</li>
+      </ul>
+      <p>
+        The interesting artifact is the <strong>decision journal</strong>: thesis version, rationale, confidence,
+        price context, and links between intent and fill reconciliation. That turns a trading experiment into
+        something you can audit weeks later instead of a vague “the model said so.”
+      </p>
+
+      <h2>Why build it this way</h2>
+      <p>
+        I care about systems that stay honest under their own logging. If the journal can’t explain a trade,
+        the trade doesn’t count as research. That bias shows up elsewhere in my work too — evidence trails in
+        AuditLayer, leakage controls in spatial evaluation, ablations in the systems thesis.
+      </p>
+
+      <h2>What stays out of public view</h2>
+      <p>
+        Implementation details, private prompts, live credentials, and unreleased performance runs stay off
+        this site. What you’re reading is the shape of the system and the standard it holds itself to.
+      </p>
+    </div>
+
+    <div class="note-footer">
+      <div class="note-nav">
+        <a class="btn btn-ghost" href="auditlayer.html">next: AuditLayer →</a>
+        <a class="btn btn-ghost" href="../archive.html">archive</a>
+      </div>
+      <a class="btn btn-solid" href="../">home</a>
+    </div>
+  </div>
+</article>
+</body>
+</html>

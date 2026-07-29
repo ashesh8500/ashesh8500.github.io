@@ -42,10 +42,14 @@ Résumé: https://asheshkaji.com/Ashesh_Kaji_Resume.pdf
 - Undergraduate Research Assistant, UC San Diego, Dr. Mary Boyle's Lab (10/2022–06/2025): UK Biobank & ABCD neuroimaging
 
 ── Projects ──
-- Fractal Cognition: paper-trading research infrastructure with auditable decision journal. Profitability not established.
-- AuditLayer: competitive-intelligence software for wellness creators (https://auditlayermedia.com). Technical cofounder.
-- Spatial Intelligence: object association under pose noise at NYU WIRELESS (https://github.com/ashesh8500/habitat)
-- Systems Thesis: 60-arm walk-forward portfolio optimization study (https://asheshkaji.com/portfolio/systemopt/)
+- Fractal Cognition: paper-trading research infrastructure with auditable decision journal. Profitability not established. Notes: https://asheshkaji.com/notes/fractal.html
+- AuditLayer: competitive-intelligence software for wellness creators. Technical cofounder. Notes: https://asheshkaji.com/notes/auditlayer.html · Product: https://auditlayermedia.com
+- Spatial Intelligence: object association under pose noise at NYU WIRELESS. Strict-threshold F1 0.598 clean pose / 0.484 injected pose noise. Implementation is private (no public repo). Notes: https://asheshkaji.com/notes/spatial.html
+- Systems Thesis: 60-arm walk-forward portfolio optimization study with ablations and negative results. Notes: https://asheshkaji.com/notes/systems-thesis.html · Full study: https://asheshkaji.com/portfolio/systemopt/
+- Notes index: https://asheshkaji.com/notes/
+- Archive index: https://asheshkaji.com/archive.html
+
+Do not invent or link private repositories (including habitat / spatial implementation repos).
 
 ── Stack ──
 Python, Rust, PyTorch, TypeScript, Docker, Azure, AWS, vector DBs, RAG, WebGPU/ONNX, FPGA basics
