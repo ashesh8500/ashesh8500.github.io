@@ -1,0 +1,169 @@
+{
+  "person": {
+    "name": "Ashesh Kaji",
+    "title": "ML/AI Systems Engineer & Technical Founder",
+    "location": "New York, NY",
+    "email": "ashesh8500@gmail.com",
+    "phone": "+1 (858) 308-6586",
+    "site": "https://asheshkaji.com",
+    "github": "https://github.com/ashesh8500",
+    "visibility": "full",
+    "source": "Ashesh_Kaji_Resume.pdf",
+    "source_date": "2026-07-28"
+  },
+  "education": [
+    {
+      "id": "edu-001",
+      "school": "NYU Tandon School of Engineering",
+      "degree": "MS Computer Engineering",
+      "dates": "Jan 2026 – Dec 2027 (expected)",
+      "focus": ["systems", "ML infrastructure", "optimization", "hardware/software co-design"],
+      "source": "resume"
+    },
+    {
+      "id": "edu-002",
+      "school": "UC San Diego",
+      "degree": "BS with Honors, Cognitive Science — ML & Neural Computation",
+      "dates": "Sep 2021 – Jun 2025",
+      "gpa": "3.75/4.00",
+      "honors": ["Provost Honors", "Honors thesis"],
+      "source": "resume"
+    }
+  ],
+  "experience": [
+    {
+      "id": "exp-001",
+      "role": "Technical Cofounder",
+      "org": "AuditLayer",
+      "dates": "2026 – present",
+      "source": "resume",
+      "key_claims": [
+        "Owns technical development of a competitive-intelligence product",
+        "Built Next.js, Supabase/Postgres, and Python worker architecture",
+        "Separated deterministic orchestration from agentic research; implemented bounded execution, source provenance, account isolation, failure states, and reproducible report delivery"
+      ]
+    },
+    {
+      "id": "exp-002",
+      "role": "Consulting AI Engineer",
+      "org": "SageX Global",
+      "dates": "Sep 2024 – present",
+      "source": "resume",
+      "key_claims": [
+        "Production LLM/SLM, semantic retrieval, and multimodal data workflows",
+        "Python, PyTorch, vector databases, Azure/AWS",
+        "RAG and semantic-memory systems in serverless product contexts"
+      ]
+    },
+    {
+      "id": "exp-003",
+      "role": "Machine Learning Intern",
+      "org": "UniQreate",
+      "dates": "Sep 2023 – Jul 2024",
+      "source": "resume",
+      "key_claims": [
+        "LLM-powered document-intelligence and chat pipeline using retrieval, vector databases, Azure Blob Storage, and serverless infrastructure"
+      ]
+    },
+    {
+      "id": "exp-004",
+      "role": "Undergraduate Research Assistant",
+      "org": "UC San Diego, Dr. Mary Boyle's Lab",
+      "dates": "Oct 2022 – Jun 2025",
+      "source": "resume",
+      "key_claims": [
+        "Longitudinal biomedical and neuroimaging analysis with Python, NumPy/Pandas, Statsmodels, GEE",
+        "Honors thesis: adolescent nicotine use and impulsivity, ABCD Study (N=9,562)"
+      ]
+    }
+  ],
+  "research": [
+    {
+      "id": "res-001",
+      "title": "Runtime Object Association for Embodied Agents",
+      "org": "NYU WIRELESS",
+      "year": 2026,
+      "problem": "Object association across viewpoint and camera pose change",
+      "role": "principal",
+      "method": "Leakage-controlled experiment using runtime-available visual, geometric, and graph features",
+      "dataset": {"train": 2400, "validation": 186, "test": 771},
+      "metrics": {
+        "clean_pose_f1": {"value": 0.598, "source": "resume", "condition": "strict threshold"},
+        "pose_noise_f1": {"value": 0.484, "source": "resume", "condition": "strict threshold, injected pose noise"}
+      },
+      "evaluation_notes": "Class balance, strict-threshold coverage, pseudo-label precision, ablations, and failure modes reported separately",
+      "code_visibility": "private",
+      "artifacts": [{"label": "Project note", "url": "notes/spatial.html"}],
+      "source": "resume"
+    }
+  ],
+  "projects": [
+    {
+      "id": "proj-001",
+      "name": "AuditLayer",
+      "entity": "venture · production",
+      "role": "technical cofounder",
+      "dates": "2026 – present",
+      "source": "resume",
+      "claim": "Competitive-intelligence software for wellness creators. In production.",
+      "artifacts": [
+        {"label": "Product site", "url": "https://auditlayermedia.com"},
+        {"label": "Project note", "url": "notes/auditlayer.html"}
+      ]
+    },
+    {
+      "id": "proj-002",
+      "name": "Fractal",
+      "entity": "research infrastructure",
+      "dates": "active",
+      "dates_source": "project_note (no earlier authoritative source)",
+      "source": "project_note",
+      "claim": "Paper-trading research system with auditable decision journal. Profitability not established.",
+      "artifacts": [{"label": "Project note", "url": "notes/fractal.html"}]
+    },
+    {
+      "id": "proj-003",
+      "name": "Systems Thesis",
+      "entity": "research study",
+      "dates": "2024",
+      "source": "public_study",
+      "claim": "60-arm walk-forward study of screening, weighting, and turnover costs across three portfolio universes. Includes ablations and negative results.",
+      "metrics": {
+        "top100_best_sharpe": {"value": 1.47, "label": "21d momentum + equal weight", "source": "study"},
+        "top500_best_sharpe": {"value": 1.76, "label": "63d vol-adj momentum + 21d rank-and-hold", "source": "study"}
+      },
+      "artifacts": [
+        {"label": "Project note", "url": "notes/systems-thesis.html"},
+        {"label": "Full study", "url": "portfolio/systemopt/"}
+      ]
+    }
+  ],
+  "skills": [
+    {
+      "group": "ML & Evaluation",
+      "items": ["Python", "PyTorch", "scikit-learn", "NumPy/SciPy", "Pandas", "Statsmodels", "LLMs", "RAG", "evaluation", "reinforcement learning", "statistical modeling"],
+      "source": "resume"
+    },
+    {
+      "group": "Systems & Infrastructure",
+      "items": ["Rust", "C/C++", "TypeScript/JavaScript", "SQL", "Linux", "Docker", "Git", "gRPC", "Supabase/Postgres", "Azure", "AWS", "Cloudflare"],
+      "source": "resume"
+    },
+    {
+      "group": "Research Methods",
+      "items": ["GEE modeling", "longitudinal analysis", "neuroimaging", "ABCD cohort", "UK Biobank", "walk-forward evaluation", "ablation design", "reproducible CLI workflows"],
+      "source": "resume"
+    }
+  ],
+  "public_artifacts": [
+    {"path": "index.html", "type": "homepage"},
+    {"path": "notes/fractal.html", "type": "project_note", "entity_id": "proj-002"},
+    {"path": "notes/auditlayer.html", "type": "project_note", "entity_id": "proj-001"},
+    {"path": "notes/spatial.html", "type": "project_note", "entity_id": "res-001"},
+    {"path": "notes/systems-thesis.html", "type": "project_note", "entity_id": "proj-003"},
+    {"path": "notes/index.html", "type": "notes_index"},
+    {"path": "portfolio/systemopt/index.html", "type": "research_artifact", "entity_id": "proj-003"},
+    {"path": "archive.html", "type": "curated_archive"},
+    {"path": "Ashesh_Kaji_Resume.pdf", "type": "document"}
+  ]
+}

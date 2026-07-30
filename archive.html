@@ -4,92 +4,75 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Archive — Ashesh Kaji</title>
-<meta name="description" content="Searchable archive of coursework, research, and projects — plus public notes on selected work.">
-<meta name="theme-color" content="#080C0A">
+<meta name="description" content="Curated index of coursework, research, and projects.">
+<meta name="theme-color" content="#0a0a0a">
 <link rel="icon" href="assets/favicon.ico">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,400;1,9..144,300;1,9..144,400&family=Syne:wght@600;700;800&family=Sora:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/style.css?v=31">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css?v=32">
 </head>
 <body>
-<script src="assets/js/ascii-bg.js?v=31"></script>
-
 <nav class="topbar">
   <div class="topbar-inner">
-    <a class="topbar-mark" href="./">
-      <span class="mark-main">ASHESH KAJI</span>
-      <span class="mark-chapter">archive</span>
-    </a>
-    <div class="topbar-right">
-      <a class="topbar-cmd" href="notes/"><span class="cmd-label">notes</span><span class="cmd-kbd">→</span></a>
-      <a class="topbar-cmd" href="Ashesh_Kaji_Resume.pdf"><span class="cmd-label">résumé</span><span class="cmd-kbd">↗</span></a>
+    <a class="topbar-name" href="./">Ashesh Kaji</a>
+    <div class="topbar-links">
+      <a href="notes/">notes</a>
+      <a href="Ashesh_Kaji_Resume.pdf">résumé</a>
     </div>
   </div>
 </nav>
 
 <main class="archive-shell">
-  <div class="archive-inner">
-    <a class="note-back" href="./">← home</a>
+  <a class="note-back" href="./">← home</a>
 
-    <header class="archive-hero">
-      <p class="eyebrow">index</p>
-      <h1>Archive.</h1>
-      <p>
-        A practical index of coursework, research, and projects.
-        Start with the public notes if you want to peer into current work without private repos.
-      </p>
-    </header>
+  <header class="archive-hero">
+    <p class="note-kicker">index</p>
+    <h1>Archive.</h1>
+    <p>A curated index of coursework, research, and projects. Start with the <a href="notes/">project notes</a> for current work.</p>
+  </header>
 
-    <section class="archive-featured" aria-label="Featured notes">
-      <div class="archive-featured-label">featured notes · peer into the work</div>
-      <div class="archive-featured-grid">
-        <a class="archive-feat" href="notes/fractal.html">
-          <span class="archive-feat-k">active · research</span>
-          <span class="archive-feat-t">Fractal Cognition</span>
-          <span class="archive-feat-d">Decision journal for paper-trading research. Profitability not claimed.</span>
-        </a>
-        <a class="archive-feat" href="notes/auditlayer.html">
-          <span class="archive-feat-k">live · venture</span>
-          <span class="archive-feat-t">AuditLayer</span>
-          <span class="archive-feat-d">Production competitive audits for wellness creators.</span>
-        </a>
-        <a class="archive-feat" href="notes/spatial.html">
-          <span class="archive-feat-k">research · private code</span>
-          <span class="archive-feat-t">Spatial Intelligence</span>
-          <span class="archive-feat-d">Pose-robust association at NYU WIRELESS. Public framing only.</span>
-        </a>
-        <a class="archive-feat" href="notes/systems-thesis.html">
-          <span class="archive-feat-k">complete · study</span>
-          <span class="archive-feat-t">Systems Thesis</span>
-          <span class="archive-feat-d">60-arm walk-forward optimization with negative results.</span>
-        </a>
-      </div>
-    </section>
-
-    <div class="archive-tools">
-      <input class="archive-search" id="search" type="search" placeholder="Search title, skill, course, or description…" aria-label="Search archive">
+  <section aria-label="Featured notes">
+    <div class="archive-featured-label">featured notes</div>
+    <div class="archive-featured-grid">
+      <a class="archive-feat" href="notes/fractal.html">
+        <span class="archive-feat-k">active · research</span>
+        <span class="archive-feat-t">Fractal</span>
+        <span class="archive-feat-d">Paper-trading research system with auditable decision journal. Profitability not claimed.</span>
+      </a>
+      <a class="archive-feat" href="notes/auditlayer.html">
+        <span class="archive-feat-k">live · venture</span>
+        <span class="archive-feat-t">AuditLayer</span>
+        <span class="archive-feat-d">Production competitive-intelligence software for wellness creators.</span>
+      </a>
+      <a class="archive-feat" href="notes/spatial.html">
+        <span class="archive-feat-k">research · private code</span>
+        <span class="archive-feat-t">Spatial Intelligence</span>
+        <span class="archive-feat-d">Object association under viewpoint and pose change at NYU WIRELESS.</span>
+      </a>
+      <a class="archive-feat" href="notes/systems-thesis.html">
+        <span class="archive-feat-k">complete · study</span>
+        <span class="archive-feat-t">Systems Thesis</span>
+        <span class="archive-feat-d">60-arm walk-forward study with ablations and negative results.</span>
+      </a>
     </div>
-    <div class="archive-filters" id="filters" role="tablist" aria-label="Filter by category"></div>
-    <div class="archive-count" id="count"></div>
-    <div class="archive-list" id="list"></div>
+  </section>
+
+  <div class="archive-tools">
+    <input class="archive-search" id="search" type="search" placeholder="Search title, course, or description…" aria-label="Search archive">
   </div>
+  <div class="archive-filters" id="filters" role="tablist" aria-label="Filter by category"></div>
+  <div class="archive-count" id="count"></div>
+  <div class="archive-list" id="list"></div>
 </main>
 
-<footer class="footer">
+<footer>
   <div class="footer-inner">
-    <div class="footer-links">
-      <a href="./">Home</a>
-      <a href="notes/">Notes</a>
-      <a href="mailto:ashesh8500@gmail.com">Email</a>
-    </div>
-    <div class="footer-bottom">
-      <span>Indexed from published materials · no private repos linked</span>
-    </div>
+    <p>Indexed from published materials.</p>
   </div>
 </footer>
 
-<script src="assets/js/archive-data.js"></script>
+<script src="assets/js/archive-data.js?v=1"></script>
 <script>
 (function () {
   var data = typeof ARCHIVE_DATA !== "undefined" ? ARCHIVE_DATA : [];
@@ -100,132 +83,67 @@
   var active = "all";
   var query = "";
 
-  var labels = {
-    all: "All",
-    project: "Projects",
-    research: "Research",
-    coursework: "Coursework",
-    ibdp: "Early work"
-  };
-
-  var counts = { all: data.length };
-  data.forEach(function (e) {
-    counts[e.category] = (counts[e.category] || 0) + 1;
-  });
-
-  function escapeHtml(text) {
-    return String(text || "")
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;");
-  }
-
-  function cleanTitle(title) {
-    return String(title || "")
-      .replace(/\s*[—-]\s*\[[^\]]+\]/g, "")
-      .replace(/\s*\[[^\]]+\]/g, "")
-      .replace(/\s{2,}/g, " ")
-      .trim();
-  }
-
-  function cleanDesc(desc) {
-    var t = String(desc || "").trim();
-    if (t.length > 220) t = t.slice(0, 217).replace(/\s+\S*$/, "") + "…";
-    return t;
-  }
-
-  function metaLine(e) {
-    var parts = [];
-    if (e.date) parts.push(e.date);
-    if (e.semester) parts.push(e.semester);
-    if (e.institution) parts.push(e.institution);
-    if (e.subject) parts.push(e.subject);
-    if (e.course_code) parts.push(e.course_code);
-    return parts.join(" · ");
-  }
-
-  function publicLinks(e) {
-    return (e.links || []).filter(function (l) {
-      if (!l || !l.url || l.url.indexOf("http") !== 0) return false;
-      // Never surface known-private habitat / spatial implementation links
-      if (/github\.com\/ashesh8500\/habitat/i.test(l.url)) return false;
-      return true;
-    });
-  }
-
-  function renderFilters() {
-    filtersEl.innerHTML = Object.keys(labels).map(function (key) {
-      var on = active === key ? " is-on" : "";
-      return (
-        '<button type="button" class="archive-filter' + on + '" data-cat="' + key + '">' +
-        labels[key] +
-        "<span>" + (counts[key] || 0) + "</span></button>"
-      );
-    }).join("");
-
-    filtersEl.querySelectorAll(".archive-filter").forEach(function (btn) {
-      btn.addEventListener("click", function () {
-        active = btn.getAttribute("data-cat");
-        renderFilters();
-        renderList();
-      });
-    });
-  }
-
-  function renderList() {
-    var filtered = data.filter(function (e) {
-      if (active !== "all" && e.category !== active) return false;
-      if (!query) return true;
-      var hay = [
-        e.title, e.description, e.subject, e.semester, e.course_code,
-        e.institution, e.language, e.type, (e.skills || []).join(" ")
-      ].join(" ").toLowerCase();
-      return hay.indexOf(query) !== -1;
-    });
-
-    countEl.textContent = "Showing " + filtered.length + " of " + data.length;
-
-    if (!filtered.length) {
-      listEl.innerHTML = '<div class="archive-empty">Nothing matched. Try another category or a shorter search.</div>';
-      return;
+  var categories = [];
+  var seen = {};
+  data.forEach(function (item) {
+    if (!seen[item.category]) {
+      seen[item.category] = true;
+      categories.push(item.category);
     }
+  });
 
-    listEl.innerHTML = filtered.map(function (e) {
-      var skills = (e.skills || []).slice(0, 5).map(function (s) {
-        return "<span>" + escapeHtml(s) + "</span>";
-      }).join("");
-      var links = publicLinks(e).map(function (l) {
-        return '<a href="' + escapeHtml(l.url) + '" target="_blank" rel="noopener">' + escapeHtml(l.label || "link") + " ↗</a>";
-      }).join("");
-      var meta = metaLine(e);
+  categories.unshift("all");
+  filtersEl.innerHTML = categories.map(function (cat) {
+    var label = cat === "all" ? "All" : cat.toUpperCase();
+    return '<button role="tab" aria-selected="' + (cat === active) + '" data-cat="' + cat + '"' + (cat === active ? ' class="active"' : '') + '>' + label + '</button>';
+  }).join("");
 
-      return (
-        '<article class="archive-item">' +
-          '<div class="archive-item-top">' +
-            '<span class="archive-badge">' + escapeHtml(labels[e.category] || e.category) + "</span>" +
-            (meta ? '<span class="archive-item-when">' + escapeHtml(meta) + "</span>" : "") +
-          "</div>" +
-          '<h2 class="archive-item-title">' + escapeHtml(cleanTitle(e.title)) + "</h2>" +
-          (e.description ? '<p class="archive-item-desc">' + escapeHtml(cleanDesc(e.description)) + "</p>" : "") +
-          (skills ? '<div class="archive-item-skills">' + skills + "</div>" : "") +
-          (links ? '<div class="archive-item-links">' + links + "</div>" : "") +
-        "</article>"
-      );
+  function filterData() {
+    return data.filter(function (item) {
+      var matchCat = active === "all" || item.category === active;
+      var matchSearch = !query || item.title.toLowerCase().indexOf(query.toLowerCase()) > -1 ||
+        item.description.toLowerCase().indexOf(query.toLowerCase()) > -1 ||
+        (item.skills || []).some(function (s) { return s.toLowerCase().indexOf(query.toLowerCase()) > -1; });
+      return matchCat && matchSearch;
+    });
+  }
+
+  function render() {
+    var filtered = filterData();
+    countEl.textContent = "Showing " + filtered.length + " of " + data.length + " entries";
+
+    listEl.innerHTML = filtered.map(function (item) {
+      var skills = (item.skills || []).slice(0, 6).map(function (s) {
+        return "<span>" + s + "</span>";
+      }).join("");
+      return '<div class="archive-item">' +
+        '<div class="archive-item-header">' +
+        '<span class="archive-item-title">' + item.title + '</span>' +
+        '<span class="archive-item-cat">' + item.category + '</span>' +
+        '</div>' +
+        '<p class="archive-item-desc">' + item.description + '</p>' +
+        '<div class="archive-item-skills">' + skills + '</div>' +
+        '</div>';
     }).join("");
   }
 
-  var searchTimer = null;
-  searchEl.addEventListener("input", function () {
-    clearTimeout(searchTimer);
-    searchTimer = setTimeout(function () {
-      query = (searchEl.value || "").trim().toLowerCase();
-      renderList();
-    }, 120);
+  filtersEl.addEventListener("click", function (event) {
+    var btn = event.target.closest("button");
+    if (!btn) return;
+    active = btn.dataset.cat;
+    filtersEl.querySelectorAll("button").forEach(function (b) {
+      b.classList.toggle("active", b.dataset.cat === active);
+      b.setAttribute("aria-selected", b.dataset.cat === active);
+    });
+    render();
   });
 
-  renderFilters();
-  renderList();
+  searchEl.addEventListener("input", function () {
+    query = searchEl.value;
+    render();
+  });
+
+  render();
 })();
 </script>
 </body>

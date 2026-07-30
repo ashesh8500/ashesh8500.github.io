@@ -4,84 +4,67 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Systems Thesis — Ashesh Kaji</title>
-<meta name="description" content="Sixty-arm walk-forward study of screening, weighting, and turnover across portfolio universes — including negative results.">
-<meta name="theme-color" content="#080C0A">
+<meta name="description" content="60-arm walk-forward study of screening, weighting, and turnover — including negative results.">
+<meta name="theme-color" content="#0a0a0a">
 <link rel="icon" href="../assets/favicon.ico">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,400;1,9..144,300;1,9..144,400&family=Syne:wght@600;700;800&family=Sora:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/css/style.css?v=31">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/style.css?v=32">
 </head>
 <body>
-<script src="../assets/js/ascii-bg.js?v=31"></script>
-
 <nav class="topbar">
   <div class="topbar-inner">
-    <a class="topbar-mark" href="../">
-      <span class="mark-main">ASHESH KAJI</span>
-      <span class="mark-chapter">notes / systems thesis</span>
-    </a>
-    <div class="topbar-right">
-      <a class="topbar-cmd" href="./"><span class="cmd-label">all notes</span><span class="cmd-kbd">→</span></a>
+    <a class="topbar-name" href="../">Ashesh Kaji</a>
+    <div class="topbar-links">
+      <a href="./">all notes</a>
     </div>
   </div>
 </nav>
 
 <article class="note-shell">
-  <div class="note-shell-inner">
-    <a class="note-back" href="./">← notes</a>
-    <p class="eyebrow note-kicker">selected work · research · complete</p>
-    <h1 class="note-title">Systems <em>Thesis</em></h1>
-    <p class="note-deck">Portfolio allocation treated as layered system optimization — walk-forward, ablations, and the limits of deployment.</p>
+  <a class="note-back" href="./">← notes</a>
+  <p class="note-kicker">research study · complete</p>
+  <h1 class="note-title">Systems Thesis</h1>
+  <p class="note-deck">Portfolio allocation treated as layered system optimization — walk-forward evaluation with ablations and negative results.</p>
 
-    <div class="note-meta">
-      <span><strong>scope</strong> 60-arm study</span>
-      <span><strong>method</strong> walk-forward</span>
-      <span><strong>stance</strong> negative results included</span>
-    </div>
+  <div class="note-meta">
+    <span><strong>Scope</strong> 60-arm study</span>
+    <span><strong>Method</strong> walk-forward</span>
+    <span><strong>Stance</strong> negative results included</span>
+  </div>
 
-    <div class="note-body">
-      <p>
-        This study asks what happens when screening, weighting, covariance choices, and turnover costs are
-        treated as interacting layers rather than a single magic objective. The point is behavior under
-        constraints — not a leaderboard chase.
-      </p>
+  <div class="note-body">
+    <h2>What was studied</h2>
+    <p>Walk-forward evaluation across three portfolio universes (Top-100, Top-250, Top-500). Screening and weighting choices under explicit turnover penalties. Ablations that remove or swap components to identify what actually moved results. Deployment limits — where a clean backtest stops being an honest production story.</p>
 
-      <h2>What the study covers</h2>
-      <ul>
-        <li>Walk-forward evaluation across three portfolio universes.</li>
-        <li>Screening and weighting choices under explicit turnover penalties.</li>
-        <li>Ablations that remove or swap components to see what actually moved results.</li>
-        <li>Deployment limits — where a clean backtest stops being an honest production story.</li>
-      </ul>
-
-      <div class="note-callout">
-        <strong>Research philosophy</strong>
-        Understanding system behavior under constraints beats maximizing a single return chart.
-        If an arm looks strong only because turnover was free, or because leakage snuck in, it fails the study.
+    <h2>Results</h2>
+    <div class="note-grid">
+      <div class="note-stat">
+        <span class="note-stat-k">Top-100 best</span>
+        <span class="note-stat-v">1.47</span>
+        <span class="note-stat-s">Sharpe · 21d momentum + equal weight</span>
       </div>
-
-      <h2>How to read the public materials</h2>
-      <p>
-        The long-form deck and supporting notes live under the system-optimization portfolio page.
-        Start there for charts, arm structure, and the fuller writeup. This note is the orientation layer:
-        what question was asked, and what kind of answer counts.
-      </p>
-
-      <h2>Connection to the rest of the site</h2>
-      <p>
-        Fractal inherits the journal instinct from this work. AuditLayer inherits the production skepticism.
-        Spatial inherits the “report conditions separately” habit. The thesis is older, but the standard stuck.
-      </p>
-    </div>
-
-    <div class="note-footer">
-      <div class="note-nav">
-        <a class="btn btn-ghost" href="spatial.html">← Spatial</a>
-        <a class="btn btn-ghost" href="./">all notes</a>
+      <div class="note-stat">
+        <span class="note-stat-k">Top-500 best</span>
+        <span class="note-stat-v">1.76</span>
+        <span class="note-stat-s">Sharpe · 63d vol-adj momentum + 21d rank-and-hold</span>
       </div>
-      <a class="btn btn-solid" href="../portfolio/systemopt/">open full study ↗</a>
     </div>
+
+    <div class="note-callout">
+      <strong>Research philosophy</strong>
+      <p>Understanding system behavior under constraints beats maximizing a single return chart. If an arm looks strong only because turnover was free, or because leakage snuck in, it fails the study.</p>
+    </div>
+
+    <h2>Connection to other work</h2>
+    <p>Fractal inherits the journal instinct from this work. AuditLayer inherits the production skepticism. The spatial work inherits the "report conditions separately" habit. The thesis is older, but the standard stuck.</p>
+  </div>
+
+  <div class="note-footer">
+    <a class="btn btn-ghost" href="spatial.html">← Spatial</a>
+    <a class="btn btn-ghost" href="./">all notes</a>
+    <a class="btn btn-solid" href="../portfolio/systemopt/">full study ↗</a>
   </div>
 </article>
 </body>
