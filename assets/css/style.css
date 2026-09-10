@@ -138,3 +138,34 @@ footer{border-top:1px solid var(--border);padding:48px 24px}
   .notes-index a{grid-template-columns:1fr;gap:6px}
   .ni-go{text-align:left}
 }
+
+/* ── Thesis ── */
+.thesis{font:400 18px/1.65 var(--sans);color:var(--text);max-width:700px;border-left:3px solid var(--accent);padding-left:18px;margin-top:28px}
+
+/* ── Systems: featured + compact rows ── */
+.sys-featured{margin-bottom:44px;padding-left:20px;border-left:2px solid var(--border)}
+.sys-featured:first-of-type{border-left-color:var(--accent)}
+.sys-kicker{font:600 10px/1 var(--mono);text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);margin-bottom:10px}
+.sys-featured h3{font:700 24px/1.25 var(--sans);letter-spacing:-.01em;margin-bottom:10px;color:var(--text)}
+.sys-deck{font:400 16px/1.7 var(--sans);color:var(--text);max-width:680px;margin-bottom:10px}
+.sys-row{margin-bottom:32px}
+.sys-row:last-child{margin-bottom:0}
+.sys-row-head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+.sys-row-head h3{font:600 17px/1.35 var(--sans);color:var(--text)}
+.sys-status{font:500 11px/1 var(--mono);color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em}
+.sys-row p{font:400 15px/1.7 var(--sans);color:var(--text-muted);max-width:680px}
+.sys-muted{color:var(--text-muted);font-size:13px}
+
+/* ── Background: compressed chronology ── */
+.bg-list{display:grid;gap:20px}
+.bg-item{display:grid;grid-template-columns:170px 1fr;gap:16px;align-items:start}
+.bg-when{font:500 12px/1.6 var(--mono);color:var(--text-muted)}
+.bg-item p{font:400 14.5px/1.65 var(--sans);color:var(--text-muted);max-width:640px}
+.bg-item strong{color:var(--text);font-weight:600}
+
+@media(max-width:640px){
+  .bg-item{grid-template-columns:1fr;gap:4px}
+  .sys-featured{padding-left:14px}
+  .sys-featured h3{font-size:20px}
+  .thesis{font-size:16px}
+}

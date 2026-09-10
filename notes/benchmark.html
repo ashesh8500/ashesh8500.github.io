@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent-memory benchmark — Ashesh Kaji</title>
+<meta name="description" content="Independent public benchmark: can an agent retain and correctly use scoped persistent context across a long, distractor-filled task?">
+<meta name="theme-color" content="#0a0a0a">
+<link rel="icon" href="../assets/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/style.css?v=33">
+</head>
+<body>
+<nav class="topbar">
+  <div class="topbar-inner">
+    <a class="topbar-name" href="../">Ashesh Kaji</a>
+    <div class="topbar-links">
+      <a href="./">all notes</a>
+    </div>
+  </div>
+</nav>
+
+<article class="note-shell">
+  <a class="note-back" href="./">← notes</a>
+  <p class="note-kicker">research infrastructure · active</p>
+  <h1 class="note-title">Agent-memory benchmark</h1>
+  <p class="note-deck">Can an agent retain and correctly use scoped persistent context across a long, distractor-filled task?</p>
+
+  <div class="note-meta">
+    <span><strong>Status</strong> scaffold complete · generator realism in progress</span>
+    <span><strong>Output contract</strong> task definition · baselines · eval set · metrics · ablations · failure modes</span>
+  </div>
+
+  <div class="note-body">
+    <p>Frontier agent work lives or dies on memory: whether a system can hold the right context across a long task without drowning in distractors. This is an independent public benchmark for exactly that — small, ruthless, and honest about where it fails.</p>
+
+    <h2>Design</h2>
+    <ul>
+      <li><strong>Task</strong> — seeded synthetic transcripts: planted facts buried in distractor-filled, long-horizon episodes. No private data anywhere in the pipeline.</li>
+      <li><strong>Baselines</strong> — no-memory, full-context, and naive retrieval agents, run as policies any LLM agent can plug into.</li>
+      <li><strong>Metrics</strong> — fact recall/precision, task success rate, provenance accuracy, trap abstention.</li>
+      <li><strong>Provenance</strong> — append-only results with git sha, timestamp, config hash, and seed. Prior results are never overwritten.</li>
+    </ul>
+
+    <div class="note-callout">
+      <strong>Honest finding so far</strong>
+      <p>At a generous 8,000-token budget the task does not discriminate — full-context and retrieval both saturate at perfect recall. It only separates baselines when the budget binds: at 500 tokens, full-context drops to 0.25 recall while retrieval holds 1.00. That crossover is what the benchmark is designed to surface. Making the distractors genuinely confusing — paraphrased facts, near-miss traps — is the current work.</p>
+    </div>
+
+    <h2>What it is not</h2>
+    <p>Not a leaderboard, not a claim about any production system, and not a result until multi-seed baseline runs are logged with ablations. The scaffold, harness, and task definition are done; the science — generator realism, then real runs — is in progress.</p>
+  </div>
+
+  <div class="note-footer">
+    <a class="btn btn-ghost" href="../#systems">← systems</a>
+  </div>
+</article>
+
+</body>
+</html>
