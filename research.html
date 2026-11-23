@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Research | Ashesh Kaji</title>
 <meta name="description" content="Research by Ashesh Kaji: spatial memory for embodied agents, agent-driven hardware design-space exploration, planning with learned world models.">
-<link rel="stylesheet" href="/docs.css?v=2">
+<link rel="stylesheet" href="/docs.css?v=3">
 </head>
 <body>
 <div class="page">
@@ -35,24 +35,250 @@
 
 <h2 id="spatial-memory">Spatial memory from sparse visual observations</h2>
 <p class="meta">In progress. NYU WIRELESS, with Prof. Sundeep Rangan. 2026 to present.</p>
-<p>An agent moving through a building should remember the physical objects it has seen. It needs to build that memory from a few views of each object, under noisy camera pose, without storing raw video.</p>
-<!-- FIGURE: spatial-memory -->
-<p>Each new view is reduced to detected objects. A learned matcher decides, for each stored object, which new detection is the same object, or that none is. Matched observations update a bounded memory of objects and their spatial relations.</p>
-<p>So far, I have evaluated identity matching and memory depth on simulated HM3D rooms. Testing on real indoor walkthrough video is still in progress, and a manuscript is in preparation. The code is private to the lab.</p>
+<figure class="fig" id="fig-spatial-memory">
+  <div class="fig-frame">
+    <div class="fig-band">
+      <div class="fig-head">
+        <p class="fig-kicker">Goal</p>
+      </div>
+      <p class="fig-goal">Remember physical objects across a building from a few noisy-pose views, without storing raw video.</p>
+    </div>
+
+    <div class="fig-band">
+      <div class="fig-head">
+        <p class="fig-kicker">Approach</p>
+        <span class="fig-scroll-hint" aria-hidden="true">scroll &#8594;</span>
+      </div>
+      <div class="fig-flow">
+        <svg class="fig-svg" viewBox="0 0 608 156" width="608" height="156" role="img" aria-labelledby="fig-sm-title">
+          <title id="fig-sm-title">Spatial memory flow: sparse camera views produce per-view object detections, which a learned identity matcher compares against stored objects using visual, geometric, and graph features, updating a bounded object and spatial-relation memory that feeds back into the next view.</title>
+          <defs>
+            <marker id="sm-arrow-fg" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
+              <path d="M0,1 L7,4 L0,7 Z" fill="var(--fg)"/>
+            </marker>
+            <marker id="sm-arrow-muted" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
+              <path d="M0,1 L7,4 L0,7 Z" fill="var(--muted)"/>
+            </marker>
+          </defs>
+
+          <rect class="fig-box" x="2" y="14" width="118" height="64"/>
+          <text class="fig-node-title" x="61" y="40">Sparse views</text>
+          <text class="fig-node-sub" x="61" y="60">noisy pose</text>
+
+          <line class="fig-edge" x1="120" y1="46" x2="142" y2="46" marker-end="url(#sm-arrow-fg)"/>
+
+          <rect class="fig-box" x="144" y="14" width="118" height="64"/>
+          <text class="fig-node-title" x="203" y="40">Detections</text>
+          <text class="fig-node-sub" x="203" y="60">per view</text>
+
+          <line class="fig-edge" x1="262" y1="46" x2="284" y2="46" marker-end="url(#sm-arrow-fg)"/>
+
+          <rect class="fig-box" x="286" y="14" width="150" height="64"/>
+          <text class="fig-node-title" x="361" y="40">Identity matcher</text>
+          <text class="fig-node-sub" x="361" y="60">visual, geom., graph</text>
+
+          <line class="fig-edge" x1="436" y1="46" x2="458" y2="46" marker-end="url(#sm-arrow-fg)"/>
+
+          <rect class="fig-box" x="460" y="14" width="146" height="64"/>
+          <text class="fig-node-title" x="533" y="40">Bounded memory</text>
+          <text class="fig-node-sub" x="533" y="60">objects &amp; relations</text>
+
+          <path class="fig-edge-aux" d="M533,78 L533,122 L361,122 L361,80" marker-end="url(#sm-arrow-muted)"/>
+          <text class="fig-edge-label" x="447" y="144" text-anchor="middle">stored objects vs detections (or none)</text>
+        </svg>
+      </div>
+    </div>
+
+    <div class="fig-band">
+      <div class="fig-head">
+        <p class="fig-kicker">Progress</p>
+        <div class="fig-legend" aria-hidden="true">
+          <span class="fig-legend-item"><span class="fig-mark fig-mark-done"></span>done</span>
+          <span class="fig-legend-item"><span class="fig-mark fig-mark-wip"></span>in progress</span>
+          <span class="fig-legend-item"><span class="fig-mark fig-mark-next"></span>next</span>
+        </div>
+      </div>
+      <ul class="fig-stages">
+        <li><span class="fig-mark fig-mark-done" aria-hidden="true"></span><span>Identity matching in simulated rooms<span class="fig-sr"> (done)</span></span></li>
+        <li><span class="fig-mark fig-mark-done" aria-hidden="true"></span><span>Memory depth, one vs several views<span class="fig-sr"> (done)</span></span></li>
+        <li><span class="fig-mark fig-mark-wip" aria-hidden="true"></span><span>Real indoor walkthrough video<span class="fig-sr"> (in progress)</span></span></li>
+        <li><span class="fig-mark fig-mark-wip" aria-hidden="true"></span><span>Manuscript<span class="fig-sr"> (in progress)</span></span></li>
+      </ul>
+    </div>
+  </div>
+  <figcaption>Overview of the spatial memory pipeline, linking sparse camera observations to a bounded object-relation memory through a learned identity matcher, with current project stages.</figcaption>
+</figure>
+<p>Video cannot be stored for hours, so the agent has to keep a compact memory of objects instead. Each new view is reduced to detected objects. A learned matcher decides, for each stored object, which new detection is the same object, or that none is. Matched observations update a bounded memory of objects and their spatial relations.</p>
+<p>So far, I have evaluated identity matching and memory depth on simulated HM3D rooms. The code is private to the lab.</p>
 
 <h2 id="waveflow">Agent interface for hardware design-space exploration</h2>
 <p class="meta">In progress. NYU WIRELESS, with Prof. Sundeep Rangan. September 2026 to present. Platform repository: <a href="https://github.com/sdrangan/waveflow">sdrangan/waveflow</a>.</p>
-<p>The idea here is that a language-model agent should explore the design space of a hardware block the same way an engineer does, and cite evidence for the design it picks.</p>
-<!-- FIGURE: waveflow -->
+<figure class="fig" id="fig-waveflow">
+  <div class="fig-frame">
+    <div class="fig-band">
+      <div class="fig-head">
+        <p class="fig-kicker">Goal</p>
+      </div>
+      <p class="fig-goal">Enable a language-model agent to explore a hardware block's design space through engineering steps and cite evidence for its selection.</p>
+    </div>
+
+    <div class="fig-band">
+      <div class="fig-head">
+        <p class="fig-kicker">Approach</p>
+        <span class="fig-scroll-hint" aria-hidden="true">scroll &#8594;</span>
+      </div>
+      <div class="fig-flow">
+        <svg class="fig-svg" viewBox="0 0 608 192" width="608" height="192" role="img" aria-labelledby="fig-wf-title">
+          <title id="fig-wf-title">Waveflow agent interface flow: a language-model agent interacts bidirectionally with an MCP and CLI tool interface covering parameter discovery, Python simulation, resource prediction, synthesis, and RTL simulation, connected to a single Python Waveflow block description; all results are stored in a content-addressed store that also supports replay without the vendor toolchain.</title>
+          <defs>
+            <marker id="wf-arrow-fg" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
+              <path d="M0,1 L7,4 L0,7 Z" fill="var(--fg)"/>
+            </marker>
+            <marker id="wf-arrow-fg-start" viewBox="0 0 8 8" refX="1" refY="4" markerWidth="6" markerHeight="6" orient="auto">
+              <path d="M8,1 L1,4 L8,7 Z" fill="var(--fg)"/>
+            </marker>
+            <marker id="wf-arrow-muted" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
+              <path d="M0,1 L7,4 L0,7 Z" fill="var(--muted)"/>
+            </marker>
+          </defs>
+
+          <rect class="fig-box" x="2" y="12" width="122" height="78"/>
+          <text class="fig-node-title" x="63" y="38">LLM agent</text>
+          <text class="fig-node-sub" x="63" y="58">explores &amp;</text>
+          <text class="fig-node-sub" x="63" y="75">cites evidence</text>
+
+          <line class="fig-edge" x1="126" y1="51" x2="152" y2="51" marker-start="url(#wf-arrow-fg-start)" marker-end="url(#wf-arrow-fg)"/>
+
+          <rect class="fig-box" x="154" y="12" width="232" height="78"/>
+          <text class="fig-node-title" x="270" y="38">Tool interface (MCP / CLI)</text>
+          <text class="fig-node-sub" x="270" y="58">params, Py sim, resource pred,</text>
+          <text class="fig-node-sub" x="270" y="75">synthesis, RTL sim</text>
+
+          <line class="fig-edge" x1="388" y1="51" x2="414" y2="51" marker-start="url(#wf-arrow-fg-start)" marker-end="url(#wf-arrow-fg)"/>
+
+          <rect class="fig-box" x="416" y="12" width="190" height="78"/>
+          <text class="fig-node-title" x="511" y="38">Waveflow design</text>
+          <text class="fig-node-sub" x="511" y="58">one Python block:</text>
+          <text class="fig-node-sub" x="511" y="75">sim, HLS, firmware</text>
+
+          <line class="fig-edge" x1="252" y1="90" x2="252" y2="128" marker-end="url(#wf-arrow-fg)"/>
+          <text class="fig-edge-label" x="242" y="114" text-anchor="end">store results</text>
+
+          <line class="fig-edge-aux" x1="288" y1="130" x2="288" y2="92" marker-end="url(#wf-arrow-muted)"/>
+          <text class="fig-edge-label" x="298" y="114" text-anchor="start">offline replay</text>
+
+          <rect class="fig-box-aux" x="110" y="130" width="320" height="54"/>
+          <text class="fig-node-title" x="270" y="153">Content-addressed store</text>
+          <text class="fig-node-sub" x="270" y="172">replays runs without vendor toolchain</text>
+        </svg>
+      </div>
+    </div>
+
+    <div class="fig-band">
+      <div class="fig-head">
+        <p class="fig-kicker">Progress</p>
+        <div class="fig-legend" aria-hidden="true">
+          <span class="fig-legend-item"><span class="fig-mark fig-mark-done"></span>done</span>
+          <span class="fig-legend-item"><span class="fig-mark fig-mark-wip"></span>in progress</span>
+          <span class="fig-legend-item"><span class="fig-mark fig-mark-next"></span>next</span>
+        </div>
+      </div>
+      <ul class="fig-stages">
+        <li><span class="fig-mark fig-mark-done" aria-hidden="true"></span><span>Replay-mode interface on FIR filter<span class="fig-sr"> (done)</span></span></li>
+        <li><span class="fig-mark fig-mark-done" aria-hidden="true"></span><span>Shared tools across two blocks<span class="fig-sr"> (done)</span></span></li>
+        <li class="fig-next"><span class="fig-mark fig-mark-next" aria-hidden="true"></span><span>Live synthesis in the agent loop<span class="fig-sr"> (next)</span></span></li>
+        <li class="fig-next"><span class="fig-mark fig-mark-next" aria-hidden="true"></span><span>Comparison against grid search<span class="fig-sr"> (next)</span></span></li>
+      </ul>
+    </div>
+  </div>
+  <figcaption>Architecture of the Waveflow agent interface, connecting a language-model agent to a unified hardware block specification through structured tools and a content-addressed result store.</figcaption>
+</figure>
 <p>Waveflow is the lab's hardware design platform, where one Python description of a block drives simulation, high-level synthesis, and firmware. I built an agent interface that exposes a small set of tools over MCP and a command line: parameter discovery, Python simulation, resource prediction, synthesis, and RTL simulation. Results are stored by content, so a run can be replayed without the vendor toolchain.</p>
-<p>Right now, the interface runs Python simulation on two blocks, a FIR filter and a memory copy, and replays recorded synthesis results for the FIR filter. Live synthesis in the agent loop and a comparison against grid search are next.</p>
+<p>Right now, the interface runs Python simulation on two blocks, a FIR filter and a memory copy, and replays recorded synthesis results for the FIR filter.</p>
 
 <h2 id="world-model-planning">Planning with a frozen latent world model</h2>
 <p class="meta">In progress. Independent research. Fall 2026 to present.</p>
-<p>A learned world model predicts how a scene changes under an action. I want to understand which representations and planner settings make good controls cheap to find, and why.</p>
-<!-- FIGURE: world-model-planning -->
-<p>I keep the model (RoboJEPA) frozen and treat the system as separate modules: representation, predictor, objective, planner, and feedback. A cheap probe measures the action scale where the predictor can be trusted, and that scale sets the planner's search region. I compare sampling (CEM) and Gauss-Newton planners under one fixed scorer, writing down predictions before each run.</p>
-<p>So far, I have run the baseline, the trust-region diagnosis, and a Gauss-Newton planner on development instances of a simulated reach task. Held-out confirmation and multi-step tasks are next.</p>
+<figure class="fig" id="fig-world-model-planning">
+  <div class="fig-frame">
+    <div class="fig-band">
+      <div class="fig-head">
+        <p class="fig-kicker">Goal</p>
+      </div>
+      <p class="fig-goal">Identify which representations and planner settings make good controls cheap to find with a learned world model, and why.</p>
+    </div>
+
+    <div class="fig-band">
+      <div class="fig-head">
+        <p class="fig-kicker">Approach</p>
+        <span class="fig-scroll-hint" aria-hidden="true">scroll &#8594;</span>
+      </div>
+      <div class="fig-flow">
+        <svg class="fig-svg" viewBox="0 0 608 208" width="608" height="208" role="img" aria-labelledby="fig-wmp-title">
+          <title id="fig-wmp-title">World-model planning pipeline: an observation enters a frozen encoder for representation, then a latent dynamics predictor, a latent goal-distance objective, and a sampling CEM or Gauss-Newton planner that outputs an executed action feeding back to the next step; a cheap action-scale probe of the predictor sets the planner search region.</title>
+          <defs>
+            <marker id="wmp-arrow-fg" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
+              <path d="M0,1 L7,4 L0,7 Z" fill="var(--fg)"/>
+            </marker>
+            <marker id="wmp-arrow-muted" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
+              <path d="M0,1 L7,4 L0,7 Z" fill="var(--muted)"/>
+            </marker>
+          </defs>
+
+          <rect class="fig-box" x="2" y="12" width="124" height="62"/>
+          <text class="fig-node-title" x="64" y="37">Frozen encoder</text>
+          <text class="fig-node-sub" x="64" y="57">representation</text>
+
+          <line class="fig-edge" x1="126" y1="43" x2="146" y2="43" marker-end="url(#wmp-arrow-fg)"/>
+
+          <rect class="fig-box" x="148" y="12" width="126" height="62"/>
+          <text class="fig-node-title" x="211" y="37">Predictor</text>
+          <text class="fig-node-sub" x="211" y="57">latent dynamics</text>
+
+          <line class="fig-edge" x1="274" y1="43" x2="294" y2="43" marker-end="url(#wmp-arrow-fg)"/>
+
+          <rect class="fig-box" x="296" y="12" width="122" height="62"/>
+          <text class="fig-node-title" x="357" y="37">Objective</text>
+          <text class="fig-node-sub" x="357" y="57">goal distance</text>
+
+          <line class="fig-edge" x1="418" y1="43" x2="438" y2="43" marker-end="url(#wmp-arrow-fg)"/>
+
+          <rect class="fig-box" x="440" y="12" width="166" height="62"/>
+          <text class="fig-node-title" x="523" y="37">Planner</text>
+          <text class="fig-node-sub" x="523" y="57">CEM or Gauss-Newton</text>
+
+          <path class="fig-edge-aux" d="M211,74 L211,106" marker-end="url(#wmp-arrow-muted)"/>
+          <rect class="fig-box-aux" x="166" y="108" width="266" height="52"/>
+          <text class="fig-node-title" x="299" y="131">Action-scale probe</text>
+          <text class="fig-node-sub" x="299" y="150">trustworthy scale sets search region</text>
+          <path class="fig-edge-aux" d="M432,134 L500,134 L500,76" marker-end="url(#wmp-arrow-muted)"/>
+
+          <path class="fig-edge" d="M556,74 L556,182 L64,182 L64,76" marker-end="url(#wmp-arrow-fg)"/>
+          <text class="fig-edge-label" x="310" y="201" text-anchor="middle">executed action &#8594; feedback &#8594; next observation</text>
+        </svg>
+      </div>
+    </div>
+
+    <div class="fig-band">
+      <div class="fig-head">
+        <p class="fig-kicker">Progress</p>
+        <div class="fig-legend" aria-hidden="true">
+          <span class="fig-legend-item"><span class="fig-mark fig-mark-done"></span>done</span>
+          <span class="fig-legend-item"><span class="fig-mark fig-mark-wip"></span>in progress</span>
+          <span class="fig-legend-item"><span class="fig-mark fig-mark-next"></span>next</span>
+        </div>
+      </div>
+      <ul class="fig-stages">
+        <li><span class="fig-mark fig-mark-done" aria-hidden="true"></span><span>Baseline planner on simulated reach<span class="fig-sr"> (done)</span></span></li>
+        <li><span class="fig-mark fig-mark-done" aria-hidden="true"></span><span>Trust-region diagnosis (dev)<span class="fig-sr"> (done)</span></span></li>
+        <li><span class="fig-mark fig-mark-done" aria-hidden="true"></span><span>Gauss-Newton in trust region (dev)<span class="fig-sr"> (done)</span></span></li>
+        <li class="fig-next"><span class="fig-mark fig-mark-next" aria-hidden="true"></span><span>Held-out confirmation<span class="fig-sr"> (next)</span></span></li>
+        <li class="fig-next"><span class="fig-mark fig-mark-next" aria-hidden="true"></span><span>Multi-step tasks<span class="fig-sr"> (next)</span></span></li>
+      </ul>
+    </div>
+  </div>
+  <figcaption>Modular pipeline for planning with a frozen latent world model, pairing a predictor action-scale probe with sampling or Gauss-Newton control, and current study stages.</figcaption>
+</figure>
+<p>A learned world model predicts how a scene changes under an action. I want to understand which representations and planner settings make good controls cheap to find, and why. I keep the model (RoboJEPA) frozen and treat the system as separate modules: representation, predictor, objective, planner, and feedback. A cheap probe measures the action scale where the predictor can be trusted, and that scale sets the planner's search region. I compare sampling (CEM) and Gauss-Newton planners under one fixed scorer, writing down predictions before each run.</p>
 
 <h2 id="honors-thesis">Nicotine endorsement, impulsivity and brain structure in early adolescence</h2>
 <p class="meta">Complete. Honors thesis, UC San Diego, Department of Cognitive Science, 2025. Advisors: Mary Boyle and Rob Loughnan. <a href="https://cogsci.ucsd.edu/_files/undergraduates/past-honors-theses/2024-2025/Thesis_Kaji,%20Ashesh.pdf">Thesis (PDF)</a>.</p>
