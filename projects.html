@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Projects | Ashesh Kaji</title>
+<meta name="description" content="Projects by Ashesh Kaji: an FPGA SumCheck accelerator, a walk-forward portfolio allocation study, a RISC-V pipeline simulator, AuditLayer and Fractal.">
+<link rel="stylesheet" href="/docs.css?v=1">
+</head>
+<body>
+<div class="page">
+<nav aria-label="Site">
+  <a class="name" href="/">Ashesh Kaji</a>
+  <ul>
+    <li><a href="/">About</a></li>
+    <li><a href="/research.html">Research</a></li>
+    <li><a href="/projects.html" aria-current="page">Projects</a>
+      <ul>
+        <li><a href="#sumcheck">SumCheck accelerator</a></li>
+        <li><a href="#layered-control">Layered control study</a></li>
+        <li><a href="#riscv">RISC-V simulator</a></li>
+        <li><a href="#auditlayer">AuditLayer</a></li>
+        <li><a href="#fractal">Fractal</a></li>
+      </ul>
+    </li>
+    <li><a href="/cv.html">CV</a></li>
+  </ul>
+  <ul>
+    <li><a href="https://github.com/ashesh8500">GitHub</a></li>
+    <li><a href="https://www.linkedin.com/in/ashesh-kaji-b5a3161b9">LinkedIn</a></li>
+    <li><a href="mailto:ask9184@nyu.edu">Email</a></li>
+  </ul>
+</nav>
+<main>
+<h1>Projects</h1>
+<p>Course projects and systems built outside the lab. Research projects are on the <a href="/research.html">research page</a>.</p>
+
+<h2 id="sumcheck">SumCheck accelerator for zero-knowledge proofs <span class="status">complete</span></h2>
+<p class="meta">Team course project, NYU, Spring 2026. Team: Sammy Suliman, Jui-Teng Huang, Ashesh Kaji. <a href="https://github.com/SammySuliman/zkPHIRE-A-Programmable-Accelerator-for-ZKPs">Code</a>.</p>
+<p>The project implements one programmable SumCheck round over the BN254 scalar field in Vitis HLS. The design follows the datapath of the zkPHIRE paper (HPCA 2026). A Python golden model is the bit-exact reference. It passes randomized round checks for term degrees 2 to 6. The HLS testbench passes 7 of 7 cases on two targets: a PYNQ-Z2 design with one processing element and an RFSoC 4x2 design with eight.</p>
+
+<h2 id="layered-control">Portfolio allocation as layered control <span class="status">complete</span></h2>
+<p class="meta">Course project, System Optimization Methods, NYU, Spring 2026. <a href="/portfolio/systemopt/">Full study</a>. <a href="https://github.com/ashesh8500/system-optimization-portfolio-research">Code</a>.</p>
+<p>The study treats portfolio allocation as a layered control problem. It evaluates 60 arms (3 stock universes × 5 screens × 4 controllers) in chronological walk-forward folds. Cost sensitivity is tested up to 25 basis points. A learned RL router improved on a fixed strategy chosen in training. It did not beat a simple trailing-window router.</p>
+<p>The study states its limits: survivorship bias in the universes, few independent folds, and a proportional cost model. It is evidence about the mechanism. It makes no claim of a profitable strategy.</p>
+
+<h2 id="riscv">RISC-V five-stage pipeline simulator <span class="status">complete</span></h2>
+<p class="meta">Course project, Computer Systems Architecture, NYU, Spring 2026.</p>
+<p>A Python simulator of an RV32I processor with a five-stage pipeline.</p>
+
+<h2 id="auditlayer">AuditLayer <span class="status">in production</span></h2>
+<p class="meta">Cofounded in 2026. Role: engineering. <a href="https://auditlayermedia.com">auditlayermedia.com</a>.</p>
+<p>AuditLayer produces sourced brand and competitor reports from public social media data. Language-model agents do the research inside bounded runs. Deterministic code owns the queue, the storage and the delivery. Each claim in a report keeps a link to its source. The stack is Next.js, Postgres and Python workers.</p>
+
+<h2 id="fractal">Fractal <span class="status">paused</span></h2>
+<p class="meta">Independent project, 2025 to 2026.</p>
+<p>Fractal is a research system for investment decisions. It separates observation, allocation, risk gating and execution, and it writes each decision to a journal that can be audited later. It ran in paper trading. No performance claim is made.</p>
+
+<footer>Last updated November 2026.</footer>
+</main>
+</div>
+</body>
+</html>

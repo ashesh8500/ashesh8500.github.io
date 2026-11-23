@@ -1,76 +1,12 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Spatial Intelligence — Ashesh Kaji</title>
-<meta name="description" content="Object association under viewpoint and pose change at NYU WIRELESS.">
-<meta name="theme-color" content="#0a0a0a">
-<link rel="icon" href="../assets/favicon.ico">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/css/style.css?v=32">
+<title>Moved | Ashesh Kaji</title>
+<meta http-equiv="refresh" content="0; url=/research.html#spatial-memory">
+<link rel="canonical" href="https://asheshkaji.com/research.html#spatial-memory">
 </head>
 <body>
-<nav class="topbar">
-  <div class="topbar-inner">
-    <a class="topbar-name" href="../">Ashesh Kaji</a>
-    <div class="topbar-links">
-      <a href="./">all notes</a>
-    </div>
-  </div>
-</nav>
-
-<article class="note-shell">
-  <a class="note-back" href="./">← notes</a>
-  <p class="note-kicker">research · NYU WIRELESS</p>
-  <h1 class="note-title">Spatial Intelligence</h1>
-  <p class="note-deck">Runtime object association when the camera moves — and when the pose you trusted is wrong.</p>
-
-  <div class="note-meta">
-    <span><strong>Context</strong> NYU WIRELESS</span>
-    <span><strong>Evaluation</strong> 2,400 train / 186 val / 771 test</span>
-    <span><strong>Code</strong> private</span>
-  </div>
-
-  <div class="note-body">
-    <h2>Problem framing</h2>
-    <p>Keep object identity and association coherent as viewpoint changes. Clean pose is the easy case. Injected pose noise is the honest case. I treat them as separate evaluation stories so a single headline number cannot hide a brittle pipeline.</p>
-
-    <h2>Results</h2>
-    <div class="note-grid">
-      <div class="note-stat">
-        <span class="note-stat-k">strict-threshold F1</span>
-        <span class="note-stat-v">0.598</span>
-        <span class="note-stat-s">clean pose</span>
-      </div>
-      <div class="note-stat">
-        <span class="note-stat-k">strict-threshold F1</span>
-        <span class="note-stat-v">0.484</span>
-        <span class="note-stat-s">injected pose noise</span>
-      </div>
-    </div>
-    <p>Coverage and pseudo-label quality are reported separately. A system can look strong on matched cases while quietly skipping hard ones, or while training on labels that are not as clean as the paper title implies.</p>
-
-    <h2>Methodology</h2>
-    <ul>
-      <li>Visual, geometric, and relational cues all participate — none are treated as sufficient alone.</li>
-      <li>Leakage controls and ablations are part of the research, not afterthoughts.</li>
-      <li>Pose noise is a first-class evaluation condition, not a footnote.</li>
-    </ul>
-
-    <div class="note-callout">
-      <strong>Code visibility</strong>
-      <p>The implementation repository is private. Model weights, dataset dumps, training configs, and the private repo are not published. This page describes the research question and the standard of evidence — enough to start a conversation.</p>
-    </div>
-  </div>
-
-  <div class="note-footer">
-    <a class="btn btn-ghost" href="auditlayer.html">← AuditLayer</a>
-    <a class="btn btn-ghost" href="systems-thesis.html">Systems Thesis →</a>
-    <a class="btn btn-solid" href="mailto:ashesh8500@gmail.com">ask about collaboration</a>
-  </div>
-</article>
+<p>This page moved to <a href="/research.html#spatial-memory">/research.html#spatial-memory</a>.</p>
 </body>
 </html>
