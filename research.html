@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Research | Ashesh Kaji</title>
 <meta name="description" content="Research by Ashesh Kaji: spatial memory for embodied agents, agent-driven hardware design-space exploration, planning with learned world models.">
-<link rel="stylesheet" href="/docs.css?v=1">
+<link rel="stylesheet" href="/docs.css?v=2">
 </head>
 <body>
 <div class="page">
@@ -32,37 +32,36 @@
 </nav>
 <main>
 <h1>Research</h1>
-<p>Three projects are in progress and one is complete. Each entry states the question, the method, the result so far and what is not yet done.</p>
 
-<h2 id="spatial-memory">Spatial memory from sparse visual observations <span class="status">in progress</span></h2>
-<p class="meta">NYU WIRELESS, with Prof. Sundeep Rangan. 2026 to present. Code is private to the lab.</p>
+<h2 id="spatial-memory">Spatial memory from sparse visual observations</h2>
+<p class="meta">In progress. NYU WIRELESS, with Prof. Sundeep Rangan. 2026 to present. Code is private to the lab.</p>
 
 <h3>Question</h3>
 <p>An agent moves through a building and sees each object only a few times, from different viewpoints. When it detects an object, is this one it has seen before, or a new one? The agent must answer from runtime observations alone, with noisy camera pose and without keeping raw video.</p>
 
 <h3>Method</h3>
-<p>The matcher compares one stored object against every detected candidate in the new view, plus a "none" option. It uses visual, geometric and graph features that are available at runtime. Simulator identity labels supervise training and score the output. They never enter the runtime features.</p>
+<p>The matcher compares one stored object against every detected candidate in the new view, plus a "none" option. It uses visual, geometric and graph features that are available at runtime. Simulator identity labels are used only for training and scoring, never as runtime features.</p>
 <p>The memory stores each object as a small set of accepted observations. Two policies are compared at one fixed decision threshold. K=1 keeps the latest observation per object. K=4 keeps up to four recent observations.</p>
 
 <h3>Result so far</h3>
-<p>The table reports HM3D rooms in the Habitat simulator. Each percentage is computed per run and then averaged.</p>
+<p>The table reports two HM3D rooms in the Habitat simulator. Each percentage is computed per run and then averaged.</p>
 <div class="scroll">
 <table>
   <thead>
     <tr><th>Evaluation</th><th>Policy</th><th class="num">Precision</th><th class="num">Recall</th><th class="num">F1</th><th class="num">Entity F1 (B³)</th></tr>
   </thead>
   <tbody>
-    <tr><td>Development room, shuffled order</td><td>K=1</td><td class="num">90.66%</td><td class="num">82.03%</td><td class="num">86.13%</td><td class="num">63.65%</td></tr>
-    <tr><td>Development room, shuffled order</td><td>K=4</td><td class="num">91.72%</td><td class="num">84.09%</td><td class="num">87.74%</td><td class="num">70.22%</td></tr>
-    <tr><td>Unseen room, shuffled order</td><td>K=1</td><td class="num">86.26%</td><td class="num">85.06%</td><td class="num">85.66%</td><td class="num">41.66%</td></tr>
-    <tr><td>Unseen room, shuffled order</td><td>K=4</td><td class="num">90.53%</td><td class="num">89.18%</td><td class="num">89.85%</td><td class="num">52.84%</td></tr>
-    <tr><td>Unseen room, chronological order</td><td>K=1</td><td class="num">90.97%</td><td class="num">86.75%</td><td class="num">88.81%</td><td class="num">44.20%</td></tr>
-    <tr><td>Unseen room, chronological order</td><td>K=4</td><td class="num">90.65%</td><td class="num">88.37%</td><td class="num">89.49%</td><td class="num">51.78%</td></tr>
+    <tr><td>Development room, shuffled order</td><td>K=1</td><td class="num">90.7%</td><td class="num">82.0%</td><td class="num">86.1%</td><td class="num">63.7%</td></tr>
+    <tr><td>Development room, shuffled order</td><td>K=4</td><td class="num">91.7%</td><td class="num">84.1%</td><td class="num">87.7%</td><td class="num">70.2%</td></tr>
+    <tr><td>Unseen room, shuffled order</td><td>K=1</td><td class="num">86.3%</td><td class="num">85.1%</td><td class="num">85.7%</td><td class="num">41.7%</td></tr>
+    <tr><td>Unseen room, shuffled order</td><td>K=4</td><td class="num">90.5%</td><td class="num">89.2%</td><td class="num">89.8%</td><td class="num">52.8%</td></tr>
+    <tr><td>Unseen room, chronological order</td><td>K=1</td><td class="num">91.0%</td><td class="num">86.8%</td><td class="num">88.8%</td><td class="num">44.2%</td></tr>
+    <tr><td>Unseen room, chronological order</td><td>K=4</td><td class="num">90.7%</td><td class="num">88.4%</td><td class="num">89.5%</td><td class="num">51.8%</td></tr>
   </tbody>
 </table>
 </div>
 <p class="meta">Shuffled rows average 15 runs (3 checkpoints × 5 view orders). Chronological rows average 3 runs. Development room: 700 observations, 537 with evaluation labels, 72 physical objects. Unseen room: 700 observations, 585 with evaluation labels, 39 physical objects. Precision and recall score the decision to attach a new observation to an existing object. Entity F1 (B³) scores the final grouping of observations into objects. The threshold was fixed in advance and not retuned per room.</p>
-<p>On the unseen room, attaching observations to existing objects is about 90% precise. Grouping them into whole objects is much harder. Four observations per object raise entity F1 by about 11 points over one observation in shuffled order.</p>
+<p>On the unseen room, the decision to attach an observation to an existing object is about 90% precise. Grouping observations into whole objects is harder: entity F1 is 41.7% with one observation per object and 52.8% with four, in shuffled order.</p>
 
 <h3>Not yet done</h3>
 <ul>
@@ -70,8 +69,8 @@
   <li>A manuscript is in preparation. Results on the real video are not public yet.</li>
 </ul>
 
-<h2 id="waveflow">Agent interface for hardware design-space exploration <span class="status">in progress</span></h2>
-<p class="meta">NYU WIRELESS, with Prof. Sundeep Rangan. September 2026 to present. Platform repository: <a href="https://github.com/sdrangan/waveflow">sdrangan/waveflow</a>.</p>
+<h2 id="waveflow">Agent interface for hardware design-space exploration</h2>
+<p class="meta">In progress. NYU WIRELESS, with Prof. Sundeep Rangan. September 2026 to present. Platform repository: <a href="https://github.com/sdrangan/waveflow">sdrangan/waveflow</a>.</p>
 
 <h3>Question</h3>
 <p>Waveflow is the lab's hardware design platform. One Python description of a block drives simulation, high-level synthesis and firmware. Can a language-model agent search the design space of a block through a small, fixed set of tools, and cite the evidence for its choice?</p>
@@ -80,39 +79,40 @@
 <p>The interface exposes a small set of tools over MCP and a command line: parameter discovery, Python simulation, resource prediction, synthesis and RTL simulation. Each call is content-addressed, so a repeated call returns the stored result. A replay mode answers synthesis queries from recorded HLS estimates, which lets the agent loop run on a machine without the vendor toolchain. A failed call returns as a data row.</p>
 
 <h3>Result so far</h3>
-<p>In one recorded trial on a FIR filter block, the agent selected the reference optimum (32 taps, 16-bit, serial architecture) in 20 tool calls and cited valid evidence for it. An earlier trial failed because oversized tool replies were cut off. Compact result views fixed that failure. Both trials are kept as regression fixtures.</p>
+<p>In a single recorded trial on a FIR filter block, the agent found the reference optimum (32 taps, 16-bit, serial architecture) in 20 tool calls and cited valid evidence for it. An earlier trial failed because oversized tool replies were cut off. Compact result views fixed that failure. Both trials are kept as regression fixtures.</p>
 
 <h3>Not yet done</h3>
 <ul>
-  <li>One successful trial is a working interface. It is no evidence that the agent beats a grid search or a human designer.</li>
-  <li>As of October 2026, live synthesis and RTL runs inside the agent loop are not integrated.</li>
+  <li>The single successful trial shows the interface works end to end. It does not show that the agent outperforms grid search or a human designer.</li>
+  <li>Live synthesis and RTL runs inside the agent loop are not integrated yet.</li>
 </ul>
 
-<h2 id="world-model-planning">Planning with a frozen latent world model <span class="status">in progress</span></h2>
-<p class="meta">Independent research. Fall 2026 to present.</p>
+<h2 id="world-model-planning">Planning with a frozen latent world model</h2>
+<p class="meta">In progress. Independent research. Fall 2026 to present.</p>
 
 <h3>Question</h3>
 <p>A pretrained JEPA world model predicts the future in latent space. A planner searches for actions whose predicted outcome is close to a goal. How far can a planner trust the model's predictions, and can a cheap probe of that trust region set the planner's configuration?</p>
 
 <h3>Method</h3>
-<p>The model is RoboJEPA, kept frozen. The task is a simulated reach. Each experiment has a written prediction before it runs, a fixed scorer, and a second script that recomputes every count from the raw logs. The released sampling planner (CEM) is the baseline.</p>
+<p>The model is RoboJEPA, kept frozen. The task is a simulated reach. Each experiment has a written prediction before it runs, a fixed scorer, and a second script that recomputes every count from the raw logs. The released sampling planner (CEM) is the baseline. Progress is the fraction of the initial distance to the goal that a run closes.</p>
 
 <h3>Result so far</h3>
 <p>All numbers come from 8 development instances with one planner seed.</p>
 <ul>
   <li>The released CEM planner ends within 2 cm of the goal on 6 of 8 instances. On the 2 nearest starts it ends farther away than it began.</li>
   <li>Capping each executed step at 5 cm makes progress positive on 8 of 8 instances. Mean progress rises from 0.59 to 0.89. The gain comes from the two failing instances, and the cap costs some progress on the other six.</li>
-  <li>A Gauss-Newton planner inside the same 5 cm region reaches mean progress 0.91 at 1.3 s of planning per step. The released CEM setting takes 212 s per step (median).</li>
+  <li>A Gauss-Newton planner inside the same 5 cm region reaches mean progress 0.91. It plans in 1.3 s per step (median), against 211 s for CEM under the same cap.</li>
 </ul>
+<p>By the fixed test, a paired bootstrap on median progress, no planner has beaten the baseline yet.</p>
 
 <h3>Not yet done</h3>
 <ul>
-  <li>The fixed scorer compares medians with a paired bootstrap. By that test no planner has beaten the baseline yet.</li>
-  <li>Held-out instances, more seeds and a multi-step horizon are the next runs.</li>
+  <li>Held-out instances and more seeds.</li>
+  <li>Planning over a multi-step horizon.</li>
 </ul>
 
-<h2 id="honors-thesis">Nicotine endorsement, impulsivity and brain structure in early adolescence <span class="status">complete</span></h2>
-<p class="meta">Honors thesis, UC San Diego, Department of Cognitive Science, 2025. Advisors: Mary Boyle and Rob Loughnan. <a href="https://cogsci.ucsd.edu/_files/undergraduates/past-honors-theses/2024-2025/Thesis_Kaji,%20Ashesh.pdf">Thesis (PDF)</a>.</p>
+<h2 id="honors-thesis">Nicotine endorsement, impulsivity and brain structure in early adolescence</h2>
+<p class="meta">Complete. Honors thesis, UC San Diego, Department of Cognitive Science, 2025. Advisors: Mary Boyle and Rob Loughnan. <a href="https://cogsci.ucsd.edu/_files/undergraduates/past-honors-theses/2024-2025/Thesis_Kaji,%20Ashesh.pdf">Thesis (PDF)</a>.</p>
 
 <h3>Question</h3>
 <p>Is early nicotine use linked to impulsivity, does impulsivity predict later nicotine use, and does nicotine use show in brain structure?</p>
@@ -122,7 +122,7 @@
 
 <h3>Result</h3>
 <ul>
-  <li>Baseline impulsivity raised the odds of starting nicotine within two years (odds ratios 1.56 to 1.78).</li>
+  <li>Baseline impulsivity raised the odds of starting nicotine within two years (odds ratios 1.56 to 1.78 across impulsivity measures).</li>
   <li>No cortical or subcortical region survived correction for multiple comparisons. The thesis reports this as a null result.</li>
 </ul>
 

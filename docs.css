@@ -14,7 +14,7 @@ body {
 }
 a { color: var(--link); }
 .page { display: flex; gap: 48px; max-width: 960px; margin: 0 auto; padding: 40px 24px 80px; }
-nav { flex: 0 0 170px; position: sticky; top: 40px; align-self: flex-start; font-size: 0.95rem; }
+nav { flex: 0 0 185px; position: sticky; top: 40px; align-self: flex-start; font-size: 0.95rem; }
 nav .name { display: block; font-weight: 700; color: var(--fg); text-decoration: none; margin-bottom: 14px; }
 nav ul { list-style: none; margin: 0 0 18px; padding: 0; }
 nav li { margin: 4px 0; }
@@ -22,15 +22,15 @@ nav a { text-decoration: none; }
 nav a:hover { text-decoration: underline; }
 nav a[aria-current="page"] { color: var(--fg); font-weight: 700; }
 nav ul ul { margin: 2px 0 6px 12px; font-size: 0.88rem; }
-main { flex: 1 1 auto; min-width: 0; max-width: 680px; }
+nav ul ul li { line-height: 1.3; margin: 5px 0; }
+main { flex: 1 1 auto; min-width: 0; max-width: 640px; }
 h1 { font-size: 1.7rem; line-height: 1.25; margin: 0 0 12px; }
 h2 { font-size: 1.2rem; line-height: 1.3; margin: 40px 0 6px; padding-top: 16px; border-top: 1px solid var(--line); }
 h3 { font-size: 1rem; margin: 22px 0 4px; }
 p { margin: 0 0 12px; }
 ul { margin: 0 0 12px; padding-left: 20px; }
-li { margin: 3px 0; }
+main li { margin: 7px 0; }
 .meta { color: var(--muted); font-size: 0.9rem; margin: 0 0 10px; }
-.status { font-size: 0.78rem; font-weight: 600; color: var(--muted); border: 1px solid var(--line); border-radius: 3px; padding: 1px 6px; margin-left: 6px; white-space: nowrap; vertical-align: 2px; }
 table { border-collapse: collapse; width: 100%; font-size: 0.9rem; margin: 8px 0 12px; }
 th, td { text-align: left; padding: 5px 10px 5px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
 th { font-weight: 600; }
@@ -38,6 +38,7 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 .scroll { overflow-x: auto; }
 .row { display: flex; justify-content: space-between; gap: 16px; align-items: baseline; }
 .row .date { flex: none; color: var(--muted); font-size: 0.9rem; }
+p + .row, ul + .row { margin-top: 18px; }
 footer { margin-top: 56px; padding-top: 14px; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.85rem; }
 @media (max-width: 720px) {
   .page { display: block; padding: 20px 18px 60px; }
@@ -45,4 +46,6 @@ footer { margin-top: 56px; padding-top: 14px; border-top: 1px solid var(--line);
   nav ul { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-bottom: 6px; }
   nav ul ul { display: none; }
   .row { display: block; }
+  .scroll table { font-size: 0.8rem; }
+  .scroll th, .scroll td { white-space: nowrap; padding: 4px 10px 4px 0; }
 }
