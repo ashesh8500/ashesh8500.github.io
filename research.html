@@ -35,38 +35,38 @@
 
 <h2 id="spatial-memory">Spatial memory from sparse visual observations</h2>
 <p class="meta">In progress. NYU WIRELESS, with Prof. Sundeep Rangan. 2026 to present.</p>
-<p>An agent that moves through a building should remember the physical objects in it. The memory has to be built from a few views of each object, under noisy camera pose, without storing raw video.</p>
+<p>An agent moving through a building should remember the physical objects it has seen. It needs to build that memory from a few views of each object, under noisy camera pose, without storing raw video.</p>
 <!-- FIGURE: spatial-memory -->
-<p>Each new view is reduced to detected objects. A learned matcher decides, for each stored object, which detection shows the same object, or that none does. Matched observations update a bounded memory of objects and their spatial relations.</p>
-<p>Identity matching and memory depth have been evaluated on simulated HM3D rooms. Work on real indoor walkthrough video is in progress, and a manuscript is in preparation. Code is private to the lab.</p>
+<p>Each new view is reduced to detected objects. A learned matcher decides, for each stored object, which new detection is the same object, or that none is. Matched observations update a bounded memory of objects and their spatial relations.</p>
+<p>So far, I have evaluated identity matching and memory depth on simulated HM3D rooms. Testing on real indoor walkthrough video is still in progress, and a manuscript is in preparation. The code is private to the lab.</p>
 
 <h2 id="waveflow">Agent interface for hardware design-space exploration</h2>
 <p class="meta">In progress. NYU WIRELESS, with Prof. Sundeep Rangan. September 2026 to present. Platform repository: <a href="https://github.com/sdrangan/waveflow">sdrangan/waveflow</a>.</p>
-<p>A language-model agent should be able to explore the design space of a hardware block through the same steps an engineer uses, and cite evidence for the design it selects.</p>
+<p>The idea here is that a language-model agent should explore the design space of a hardware block the same way an engineer does, and cite evidence for the design it picks.</p>
 <!-- FIGURE: waveflow -->
-<p>Waveflow is the lab's hardware design platform. One Python description of a block drives simulation, high-level synthesis and firmware. The agent interface exposes a small set of tools over MCP and a command line: parameter discovery, Python simulation, resource prediction, synthesis and RTL simulation. Results are stored by content, so a run can be replayed without the vendor toolchain.</p>
-<p>The interface runs Python simulation on two blocks, a FIR filter and a memory copy, and replays recorded synthesis results for the FIR filter. Live synthesis in the agent loop and a comparison against grid search are next.</p>
+<p>Waveflow is the lab's hardware design platform, where one Python description of a block drives simulation, high-level synthesis, and firmware. I built an agent interface that exposes a small set of tools over MCP and a command line: parameter discovery, Python simulation, resource prediction, synthesis, and RTL simulation. Results are stored by content, so a run can be replayed without the vendor toolchain.</p>
+<p>Right now, the interface runs Python simulation on two blocks, a FIR filter and a memory copy, and replays recorded synthesis results for the FIR filter. Live synthesis in the agent loop and a comparison against grid search are next.</p>
 
 <h2 id="world-model-planning">Planning with a frozen latent world model</h2>
 <p class="meta">In progress. Independent research. Fall 2026 to present.</p>
-<p>A learned world model predicts how a scene changes under an action. The study asks which representations and planner settings make good controls cheap to find, and why.</p>
+<p>A learned world model predicts how a scene changes under an action. I want to understand which representations and planner settings make good controls cheap to find, and why.</p>
 <!-- FIGURE: world-model-planning -->
-<p>The model (RoboJEPA) stays frozen. The system is treated as modules: representation, predictor, objective, planner and feedback. A cheap probe measures the action scale at which the predictor can be trusted, and that scale sets the planner's search region. Sampling (CEM) and Gauss-Newton planners are compared under one fixed scorer, with predictions written before each run.</p>
-<p>The baseline, the trust-region diagnosis and a Gauss-Newton planner have been run on development instances of a simulated reach task. Held-out confirmation and multi-step tasks are next.</p>
+<p>I keep the model (RoboJEPA) frozen and treat the system as separate modules: representation, predictor, objective, planner, and feedback. A cheap probe measures the action scale where the predictor can be trusted, and that scale sets the planner's search region. I compare sampling (CEM) and Gauss-Newton planners under one fixed scorer, writing down predictions before each run.</p>
+<p>So far, I have run the baseline, the trust-region diagnosis, and a Gauss-Newton planner on development instances of a simulated reach task. Held-out confirmation and multi-step tasks are next.</p>
 
 <h2 id="honors-thesis">Nicotine endorsement, impulsivity and brain structure in early adolescence</h2>
 <p class="meta">Complete. Honors thesis, UC San Diego, Department of Cognitive Science, 2025. Advisors: Mary Boyle and Rob Loughnan. <a href="https://cogsci.ucsd.edu/_files/undergraduates/past-honors-theses/2024-2025/Thesis_Kaji,%20Ashesh.pdf">Thesis (PDF)</a>.</p>
 
 <h3>Question</h3>
-<p>Is early nicotine use linked to impulsivity, does impulsivity predict later nicotine use, and does nicotine use show in brain structure?</p>
+<p>I wanted to test whether early nicotine use is linked to impulsivity, whether impulsivity predicts later nicotine use, and whether nicotine use shows up in brain structure.</p>
 
 <h3>Method</h3>
-<p>The data are 9,562 participants of the Adolescent Brain Cognitive Development (ABCD) Study, about 9.9 years old at baseline. Behavioral links were tested with generalized estimating equations that account for family clustering. Brain structure was tested vertex by vertex with mixed-effects models.</p>
+<p>I used data from 9,562 participants in the Adolescent Brain Cognitive Development (ABCD) Study, about 9.9 years old at baseline. I tested behavioral links with generalized estimating equations to account for family clustering, and tested brain structure vertex by vertex with mixed-effects models.</p>
 
 <h3>Result</h3>
 <ul>
   <li>Baseline impulsivity raised the odds of starting nicotine within two years (odds ratios 1.56 to 1.78 across impulsivity measures).</li>
-  <li>No cortical or subcortical region survived correction for multiple comparisons. The thesis reports this as a null result.</li>
+  <li>No cortical or subcortical region survived correction for multiple comparisons. I report this as a null result.</li>
 </ul>
 
 <footer>Last updated November 2026.</footer>

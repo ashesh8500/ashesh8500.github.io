@@ -31,16 +31,16 @@
 </nav>
 <main>
 <h1>Projects</h1>
-<p>Course projects and systems built outside the lab. Research projects are on the <a href="/research.html">research page</a>.</p>
+<p>Course projects and systems I built outside the lab. Research work is on the <a href="/research.html">research page</a>.</p>
 
 <h2 id="sumcheck">SumCheck accelerator for zero-knowledge proofs</h2>
 <p class="meta">Complete. Team course project, NYU, Spring 2026. Team: Sammy Suliman, Jui-Teng Huang, Ashesh Kaji. <a href="https://github.com/SammySuliman/zkPHIRE-A-Programmable-Accelerator-for-ZKPs">Code</a>.</p>
-<p>The project implements one programmable SumCheck round over the BN254 scalar field in Vitis HLS. The design follows the datapath of the zkPHIRE paper (HPCA 2026). A Python golden model is the bit-exact reference. It passes randomized round checks for term degrees 2 to 6. The HLS testbench passes 7 of 7 cases on two targets: a PYNQ-Z2 design with one processing element and an RFSoC 4x2 design with eight.</p>
+<p>We implemented one programmable SumCheck round over the BN254 scalar field in Vitis HLS, following the datapath of the zkPHIRE paper (HPCA 2026). A Python golden model serves as the bit-exact reference and passes randomized round checks for term degrees 2 to 6. The HLS testbench passes 7 of 7 cases on two targets: a PYNQ-Z2 design with one processing element and an RFSoC 4x2 design with eight.</p>
 
 <h2 id="layered-control">Portfolio allocation as layered control</h2>
 <p class="meta">Complete. Course project, System Optimization Methods, NYU, Spring 2026. <a href="/portfolio/systemopt/">Full study</a>. <a href="https://github.com/ashesh8500/system-optimization-portfolio-research">Code</a>.</p>
-<p>The study treats portfolio allocation as a layered control problem. It evaluates 60 arms (3 stock universes × 5 screens × 4 controllers) in chronological walk-forward folds. Cost sensitivity is tested up to 25 basis points. A learned RL router improved on a fixed strategy chosen in training. It did not beat a simple trailing-window router.</p>
-<p>The study states its limits: survivorship bias in the universes, few independent folds, and a proportional cost model. The study tests the mechanism, not profitability.</p>
+<p>I framed portfolio allocation as a layered control problem and evaluated 60 arms (3 stock universes × 5 screens × 4 controllers) in chronological walk-forward folds. I tested cost sensitivity up to 25 basis points. A learned RL router improved on a fixed strategy chosen in training, though it did not beat a simple trailing-window router.</p>
+<p>The limits are survivorship bias in the universes, few independent folds, and a proportional cost model. I ran this to test the mechanism rather than profitability.</p>
 
 <h2 id="auditlayer">AuditLayer</h2>
 <p class="meta">In production. Cofounded in 2026. Role: engineering. <a href="https://auditlayermedia.com">auditlayermedia.com</a>.</p>
